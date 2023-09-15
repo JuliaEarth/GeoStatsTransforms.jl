@@ -1,13 +1,13 @@
 name = "GeoStatsTransforms"
 uuid = "725d9659-360f-4996-9c94-5f19c7e4a8a6"
 authors = ["Júlio Hoffimann <julio.hoffimann@gmail.com> and contributors"]
-version = "1.0.0-DEV"
+version = "0.1.0"
+
+[deps]
+Meshes = "eacbb407-ea5a-433e-ab97-5258b1ca43fa"
+TableTransforms = "0d432bfd-3ee1-4ac1-886a-39f05cc69a3e"
 
 [compat]
+Meshes = "0.35"
+TableTransforms = "1.15"
 julia = "1.9"
-
-[extras]
-Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
-
-[targets]
-test = ["Test"]
