@@ -113,14 +113,17 @@ function apply(transform::Interpolate, geotable::AbstractGeoTable)
     minneighbors = 1
   end
 
-  vdom = point ? PointSet(centroid(dom, i) for i in 1:nobs) : dom
-  searcher = searcher_ui(vdom, maxneighbors, distance, neighborhood)
-
   # preprocess variable models
   varmodels = mapreduce(vcat, colspecs, models) do colspec, model
     svars = choose(colspec, vars)
     [var => model for var in svars]
   end
+
+  pset = PointSet(centroid(dom, i) for i in 1:nobs)
+  data = point ? georef(values(geotable), pset) : geotable
+
+  # determine bounded search method
+  searcher = searcher_ui(pset, maxneighbors, distance, neighborhood)
 
   # pre-allocate memory for neighbors
   neighbors = Vector{Int}(undef, maxneighbors)
@@ -145,7 +148,7 @@ function apply(transform::Interpolate, geotable::AbstractGeoTable)
         ninds = view(neighbors, 1:nneigh)
 
         # view neighborhood with data
-        samples = view(geotable, ninds)
+        samples = view(data, ninds)
 
         # fit model to data
         fmodel = fit(model, samples)
