@@ -396,7 +396,7 @@ version = "0.35.3"
 
 [[deps.GeoStatsModels]]
 deps = ["Combinatorics", "Distances", "Distributions", "GeoTables", "LinearAlgebra", "Meshes", "Statistics", "Tables", "Unitful", "Variography"]
-git-tree-sha1 = "96f2efb706d25de2eace78505aaed93d889183c5"
+git-tree-sha1 = "cf8ddfe637feb50c909cbfd309a33f2f6fac4054"
 repo-rev = "main"
 repo-url = "https://github.com/JuliaEarth/GeoStatsModels.jl"
 uuid = "ad987403-13c5-47b5-afee-0a48f6ac4f12"
