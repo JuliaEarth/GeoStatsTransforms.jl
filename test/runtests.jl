@@ -2,8 +2,8 @@ using GeoStatsTransforms
 using Meshes
 using GeoTables
 using Tables
-using GeoStatsModels
 using Variography
+using GeoStatsModels
 using TableTransforms
 using ScientificTypes
 using CategoricalArrays

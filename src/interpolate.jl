@@ -15,15 +15,18 @@
       prob=false
     )
   
-TODO
+Interpolate geospatial data on given `domain` using geostatistical models
+`model₁`, ..., `modelₙ` for variables `vars₁`, ..., `varsₙ`.
 
-## Global Parameters
+## Parameters
 
 * `minneighbors` - Minimum number of neighbors (default to `1`)
 * `maxneighbors` - Maximum number of neighbors (default to `10`)
 * `neighborhood` - Search neighborhood (default to `nothing`)
 * `distance`     - A distance defined in Distances.jl (default to `Euclidean()`)
 * `path`         - The path algorithm used to iterate over the domain (default to `LinearPath()`)
+* `point`        - Perform interpolation on point support (default to `true`)
+* `prob`         - Perform probabilistic interpolation (default to `false`)
 
 The `maxneighbors` option can be used to perform interpolation
 with a subset of measurements per prediction location. 
