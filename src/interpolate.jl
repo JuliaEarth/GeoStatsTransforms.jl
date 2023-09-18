@@ -122,7 +122,6 @@ function apply(transform::Interpolate, geotable::AbstractGeoTable)
   pairs = (var => pred(var, model) for (var, model) in varmodels)
   newtab = (; pairs...) |> Tables.materializer(tab)
 
-  # new spatial data
   newgeotable = georef(newtab, idom)
 
   newgeotable, nothing
