@@ -6,8 +6,8 @@
     Interpolate(
       domain,
       vars₁ => model₁, ..., varsₙ => modelₙ;
-      minneighbors=nothing,
-      maxneighbors=nothing,
+      minneighbors=1,
+      maxneighbors=10,
       neighborhood=nothing,
       distance=Euclidean(),
       path=LinearPath()
@@ -19,8 +19,8 @@ struct Interpolate{D<:Domain,N,M,P} <: TableTransform
   domain::D
   colspecs::Vector{ColSpec}
   models::Vector{GeoStatsModel}
-  minneighbors::Union{Int,Nothing}
-  maxneighbors::Union{Int,Nothing}
+  minneighbors::Int
+  maxneighbors::Int
   neighborhood::N
   distance::M
   path::P
@@ -30,8 +30,8 @@ Interpolate(
   domain::Domain,
   colspecs,
   models;
-  minneighbors=nothing,
-  maxneighbors=nothing,
+  minneighbors=1,
+  maxneighbors=10,
   neighborhood=nothing,
   distance=Euclidean(),
   path=LinearPath()
@@ -65,22 +65,19 @@ function apply(transform::Interpolate, geotable::AbstractGeoTable)
   neighborhood = transform.neighborhood
   distance = transform.distance
   path = transform.path
-
-  nelms = nrow(geotable)
-  nmin = isnothing(minneighbors) ? 1 : minneighbors
-  nmax = isnothing(maxneighbors) ? nelms : maxneighbors
-
-  if nmax > nelms || nmax < 1
-    @warn "Invalid maximum number of neighbors. Adjusting to $nelms..."
-    nmax = nelms
+  
+  nobs = nrow(geotable)
+  if maxneighbors > nobs || maxneighbors < 1
+    @warn "Invalid maximum number of neighbors. Adjusting to $nobs..."
+    maxneighbors = nobs
   end
 
-  if nmin > nmax || nmin < 1
+  if minneighbors > maxneighbors || minneighbors < 1
     @warn "Invalid minimum number of neighbors. Adjusting to 1..."
-    nmin = 1
+    minneighbors = 1
   end
 
-  searcher = searcher_ui(dom, nmax, distance, neighborhood)
+  searcher = searcher_ui(dom, maxneighbors, distance, neighborhood)
 
   # preprocess variable models
   varmodels = mapreduce(vcat, colspecs, models) do colspec, model
@@ -89,7 +86,7 @@ function apply(transform::Interpolate, geotable::AbstractGeoTable)
   end
 
   # pre-allocate memory for neighbors
-  neighbors = Vector{Int}(undef, nmax)
+  neighbors = Vector{Int}(undef, maxneighbors)
 
   # prediction order
   inds = traverse(idom, path)
@@ -104,7 +101,7 @@ function apply(transform::Interpolate, geotable::AbstractGeoTable)
       nneigh = search!(neighbors, center, searcher)
   
       # skip if there are too few neighbors
-      if nneigh < nmin
+      if nneigh < minneighbors
         missing
       else
         # final set of neighbors
