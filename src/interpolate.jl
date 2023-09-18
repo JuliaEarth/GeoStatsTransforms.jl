@@ -102,7 +102,7 @@ function apply(transform::Interpolate, geotable::AbstractGeoTable)
   point = transform.point
   prob = transform.prob
 
-  nobs = nrow(geotable)
+  nobs = nelements(dom)
   if maxneighbors > nobs || maxneighbors < 1
     @warn "Invalid maximum number of neighbors. Adjusting to $nobs..."
     maxneighbors = nobs
