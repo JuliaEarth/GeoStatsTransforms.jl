@@ -6,6 +6,7 @@ module GeoStatsTransforms
 
 using Meshes
 using GeoTables
+using GeoStatsModels
 
 using Tables
 using TableDistances
@@ -20,6 +21,7 @@ using SparseArrays
 using LinearAlgebra
 using Statistics
 
+import GeoStatsModels: GeoStatsModel, fit, predict
 import TableTransforms: ColSpec, Col, AllSpec, NoneSpec
 import TableTransforms: colspec, choose
 import TableTransforms: divide, attach
@@ -39,8 +41,11 @@ include("rasterize.jl")
 include("potrace.jl")
 include("detrend.jl")
 
+include("interpolate.jl")
+
 export
   # transforms
+  Interpolate,
   UniqueCoords,
   Rasterize,
   Potrace,
