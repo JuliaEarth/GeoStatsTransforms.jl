@@ -22,8 +22,9 @@ using LinearAlgebra
 using Statistics
 
 using GeoStatsModels: GeoStatsModel, fit, predict, predictprob
-import TableTransforms: ColSpec, Col, AllSpec, NoneSpec
-import TableTransforms: colspec, choose
+using TableTransforms: ColSpec, Col, AllSpec, NoneSpec
+using TableTransforms: colspec, choose
+
 import TableTransforms: divide, attach
 import TableTransforms: applymeta, revertmeta
 import TableTransforms: apply, revert, reapply
