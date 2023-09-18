@@ -119,7 +119,7 @@ function apply(transform::Interpolate, geotable::AbstractGeoTable)
   # preprocess variable models
   varmodels = mapreduce(vcat, colspecs, models) do colspec, model
     svars = choose(colspec, vars)
-    svars .=> Ref(model)
+    [var => model for var in svars]
   end
 
   # pre-allocate memory for neighbors
