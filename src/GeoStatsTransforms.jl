@@ -8,9 +8,16 @@ using Meshes
 using GeoTables
 
 using Tables
+using TableDistances
 using TableTransforms
 using ScientificTypes
 using Combinatorics
+using Distances
+using Clustering
+using ArnoldiMethod
+using CategoricalArrays
+using SparseArrays
+using LinearAlgebra
 using Statistics
 
 import TableTransforms: ColSpec, Col, AllSpec, NoneSpec
@@ -27,6 +34,7 @@ include("feature.jl")
 include("geometric.jl")
 
 include("uniquecoords.jl")
+include("clustering.jl")
 include("rasterize.jl")
 include("potrace.jl")
 include("detrend.jl")
@@ -36,6 +44,9 @@ export
   UniqueCoords,
   Rasterize,
   Potrace,
-  Detrend
+  Detrend,
+  SLIC,
+  GHC,
+  GSC
 
 end

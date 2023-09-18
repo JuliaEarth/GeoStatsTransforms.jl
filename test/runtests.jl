@@ -18,6 +18,7 @@ testfiles = [
   "feature.jl",
   "geometric.jl",
   "uniquecoords.jl",
+  "clustering.jl",
   "rasterize.jl",
   "potrace.jl",
   "detrend.jl"
