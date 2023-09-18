@@ -2,6 +2,8 @@ using GeoStatsTransforms
 using Meshes
 using GeoTables
 using Tables
+using GeoStatsModels
+using Variography
 using TableTransforms
 using ScientificTypes
 using CategoricalArrays
@@ -17,6 +19,7 @@ datadir = joinpath(@__DIR__, "data")
 testfiles = [
   "feature.jl",
   "geometric.jl",
+  "interpolate.jl",
   "uniquecoords.jl",
   "clustering.jl",
   "rasterize.jl",
