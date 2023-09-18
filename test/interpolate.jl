@@ -3,19 +3,19 @@
 
   pset = PointSet(rand(Point2, 3))
   gtb = georef((a=[1, 2, 3], b=[4, 5, 6]), pset)
-  variogram = GaussianVariogram(range=35.0, nugget=0.0)
-  ngtb = gtb |> Interpolate(pset, [:a, :b] => Kriging(variogram))
+  ngtb = gtb |> Interpolate(pset)
   @test ngtb.a == gtb.a
   @test ngtb.b == gtb.b
   @test ngtb.geometry == pset
-
+  
   # --------------------
   # 2D PROBLEM (GLOBAL)
   # --------------------
-
+  
   gtb = georef((; z=[1.0, 0.0, 1.0]), [(25.0, 25.0), (50.0, 75.0), (75.0, 50.0)])
   grid = CartesianGrid((100, 100), (0.5, 0.5), (1.0, 1.0))
   linds = LinearIndices(size(grid))
+  variogram = GaussianVariogram(range=35.0, nugget=0.0)
 
   Random.seed!(2021)
   ngtb = gtb |> Interpolate(grid, :z => Kriging(variogram))
