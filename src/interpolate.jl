@@ -23,12 +23,11 @@ TODO
 * `maxneighbors` - Maximum number of neighbors (default to `10`)
 * `neighborhood` - Search neighborhood (default to `nothing`)
 * `distance`     - A distance defined in Distances.jl (default to `Euclidean()`)
-* `exponent`     - Exponent of the distances (default to `1`)
 * `path`         - The path algorithm used to iterate over the domain (default to `LinearPath()`)
 
-The `maxneighbors` option can be used to perform inverse distance weighting
-with a subset of measurements per prediction location. If `maxneighbors`
-is not provided, then all measurements are used.
+The `maxneighbors` option can be used to perform interpolation
+with a subset of measurements per prediction location. 
+If `maxneighbors` is not provided, then all measurements are used.
 
 Two `neighborhood` search methods are available:
 
@@ -151,7 +150,7 @@ function apply(transform::Interpolate, geotable::AbstractGeoTable)
         # save prediction
         geom = point ? center : dom[ind]
         if prob
-          predictprpb(fmodel, var, geom)
+          predictprob(fmodel, var, geom)
         else
           predict(fmodel, var, geom)
         end
