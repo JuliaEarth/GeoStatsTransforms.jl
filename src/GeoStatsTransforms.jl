@@ -35,13 +35,12 @@ include("traits.jl")
 include("feature.jl")
 include("geometric.jl")
 
+include("interpolate.jl")
 include("uniquecoords.jl")
 include("clustering.jl")
 include("rasterize.jl")
 include("potrace.jl")
 include("detrend.jl")
-
-include("interpolate.jl")
 
 export
   # transforms
