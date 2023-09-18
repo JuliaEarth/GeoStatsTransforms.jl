@@ -113,14 +113,14 @@ function apply(transform::Interpolate, geotable::AbstractGeoTable)
     minneighbors = 1
   end
 
+  pset = PointSet(centroid(dom, i) for i in 1:nobs)
+  data = point ? georef(values(geotable), pset) : geotable
+
   # preprocess variable models
   varmodels = mapreduce(vcat, colspecs, models) do colspec, model
     svars = choose(colspec, vars)
     [var => model for var in svars]
   end
-
-  pset = PointSet(centroid(dom, i) for i in 1:nobs)
-  data = point ? georef(values(geotable), pset) : geotable
 
   # determine bounded search method
   searcher = searcher_ui(pset, maxneighbors, distance, neighborhood)
