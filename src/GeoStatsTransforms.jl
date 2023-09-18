@@ -21,7 +21,7 @@ using SparseArrays
 using LinearAlgebra
 using Statistics
 
-import GeoStatsModels: GeoStatsModel, fit, predict
+import GeoStatsModels: GeoStatsModel, fit, predict, predictprob
 import TableTransforms: ColSpec, Col, AllSpec, NoneSpec
 import TableTransforms: colspec, choose
 import TableTransforms: divide, attach

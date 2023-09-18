@@ -11,6 +11,8 @@
       neighborhood=nothing,
       distance=Euclidean(),
       path=LinearPath()
+      point=true,
+      prob=false
     )
   
 TODO
@@ -45,6 +47,8 @@ struct Interpolate{D<:Domain,N,M,P} <: TableTransform
   neighborhood::N
   distance::M
   path::P
+  point::Bool
+  prob::Bool
 end
 
 Interpolate(
@@ -55,7 +59,9 @@ Interpolate(
   maxneighbors=10,
   neighborhood=nothing,
   distance=Euclidean(),
-  path=LinearPath()
+  path=LinearPath(),
+  point=true,
+  prob=false
 ) = Interpolate(
   domain,
   collect(ColSpec, colspecs),
@@ -64,7 +70,9 @@ Interpolate(
   maxneighbors,
   neighborhood,
   distance,
-  path
+  path,
+  point,
+  prob
 )
 
 Interpolate(domain::Domain; distance=Euclidean(), kwargs...) =
@@ -89,6 +97,8 @@ function apply(transform::Interpolate, geotable::AbstractGeoTable)
   neighborhood = transform.neighborhood
   distance = transform.distance
   path = transform.path
+  point = transform.point
+  prob = transform.prob
 
   nobs = nrow(geotable)
   if maxneighbors > nobs || maxneighbors < 1
@@ -101,7 +111,8 @@ function apply(transform::Interpolate, geotable::AbstractGeoTable)
     minneighbors = 1
   end
 
-  searcher = searcher_ui(dom, maxneighbors, distance, neighborhood)
+  vdom = point ? PointSet(centroid(dom, i) for i in 1:nobs) : dom
+  searcher = searcher_ui(vdom, maxneighbors, distance, neighborhood)
 
   # preprocess variable models
   varmodels = mapreduce(vcat, colspecs, models) do colspec, model
@@ -138,7 +149,12 @@ function apply(transform::Interpolate, geotable::AbstractGeoTable)
         fmodel = fit(model, samples)
 
         # save prediction
-        predict(fmodel, var, idom[ind])
+        geom = point ? center : dom[ind]
+        if prob
+          predictprpb(fmodel, var, geom)
+        else
+          predict(fmodel, var, geom)
+        end
       end
     end
   end
