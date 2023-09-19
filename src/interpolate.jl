@@ -18,9 +18,9 @@ Interpolate geospatial data on given `domain` using geostatistical models
 * `point`        - Perform interpolation on point support (default to `true`)
 * `prob`         - Perform probabilistic interpolation (default to `false`)
 
-The `maxneighbors` option can be used to perform interpolation
-with a subset of measurements per prediction location. 
-If `maxneighbors` is not provided, then all measurements are used.
+The `maxneighbors` parameter can be used to perform interpolation with
+a subset of measurements per prediction location. If `maxneighbors`
+is not provided, then all measurements are used.
 
 Two `neighborhood` search methods are available:
 
