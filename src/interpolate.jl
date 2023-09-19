@@ -3,22 +3,12 @@
 # ------------------------------------------------------------------
 
 """
-    Interpolate(
-      domain,
-      vars₁ => model₁, ..., varsₙ => modelₙ;
-      minneighbors=1,
-      maxneighbors=10,
-      neighborhood=nothing,
-      distance=Euclidean(),
-      path=LinearPath()
-      point=true,
-      prob=false
-    )
+    Interpolate(domain, vars₁ => model₁, ..., varsₙ => modelₙ; [options])
   
 Interpolate geospatial data on given `domain` using geostatistical models
 `model₁`, ..., `modelₙ` for variables `vars₁`, ..., `varsₙ`.
 
-## Parameters
+## Options
 
 * `minneighbors` - Minimum number of neighbors (default to `1`)
 * `maxneighbors` - Maximum number of neighbors (default to `10`)
@@ -155,11 +145,8 @@ function apply(transform::Interpolate, geotable::AbstractGeoTable)
 
         # save prediction
         geom = point ? center : dom[ind]
-        if prob
-          predictprob(fmodel, var, geom)
-        else
-          predict(fmodel, var, geom)
-        end
+        pfun = prob ? predictprob : predict
+        pfun(fmodel, var, geom)
       end
     end
   end
