@@ -3,12 +3,12 @@
 # ------------------------------------------------------------------
 
 """
-    Interpolate(domain, vars₁ => model₁, ..., varsₙ => modelₙ; [options])
+    Interpolate(domain, vars₁ => model₁, ..., varsₙ => modelₙ; [parameters])
   
 Interpolate geospatial data on given `domain` using geostatistical models
 `model₁`, ..., `modelₙ` for variables `vars₁`, ..., `varsₙ`.
 
-## Options
+## Parameters
 
 * `minneighbors` - Minimum number of neighbors (default to `1`)
 * `maxneighbors` - Maximum number of neighbors (default to `10`)
