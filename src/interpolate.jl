@@ -144,7 +144,7 @@ function apply(transform::Interpolate, geotable::AbstractGeoTable)
         fmodel = fit(model, samples)
 
         # save prediction
-        geom = point ? center : dom[ind]
+        geom = point ? center : idom[ind]
         pfun = prob ? predictprob : predict
         pfun(fmodel, var, geom)
       end
