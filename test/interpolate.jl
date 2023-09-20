@@ -18,4 +18,15 @@
   @test isapprox(ngtb.z[linds[25, 25]], 1.0, atol=1e-3)
   @test isapprox(ngtb.z[linds[50, 75]], 0.0, atol=1e-3)
   @test isapprox(ngtb.z[linds[75, 50]], 1.0, atol=1e-3)
+
+  # units
+  gtb = georef((; T=[1.0, 0.0, 1.0] * u"K"), pset)
+  grid = CartesianGrid(5, 5)
+  ngtb = gtb |> Interpolate(grid)
+  @test GeoStatsTransforms.elunit(ngtb.T) == u"K"
+
+  # affine units
+  gtb = georef((; T=[-272.15, -273.15, -272.15] * u"°C"), pset)
+  ngtb = gtb |> Interpolate(grid)
+  @test GeoStatsTransforms.elunit(ngtb.T) == u"K"
 end
