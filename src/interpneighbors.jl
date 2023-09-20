@@ -8,6 +8,10 @@
 Interpolate geospatial data on given `domain` using geostatistical models
 `model₁`, ..., `modelₙ` for variables `vars₁`, ..., `varsₙ`.
 
+    InterpolateNeighbors(domain, model=IDW(); [parameters])
+  
+Interpolate geospatial data on given `domain` using geostatistical `model` for all variables.
+
 Unlike [`Interpolate`](@ref), this transform uses neighbor search methods to
 fit geostatistical models at each interpolation location with a reduced number
 of measurements.
@@ -69,7 +73,8 @@ InterpolateNeighbors(
   prob
 )
 
-InterpolateNeighbors(domain::Domain; kwargs...) = InterpolateNeighbors(domain, [AllSpec()], [IDW()]; kwargs...)
+InterpolateNeighbors(domain::Domain, model::GeoStatsModel=IDW(); kwargs...) =
+  InterpolateNeighbors(domain, [AllSpec()], [model]; kwargs...)
 
 InterpolateNeighbors(domain::Domain, pairs::Pair{<:Any,<:GeoStatsModel}...; kwargs...) =
   InterpolateNeighbors(domain, colspec.(first.(pairs)), last.(pairs); kwargs...)

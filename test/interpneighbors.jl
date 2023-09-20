@@ -3,7 +3,7 @@
 
   pset = PointSet(rand(Point2, 3))
   gtb = georef((a=[1, 2, 3], b=[4, 5, 6]), pset)
-  ngtb = gtb |> InterpolateNeighbors(pset, maxneighbors=3)
+  ngtb = gtb |> InterpolateNeighbors(pset, IDW(), maxneighbors=3)
   @test ngtb.a == gtb.a
   @test ngtb.b == gtb.b
   @test ngtb.geometry == pset
