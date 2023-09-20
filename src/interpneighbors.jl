@@ -18,7 +18,6 @@ of measurements.
 * `maxneighbors` - Maximum number of neighbors (default to `10`)
 * `neighborhood` - Search neighborhood (default to `nothing`)
 * `distance`     - A distance defined in Distances.jl (default to `Euclidean()`)
-* `path`         - The path algorithm used to iterate over the domain (default to `LinearPath()`)
 * `point`        - Perform interpolation on point support (default to `true`)
 * `prob`         - Perform probabilistic interpolation (default to `false`)
 
@@ -36,7 +35,7 @@ Two `neighborhood` search methods are available:
 
 See also [`Interpolate`](@ref).
 """
-struct InterpolateNeighbors{D<:Domain,N,M,P} <: TableTransform
+struct InterpolateNeighbors{D<:Domain,N,M} <: TableTransform
   domain::D
   colspecs::Vector{ColSpec}
   models::Vector{GeoStatsModel}
@@ -44,7 +43,6 @@ struct InterpolateNeighbors{D<:Domain,N,M,P} <: TableTransform
   maxneighbors::Int
   neighborhood::N
   distance::M
-  path::P
   point::Bool
   prob::Bool
 end
@@ -57,7 +55,6 @@ InterpolateNeighbors(
   maxneighbors=10,
   neighborhood=nothing,
   distance=Euclidean(),
-  path=LinearPath(),
   point=true,
   prob=false
 ) = InterpolateNeighbors(
@@ -68,7 +65,6 @@ InterpolateNeighbors(
   maxneighbors,
   neighborhood,
   distance,
-  path,
   point,
   prob
 )
@@ -93,7 +89,6 @@ function apply(transform::InterpolateNeighbors, geotable::AbstractGeoTable)
   maxneighbors = transform.maxneighbors
   neighborhood = transform.neighborhood
   distance = transform.distance
-  path = transform.path
   point = transform.point
   prob = transform.prob
 
@@ -128,7 +123,7 @@ function apply(transform::InterpolateNeighbors, geotable::AbstractGeoTable)
   neighbors = Vector{Int}(undef, maxneighbors)
 
   # prediction order
-  inds = traverse(idom, path)
+  inds = traverse(idom, LinearPath())
 
   # predict variable values
   function pred(var, model)
@@ -139,10 +134,8 @@ function apply(transform::InterpolateNeighbors, geotable::AbstractGeoTable)
       # find neighbors with data
       nneigh = search!(neighbors, center, searcher)
 
-      # skip if there are too few neighbors
-      if nneigh < minneighbors
-        missing
-      else
+      # predict if enough neighbors
+      if nneigh ≥ minneighbors
         # final set of neighbors
         ninds = view(neighbors, 1:nneigh)
 
@@ -156,6 +149,8 @@ function apply(transform::InterpolateNeighbors, geotable::AbstractGeoTable)
         geom = point ? center : idom[ind]
         pfun = prob ? predictprob : predict
         pfun(fmodel, var, geom)
+      else # missing prediction
+        missing
       end
     end
   end

@@ -10,23 +10,21 @@ Interpolate geospatial data on given `domain` using geostatistical models
 
 ## Parameters
 
-* `path`  - The path algorithm used to iterate over the domain (default to `LinearPath()`)
 * `point` - Perform interpolation on point support (default to `true`)
 * `prob`  - Perform probabilistic interpolation (default to `false`)
 
 See also [`InterpolateNeighbors`](@ref).
 """
-struct Interpolate{D<:Domain,P} <: TableTransform
+struct Interpolate{D<:Domain} <: TableTransform
   domain::D
   colspecs::Vector{ColSpec}
   models::Vector{GeoStatsModel}
-  path::P
   point::Bool
   prob::Bool
 end
 
-Interpolate(domain::Domain, colspecs, models; path=LinearPath(), point=true, prob=false) =
-  Interpolate(domain, collect(ColSpec, colspecs), collect(GeoStatsModel, models), path, point, prob)
+Interpolate(domain::Domain, colspecs, models; point=true, prob=false) =
+  Interpolate(domain, collect(ColSpec, colspecs), collect(GeoStatsModel, models), point, prob)
 
 Interpolate(domain::Domain; kwargs...) = Interpolate(domain, [AllSpec()], [IDW()]; kwargs...)
 
@@ -44,7 +42,6 @@ function apply(transform::Interpolate, geotable::AbstractGeoTable)
   idom = transform.domain
   colspecs = transform.colspecs
   models = transform.models
-  path = transform.path
   point = transform.point
   prob = transform.prob
 
@@ -63,7 +60,7 @@ function apply(transform::Interpolate, geotable::AbstractGeoTable)
   end
 
   # prediction order
-  inds = traverse(idom, path)
+  inds = traverse(idom, LinearPath())
 
   # predict variable values
   function pred(var, fmodel)
