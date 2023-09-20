@@ -23,24 +23,10 @@ struct InterpolateGlobal{D<:Domain,P} <: TableTransform
   prob::Bool
 end
 
-InterpolateGlobal(
-  domain::Domain,
-  colspecs,
-  models;
-  path=LinearPath(),
-  point=true,
-  prob=false
-) = InterpolateGlobal(
-  domain,
-  collect(ColSpec, colspecs),
-  collect(GeoStatsModel, models),
-  path,
-  point,
-  prob
-)
+InterpolateGlobal(domain::Domain, colspecs, models; path=LinearPath(), point=true, prob=false) =
+  InterpolateGlobal(domain, collect(ColSpec, colspecs), collect(GeoStatsModel, models), path, point, prob)
 
-InterpolateGlobal(domain::Domain; kwargs...) =
-  InterpolateGlobal(domain, [AllSpec()], [IDW()]; kwargs...)
+InterpolateGlobal(domain::Domain; kwargs...) = InterpolateGlobal(domain, [AllSpec()], [IDW()]; kwargs...)
 
 InterpolateGlobal(domain::Domain, pairs::Pair{<:Any,<:GeoStatsModel}...; kwargs...) =
   InterpolateGlobal(domain, colspec.(first.(pairs)), last.(pairs); kwargs...)
@@ -60,10 +46,10 @@ function apply(transform::InterpolateGlobal, geotable::AbstractGeoTable)
   point = transform.point
   prob = transform.prob
 
-  data = if point 
+  data = if point
     pset = PointSet(centroid(dom, i) for i in 1:nelements(dom))
     georef(values(geotable), pset)
-  else 
+  else
     geotable
   end
 

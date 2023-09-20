@@ -67,8 +67,7 @@ Interpolate(
   prob
 )
 
-Interpolate(domain::Domain; kwargs...) =
-  Interpolate(domain, [AllSpec()], [IDW()]; kwargs...)
+Interpolate(domain::Domain; kwargs...) = Interpolate(domain, [AllSpec()], [IDW()]; kwargs...)
 
 Interpolate(domain::Domain, pairs::Pair{<:Any,<:GeoStatsModel}...; kwargs...) =
   Interpolate(domain, colspec.(first.(pairs)), last.(pairs); kwargs...)
