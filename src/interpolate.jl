@@ -8,6 +8,10 @@
 Interpolate geospatial data on given `domain` using geostatistical models
 `model₁`, ..., `modelₙ` for variables `vars₁`, ..., `varsₙ`.
 
+    Interpolate(domain, model=IDW(); [parameters])
+  
+Interpolate geospatial data on given `domain` using geostatistical `model` for all variables.
+
 ## Parameters
 
 * `point` - Perform interpolation on point support (default to `true`)
@@ -26,7 +30,8 @@ end
 Interpolate(domain::Domain, colspecs, models; point=true, prob=false) =
   Interpolate(domain, collect(ColSpec, colspecs), collect(GeoStatsModel, models), point, prob)
 
-Interpolate(domain::Domain; kwargs...) = Interpolate(domain, [AllSpec()], [IDW()]; kwargs...)
+Interpolate(domain::Domain, model::GeoStatsModel=IDW(); kwargs...) =
+  Interpolate(domain, [AllSpec()], [model]; kwargs...)
 
 Interpolate(domain::Domain, pairs::Pair{<:Any,<:GeoStatsModel}...; kwargs...) =
   Interpolate(domain, colspec.(first.(pairs)), last.(pairs); kwargs...)

@@ -3,7 +3,7 @@
 
   pset = PointSet(rand(Point2, 3))
   gtb = georef((a=[1, 2, 3], b=[4, 5, 6]), pset)
-  ngtb = gtb |> Interpolate(pset)
+  ngtb = gtb |> Interpolate(pset, IDW())
   @test ngtb.a == gtb.a
   @test ngtb.b == gtb.b
   @test ngtb.geometry == pset
