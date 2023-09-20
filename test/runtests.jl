@@ -19,8 +19,8 @@ datadir = joinpath(@__DIR__, "data")
 testfiles = [
   "feature.jl",
   "geometric.jl",
+  "interpneighbors.jl",
   "interpolate.jl",
-  "interpolatelocal.jl",
   "uniquecoords.jl",
   "clustering.jl",
   "rasterize.jl",

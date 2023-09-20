@@ -3,10 +3,14 @@
 # ------------------------------------------------------------------
 
 """
-    InterpolateLocal(domain, vars₁ => model₁, ..., varsₙ => modelₙ; [parameters])
+    InterpolateNeighbors(domain, vars₁ => model₁, ..., varsₙ => modelₙ; [parameters])
   
 Interpolate geospatial data on given `domain` using geostatistical models
 `model₁`, ..., `modelₙ` for variables `vars₁`, ..., `varsₙ`.
+
+Unlike [`Interpolate`](@ref), this transform uses neighbor search methods to
+fit geostatistical models at each interpolation location with a reduced number
+of measurements.
 
 ## Parameters
 
@@ -30,9 +34,9 @@ Two `neighborhood` search methods are available:
 * If a `neighborhood` is not provided, the prediction is performed 
   using `maxneighbors` nearest neighbors according to `distance`.
 
-See also [`InterpolateGlobal`](@ref).
+See also [`Interpolate`](@ref).
 """
-struct InterpolateLocal{D<:Domain,N,M,P} <: TableTransform
+struct InterpolateNeighbors{D<:Domain,N,M,P} <: TableTransform
   domain::D
   colspecs::Vector{ColSpec}
   models::Vector{GeoStatsModel}
@@ -45,7 +49,7 @@ struct InterpolateLocal{D<:Domain,N,M,P} <: TableTransform
   prob::Bool
 end
 
-InterpolateLocal(
+InterpolateNeighbors(
   domain::Domain,
   colspecs,
   models;
@@ -56,7 +60,7 @@ InterpolateLocal(
   path=LinearPath(),
   point=true,
   prob=false
-) = InterpolateLocal(
+) = InterpolateNeighbors(
   domain,
   collect(ColSpec, colspecs),
   collect(GeoStatsModel, models),
@@ -69,14 +73,14 @@ InterpolateLocal(
   prob
 )
 
-InterpolateLocal(domain::Domain; kwargs...) = InterpolateLocal(domain, [AllSpec()], [IDW()]; kwargs...)
+InterpolateNeighbors(domain::Domain; kwargs...) = InterpolateNeighbors(domain, [AllSpec()], [IDW()]; kwargs...)
 
-InterpolateLocal(domain::Domain, pairs::Pair{<:Any,<:GeoStatsModel}...; kwargs...) =
-  InterpolateLocal(domain, colspec.(first.(pairs)), last.(pairs); kwargs...)
+InterpolateNeighbors(domain::Domain, pairs::Pair{<:Any,<:GeoStatsModel}...; kwargs...) =
+  InterpolateNeighbors(domain, colspec.(first.(pairs)), last.(pairs); kwargs...)
 
-isrevertible(::Type{<:InterpolateLocal}) = false
+isrevertible(::Type{<:InterpolateNeighbors}) = false
 
-function apply(transform::InterpolateLocal, geotable::AbstractGeoTable)
+function apply(transform::InterpolateNeighbors, geotable::AbstractGeoTable)
   dom = domain(geotable)
   tab = values(geotable)
   cols = Tables.columns(tab)

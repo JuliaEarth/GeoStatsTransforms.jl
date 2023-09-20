@@ -8,16 +8,13 @@
 Interpolate geospatial data on given `domain` using geostatistical models
 `model₁`, ..., `modelₙ` for variables `vars₁`, ..., `varsₙ`.
 
-Unlike [`InterpolateLocal`](@ref), this transform performs the `fit` of the model once
-with all the available data instead of multiple `fit` calls with neighborhoods.
-
 ## Parameters
 
 * `path`  - The path algorithm used to iterate over the domain (default to `LinearPath()`)
 * `point` - Perform interpolation on point support (default to `true`)
 * `prob`  - Perform probabilistic interpolation (default to `false`)
 
-See also [`Interpolate`](@ref).
+See also [`InterpolateNeighbors`](@ref).
 """
 struct Interpolate{D<:Domain,P} <: TableTransform
   domain::D
