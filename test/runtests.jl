@@ -2,6 +2,7 @@ using GeoStatsTransforms
 using Meshes
 using GeoTables
 using Tables
+using Unitful
 using Variography
 using GeoStatsModels
 using TableTransforms

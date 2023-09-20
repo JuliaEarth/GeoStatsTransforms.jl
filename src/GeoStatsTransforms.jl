@@ -9,6 +9,7 @@ using GeoTables
 using GeoStatsModels
 
 using Tables
+using Unitful
 using TableDistances
 using TableTransforms
 using ScientificTypes
@@ -21,6 +22,7 @@ using SparseArrays
 using LinearAlgebra
 using Statistics
 
+using Unitful: AbstractQuantity, Units, AffineUnits
 using GeoStatsModels: GeoStatsModel, fit, predict, predictprob
 using TableTransforms: ColSpec, Col, AllSpec, NoneSpec
 using TableTransforms: colspec, choose

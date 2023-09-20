@@ -47,9 +47,9 @@ function apply(transform::Interpolate, geotable::AbstractGeoTable)
 
   data = if point
     pset = PointSet(centroid(dom, i) for i in 1:nelements(dom))
-    georef(values(geotable), pset)
+    georef(values(geotable), pset) |> uadjust
   else
-    geotable
+    uadjust(geotable)
   end
 
   # preprocess variable models
