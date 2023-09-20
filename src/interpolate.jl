@@ -29,6 +29,8 @@ Two `neighborhood` search methods are available:
 
 * If a `neighborhood` is not provided, the prediction is performed 
   using `maxneighbors` nearest neighbors according to `distance`.
+
+See also [`InterpolateGlobal`](@ref).
 """
 struct Interpolate{D<:Domain,N,M,P} <: TableTransform
   domain::D
@@ -67,8 +69,7 @@ Interpolate(
   prob
 )
 
-Interpolate(domain::Domain; kwargs...) =
-  Interpolate(domain, [AllSpec()], [IDW()]; kwargs...)
+Interpolate(domain::Domain; kwargs...) = Interpolate(domain, [AllSpec()], [IDW()]; kwargs...)
 
 Interpolate(domain::Domain, pairs::Pair{<:Any,<:GeoStatsModel}...; kwargs...) =
   Interpolate(domain, colspec.(first.(pairs)), last.(pairs); kwargs...)
@@ -103,8 +104,12 @@ function apply(transform::Interpolate, geotable::AbstractGeoTable)
     minneighbors = 1
   end
 
-  pset = PointSet(centroid(dom, i) for i in 1:nobs)
-  data = point ? georef(values(geotable), pset) : geotable
+  data = if point
+    pset = PointSet(centroid(dom, i) for i in 1:nobs)
+    georef(values(geotable), pset)
+  else
+    geotable
+  end
 
   # preprocess variable models
   varmodels = mapreduce(vcat, colspecs, models) do colspec, model
@@ -113,7 +118,7 @@ function apply(transform::Interpolate, geotable::AbstractGeoTable)
   end
 
   # determine bounded search method
-  searcher = searcher_ui(pset, maxneighbors, distance, neighborhood)
+  searcher = searcher_ui(dom, maxneighbors, distance, neighborhood)
 
   # pre-allocate memory for neighbors
   neighbors = Vector{Int}(undef, maxneighbors)
@@ -144,7 +149,7 @@ function apply(transform::Interpolate, geotable::AbstractGeoTable)
         fmodel = fit(model, samples)
 
         # save prediction
-        geom = point ? center : dom[ind]
+        geom = point ? center : idom[ind]
         pfun = prob ? predictprob : predict
         pfun(fmodel, var, geom)
       end

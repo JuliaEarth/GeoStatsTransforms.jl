@@ -20,6 +20,7 @@ testfiles = [
   "feature.jl",
   "geometric.jl",
   "interpolate.jl",
+  "interpolateglobal.jl",
   "uniquecoords.jl",
   "clustering.jl",
   "rasterize.jl",
