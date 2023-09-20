@@ -10,9 +10,9 @@ Interpolate geospatial data on given `domain` using geostatistical models
 
 ## Parameters
 
-* `path`         - The path algorithm used to iterate over the domain (default to `LinearPath()`)
-* `point`        - Perform interpolation on point support (default to `true`)
-* `prob`         - Perform probabilistic interpolation (default to `false`)
+* `path`  - The path algorithm used to iterate over the domain (default to `LinearPath()`)
+* `point` - Perform interpolation on point support (default to `true`)
+* `prob`  - Perform probabilistic interpolation (default to `false`)
 """
 struct InterpolateGlobal{D<:Domain,P} <: TableTransform
   domain::D
