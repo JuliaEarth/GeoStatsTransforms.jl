@@ -7,6 +7,7 @@
   
 Interpolate geospatial data on given `domain` using geostatistical models
 `model₁`, ..., `modelₙ` for variables `vars₁`, ..., `varsₙ`.
+
 Unlike [`Interpolate`](@ref), this transform performs the `fit` of the model once
 with all the available data instead of multiple `fit` calls with neighborhoods.
 
