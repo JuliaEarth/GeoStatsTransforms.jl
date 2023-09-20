@@ -15,6 +15,8 @@ with all the available data instead of multiple `fit` calls with neighborhoods.
 * `path`  - The path algorithm used to iterate over the domain (default to `LinearPath()`)
 * `point` - Perform interpolation on point support (default to `true`)
 * `prob`  - Perform probabilistic interpolation (default to `false`)
+
+See also [`Interpolate`](@ref).
 """
 struct InterpolateGlobal{D<:Domain,P} <: TableTransform
   domain::D

@@ -29,6 +29,8 @@ Two `neighborhood` search methods are available:
 
 * If a `neighborhood` is not provided, the prediction is performed 
   using `maxneighbors` nearest neighbors according to `distance`.
+
+See also [`InterpolateGlobal`](@ref).
 """
 struct Interpolate{D<:Domain,N,M,P} <: TableTransform
   domain::D
