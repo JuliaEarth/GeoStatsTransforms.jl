@@ -37,7 +37,7 @@ include("feature.jl")
 include("geometric.jl")
 
 include("interpolate.jl")
-include("interpolateglobal.jl")
+include("interpolatelocal.jl")
 include("uniquecoords.jl")
 include("clustering.jl")
 include("rasterize.jl")
@@ -47,7 +47,7 @@ include("detrend.jl")
 export
   # transforms
   Interpolate,
-  InterpolateGlobal,
+  InterpolateLocal,
   UniqueCoords,
   Rasterize,
   Potrace,

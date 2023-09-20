@@ -3,12 +3,12 @@
 # ------------------------------------------------------------------
 
 """
-    InterpolateGlobal(domain, vars₁ => model₁, ..., varsₙ => modelₙ; [parameters])
+    Interpolate(domain, vars₁ => model₁, ..., varsₙ => modelₙ; [parameters])
   
 Interpolate geospatial data on given `domain` using geostatistical models
 `model₁`, ..., `modelₙ` for variables `vars₁`, ..., `varsₙ`.
 
-Unlike [`Interpolate`](@ref), this transform performs the `fit` of the model once
+Unlike [`InterpolateLocal`](@ref), this transform performs the `fit` of the model once
 with all the available data instead of multiple `fit` calls with neighborhoods.
 
 ## Parameters
@@ -19,7 +19,7 @@ with all the available data instead of multiple `fit` calls with neighborhoods.
 
 See also [`Interpolate`](@ref).
 """
-struct InterpolateGlobal{D<:Domain,P} <: TableTransform
+struct Interpolate{D<:Domain,P} <: TableTransform
   domain::D
   colspecs::Vector{ColSpec}
   models::Vector{GeoStatsModel}
@@ -28,17 +28,17 @@ struct InterpolateGlobal{D<:Domain,P} <: TableTransform
   prob::Bool
 end
 
-InterpolateGlobal(domain::Domain, colspecs, models; path=LinearPath(), point=true, prob=false) =
-  InterpolateGlobal(domain, collect(ColSpec, colspecs), collect(GeoStatsModel, models), path, point, prob)
+Interpolate(domain::Domain, colspecs, models; path=LinearPath(), point=true, prob=false) =
+  Interpolate(domain, collect(ColSpec, colspecs), collect(GeoStatsModel, models), path, point, prob)
 
-InterpolateGlobal(domain::Domain; kwargs...) = InterpolateGlobal(domain, [AllSpec()], [IDW()]; kwargs...)
+Interpolate(domain::Domain; kwargs...) = Interpolate(domain, [AllSpec()], [IDW()]; kwargs...)
 
-InterpolateGlobal(domain::Domain, pairs::Pair{<:Any,<:GeoStatsModel}...; kwargs...) =
-  InterpolateGlobal(domain, colspec.(first.(pairs)), last.(pairs); kwargs...)
+Interpolate(domain::Domain, pairs::Pair{<:Any,<:GeoStatsModel}...; kwargs...) =
+  Interpolate(domain, colspec.(first.(pairs)), last.(pairs); kwargs...)
 
-isrevertible(::Type{<:InterpolateGlobal}) = false
+isrevertible(::Type{<:Interpolate}) = false
 
-function apply(transform::InterpolateGlobal, geotable::AbstractGeoTable)
+function apply(transform::Interpolate, geotable::AbstractGeoTable)
   dom = domain(geotable)
   tab = values(geotable)
   cols = Tables.columns(tab)
