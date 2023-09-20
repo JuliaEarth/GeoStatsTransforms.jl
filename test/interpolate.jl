@@ -1,9 +1,9 @@
-@testset "Interpolate" begin
-  @test !isrevertible(Interpolate(CartesianGrid(2, 2)))
+@testset "InterpolateGlobal" begin
+  @test !isrevertible(InterpolateGlobal(CartesianGrid(2, 2)))
 
   pset = PointSet(rand(Point2, 3))
   gtb = georef((a=[1, 2, 3], b=[4, 5, 6]), pset)
-  ngtb = gtb |> Interpolate(pset, maxneighbors=3)
+  ngtb = gtb |> InterpolateGlobal(pset)
   @test ngtb.a == gtb.a
   @test ngtb.b == gtb.b
   @test ngtb.geometry == pset
@@ -14,19 +14,7 @@
   variogram = GaussianVariogram(range=35.0, nugget=0.0)
 
   Random.seed!(2021)
-  ngtb = gtb |> Interpolate(grid, :z => Kriging(variogram), maxneighbors=3)
-  @test isapprox(ngtb.z[linds[25, 25]], 1.0, atol=1e-3)
-  @test isapprox(ngtb.z[linds[50, 75]], 0.0, atol=1e-3)
-  @test isapprox(ngtb.z[linds[75, 50]], 1.0, atol=1e-3)
-
-  Random.seed!(2021)
-  ngtb = gtb |> Interpolate(grid, :z => Kriging(variogram), maxneighbors=3)
-  @test isapprox(ngtb.z[linds[25, 25]], 1.0, atol=1e-3)
-  @test isapprox(ngtb.z[linds[50, 75]], 0.0, atol=1e-3)
-  @test isapprox(ngtb.z[linds[75, 50]], 1.0, atol=1e-3)
-
-  Random.seed!(2021)
-  ngtb = gtb |> Interpolate(grid, :z => Kriging(variogram), maxneighbors=3, neighborhood=MetricBall(100.0))
+  ngtb = gtb |> InterpolateGlobal(grid, :z => Kriging(variogram))
   @test isapprox(ngtb.z[linds[25, 25]], 1.0, atol=1e-3)
   @test isapprox(ngtb.z[linds[50, 75]], 0.0, atol=1e-3)
   @test isapprox(ngtb.z[linds[75, 50]], 1.0, atol=1e-3)
