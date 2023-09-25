@@ -22,9 +22,9 @@
   @test nrow(ndata) == 100
 
   # domain with repeated points
-  x = rand(100)
-  y = rand(1:10, 100)
-  table = (; x, y)
+  a = rand(100)
+  b = rand(1:10, 100)
+  table = (; a, b)
   points = Point.(1:10, 10:-1:1)
 
   pset = PointSet(rand(points, 100))
@@ -42,12 +42,12 @@
 
   for i in 1:10
     j = i * 10
-    @test ndata.x[i] == mean(sdata.x[(j - 9):j])
+    @test ndata.a[i] == mean(sdata.a[(j - 9):j])
   end
 
   for i in 1:10
     j = i * 10
-    @test ndata.y[i] == first(sdata.y[(j - 9):j])
+    @test ndata.b[i] == first(sdata.b[(j - 9):j])
   end
 
   # custom aggregators
@@ -57,39 +57,74 @@
 
   for i in 1:10
     j = i * 10
-    @test ndata.x[i] == std(sdata.x[(j - 9):j])
+    @test ndata.a[i] == std(sdata.a[(j - 9):j])
   end
 
   for i in 1:10
     j = i * 10
-    @test ndata.y[i] == median(sdata.y[(j - 9):j])
+    @test ndata.b[i] == median(sdata.b[(j - 9):j])
   end
 
   # colspec: symbols
-  ndata = sdata |> UniqueCoords(:x => last, :y => first)
+  ndata = sdata |> UniqueCoords(:a => last, :b => first)
   @test nrow(ndata) == 10
 
   for i in 1:10
     j = i * 10
-    @test ndata.x[i] == last(sdata.x[(j - 9):j])
+    @test ndata.a[i] == last(sdata.a[(j - 9):j])
   end
 
   for i in 1:10
     j = i * 10
-    @test ndata.y[i] == first(sdata.y[(j - 9):j])
+    @test ndata.b[i] == first(sdata.b[(j - 9):j])
   end
 
   # colspec: strings
-  ndata = sdata |> UniqueCoords("x" => maximum, "y" => minimum)
+  ndata = sdata |> UniqueCoords("a" => maximum, "b" => minimum)
   @test nrow(ndata) == 10
 
   for i in 1:10
     j = i * 10
-    @test ndata.x[i] == maximum(sdata.x[(j - 9):j])
+    @test ndata.a[i] == maximum(sdata.a[(j - 9):j])
   end
 
   for i in 1:10
     j = i * 10
-    @test ndata.y[i] == minimum(sdata.y[(j - 9):j])
+    @test ndata.b[i] == minimum(sdata.b[(j - 9):j])
+  end
+
+  # units
+  sdata = georef((; T=rand(100) * u"K"), pset)
+  ndata = sdata |> UniqueCoords()
+  @test nrow(ndata) == 10
+  @test GeoStatsTransforms.elunit(ndata.T) == u"K"
+
+  for i in 1:10
+    j = i * 10
+    @test ndata.T[i] == mean(sdata.T[(j - 9):j])
+  end
+
+  # affine units
+  sdata = georef((; T=rand(100) * u"°C"), pset)
+  ndata = sdata |> UniqueCoords()
+  @test nrow(ndata) == 10
+  @test GeoStatsTransforms.elunit(ndata.T) == u"K"
+
+  for i in 1:10
+    j = i * 10
+    v = GeoStatsTransforms.uadjust(sdata.T[(j - 9):j])
+    @test ndata.T[i] == mean(v)
+  end
+
+  # units with missing
+  sdata = georef((; T=shuffle([fill(missing, 50); rand(50)]) * u"K"), pset)
+  ndata = sdata |> UniqueCoords()
+  @test nrow(ndata) == 10
+  @test GeoStatsTransforms.elunit(ndata.T) == u"K"
+
+  for i in 1:10
+    j = i * 10
+    v = GeoStatsTransforms._mean(sdata.T[(j - 9):j])
+    @test ndata.T[i] == v
   end
 end
