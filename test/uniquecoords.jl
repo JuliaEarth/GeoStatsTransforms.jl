@@ -116,7 +116,7 @@
     @test ndata.T[i] == mean(v)
   end
 
-  # units with missing
+  # units and missings
   sdata = georef((; T=shuffle([fill(missing, 50); rand(50)]) * u"K"), pset)
   ndata = sdata |> UniqueCoords()
   @test nrow(ndata) == 10
