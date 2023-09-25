@@ -33,8 +33,9 @@ UniqueCoords(pairs::Pair{C,<:Function}...) where {C<:Col} =
 isrevertible(::Type{<:UniqueCoords}) = false
 
 function apply(transform::UniqueCoords, geotable::AbstractGeoTable)
-  dom = domain(geotable)
-  tab = values(geotable)
+  gtb = uadjust(geotable)
+  dom = domain(gtb)
+  tab = values(gtb)
   cols = Tables.columns(tab)
   vars = Tables.columnnames(cols)
 

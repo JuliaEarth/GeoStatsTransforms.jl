@@ -22,7 +22,7 @@ using SparseArrays
 using LinearAlgebra
 using Statistics
 
-using Unitful: AbstractQuantity, Units, AffineUnits
+using Unitful: AbstractQuantity, AffineUnits, Units
 using GeoStatsModels: GeoStatsModel, fit, predict, predictprob
 using TableTransforms: ColSpec, Col, AllSpec, NoneSpec
 using TableTransforms: colspec, choose

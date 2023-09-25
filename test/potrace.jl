@@ -60,4 +60,22 @@
   @test all(z -> -1 ≤ z ≤ 1, 𝒯.Z)
   @test 𝒯.Z[1] == mean(Ω.Z[masks[1] .== Ω.M])
   @test 𝒯.Z[2] == mean(Ω.Z[masks[2] .== Ω.M])
+
+  # units
+  gtb = georef((; T=Z * u"K", M))
+  ngtb = gtb |> Potrace(:M)
+  masks = unique(gtb.M)
+  @test GeoStatsTransforms.elunit(ngtb.T) == u"K"
+  @test ngtb.T[1] ≈ mean(gtb.T[masks[1] .== gtb.M])
+  @test ngtb.T[2] ≈ mean(gtb.T[masks[2] .== gtb.M])
+
+  # affine units
+  gtb = georef((; T=Z * u"°C", M))
+  ngtb = gtb |> Potrace(:M)
+  masks = unique(gtb.M)
+  @test GeoStatsTransforms.elunit(ngtb.T) == u"K"
+  v = GeoStatsTransforms.uadjust(gtb.T[masks[1] .== gtb.M])
+  @test ngtb.T[1] ≈ mean(v)
+  v = GeoStatsTransforms.uadjust(gtb.T[masks[2] .== gtb.M])
+  @test ngtb.T[2] ≈ mean(v)
 end
