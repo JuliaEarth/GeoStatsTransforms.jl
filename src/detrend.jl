@@ -30,24 +30,22 @@ Detrend(:)
   for spatially dependent functional data of a Hilbert Space]
   (https://doi.org/10.1214/13-EJS843)
 """
-struct Detrend{S<:ColSpec} <: TableTransform
-  colspec::S
+struct Detrend{S<:ColumnSelector} <: TableTransform
+  selector::S
   degree::Int
 end
 
-Detrend(spec; degree=1) = Detrend(colspec(spec), degree)
-
-Detrend(cols::T...; degree=1) where {T<:Col} = Detrend(cols; degree=degree)
-
-Detrend(; degree=1) = Detrend(:, degree=degree)
+Detrend(; degree=1) = Detrend(AllSelector(), degree)
+Detrend(cols; degree=1) = Detrend(selector(cols), degree)
+Detrend(cols::C...; degree=1) where {C<:Column} = Detrend(selector(cols), degree)
 
 isrevertible(::Type{<:Detrend}) = true
 
 function apply(transform::Detrend, geotable)
   table = values(geotable)
   cols = Tables.columns(table)
-  names = Tables.schema(table).names
-  snames = choose(transform.colspec, names)
+  names = Tables.columnnames(cols)
+  snames = transform.selector(names)
 
   tdata = trend(geotable, snames; degree=transform.degree)
   ttable = values(tdata)

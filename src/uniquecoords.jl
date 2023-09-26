@@ -21,14 +21,14 @@ UniqueCoords(:a => first, :b => minimum)
 UniqueCoords("a" => last, "b" => maximum)
 ```
 """
-struct UniqueCoords{S<:ColSpec} <: TableTransform
-  colspec::S
+struct UniqueCoords{S<:ColumnSelector} <: TableTransform
+  selector::S
   aggfuns::Vector{Function}
 end
 
-UniqueCoords() = UniqueCoords(NoneSpec(), Function[])
-UniqueCoords(pairs::Pair{C,<:Function}...) where {C<:Col} =
-  UniqueCoords(colspec(first.(pairs)), collect(Function, last.(pairs)))
+UniqueCoords() = UniqueCoords(NoneSelector(), Function[])
+UniqueCoords(pairs::Pair{C,<:Function}...) where {C<:Column} =
+  UniqueCoords(selector(first.(pairs)), collect(Function, last.(pairs)))
 
 isrevertible(::Type{<:UniqueCoords}) = false
 
@@ -40,7 +40,7 @@ function apply(transform::UniqueCoords, geotable::AbstractGeoTable)
   vars = Tables.columnnames(cols)
 
   # aggregation functions
-  svars = choose(transform.colspec, vars)
+  svars = transform.selector(vars)
   agg = Dict(zip(svars, transform.aggfuns))
   for var in vars
     if !haskey(agg, var)

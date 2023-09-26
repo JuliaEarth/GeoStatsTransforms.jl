@@ -34,20 +34,20 @@ Rasterize(grid, "a" => last, "b" => maximum)
 Rasterize(10, 10, "a" => last, "b" => maximum)
 ```
 """
-struct Rasterize{T<:Union{Grid{2},Dims{2}},S<:ColSpec} <: TableTransform
+struct Rasterize{T<:Union{Grid{2},Dims{2}},S<:ColumnSelector} <: TableTransform
   grid::T
-  colspec::S
+  selector::S
   aggfuns::Vector{Function}
 end
 
-Rasterize(grid::Grid{2}) = Rasterize(grid, NoneSpec(), Function[])
-Rasterize(nx::Int, ny::Int) = Rasterize((nx, ny), NoneSpec(), Function[])
+Rasterize(grid::Grid{2}) = Rasterize(grid, NoneSelector(), Function[])
+Rasterize(nx::Int, ny::Int) = Rasterize((nx, ny), NoneSelector(), Function[])
 
-Rasterize(grid::Grid{2}, pairs::Pair{C,<:Function}...) where {C<:Col} =
-  Rasterize(grid, colspec(first.(pairs)), collect(Function, last.(pairs)))
+Rasterize(grid::Grid{2}, pairs::Pair{C,<:Function}...) where {C<:Column} =
+  Rasterize(grid, selector(first.(pairs)), collect(Function, last.(pairs)))
 
-Rasterize(nx::Int, ny::Int, pairs::Pair{C,<:Function}...) where {C<:Col} =
-  Rasterize((nx, ny), colspec(first.(pairs)), collect(Function, last.(pairs)))
+Rasterize(nx::Int, ny::Int, pairs::Pair{C,<:Function}...) where {C<:Column} =
+  Rasterize((nx, ny), selector(first.(pairs)), collect(Function, last.(pairs)))
 
 isrevertible(::Type{<:Rasterize}) = true
 
@@ -67,7 +67,7 @@ function apply(transform::Rasterize, geotable::AbstractGeoTable)
   nrows = nelements(grid)
 
   # aggregation functions
-  svars = choose(transform.colspec, vars)
+  svars = transform.selector(vars)
   agg = Dict(zip(svars, transform.aggfuns))
   for var in vars
     if !haskey(agg, var)

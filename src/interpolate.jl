@@ -21,20 +21,20 @@ See also [`InterpolateNeighbors`](@ref).
 """
 struct Interpolate{D<:Domain} <: TableTransform
   domain::D
-  colspecs::Vector{ColSpec}
+  selectors::Vector{ColumnSelector}
   models::Vector{GeoStatsModel}
   point::Bool
   prob::Bool
 end
 
-Interpolate(domain::Domain, colspecs, models; point=true, prob=false) =
-  Interpolate(domain, collect(ColSpec, colspecs), collect(GeoStatsModel, models), point, prob)
+Interpolate(domain::Domain, selectors, models; point=true, prob=false) =
+  Interpolate(domain, collect(ColumnSelector, selectors), collect(GeoStatsModel, models), point, prob)
 
 Interpolate(domain::Domain, model::GeoStatsModel=IDW(); kwargs...) =
-  Interpolate(domain, [AllSpec()], [model]; kwargs...)
+  Interpolate(domain, [AllSelector()], [model]; kwargs...)
 
 Interpolate(domain::Domain, pairs::Pair{<:Any,<:GeoStatsModel}...; kwargs...) =
-  Interpolate(domain, colspec.(first.(pairs)), last.(pairs); kwargs...)
+  Interpolate(domain, selector.(first.(pairs)), last.(pairs); kwargs...)
 
 isrevertible(::Type{<:Interpolate}) = false
 
@@ -45,7 +45,7 @@ function apply(transform::Interpolate, geotable::AbstractGeoTable)
   vars = Tables.columnnames(cols)
 
   idom = transform.domain
-  colspecs = transform.colspecs
+  selectors = transform.selectors
   models = transform.models
   point = transform.point
   prob = transform.prob
@@ -58,9 +58,9 @@ function apply(transform::Interpolate, geotable::AbstractGeoTable)
   end
 
   # preprocess variable models
-  varmodels = mapreduce(vcat, colspecs, models) do colspec, model
+  varmodels = mapreduce(vcat, selectors, models) do selector, model
     fmodel = fit(model, data)
-    svars = choose(colspec, vars)
+    svars = selector(vars)
     [var => fmodel for var in svars]
   end
 
