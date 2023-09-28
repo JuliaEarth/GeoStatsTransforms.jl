@@ -10,6 +10,7 @@
     Sample(10),
     Filter(x -> true),
     DropMissing(),
+    DropExtrema(:z),
     Replace(1.0 => 2.0),
     Coalesce(value=0.0),
     Coerce(:z => Continuous),
