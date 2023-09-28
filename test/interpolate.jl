@@ -1,12 +1,12 @@
 @testset "Interpolate" begin
   @test !isrevertible(Interpolate(CartesianGrid(2, 2)))
 
-  pset = PointSet(rand(Point2, 3))
-  gtb = georef((a=[1, 2, 3], b=[4, 5, 6]), pset)
-  ngtb = gtb |> Interpolate(pset, IDW())
+  points = rand(Point2, 3)
+  gtb = georef((a=[1, 2, 3], b=[4, 5, 6]), points)
+  ngtb = gtb |> Interpolate(points, IDW())
   @test ngtb.a == gtb.a
   @test ngtb.b == gtb.b
-  @test ngtb.geometry == pset
+  @test ngtb.geometry == gtb.geometry
 
   gtb = georef((; z=[1.0, 0.0, 1.0]), [(25.0, 25.0), (50.0, 75.0), (75.0, 50.0)])
   grid = CartesianGrid((100, 100), (0.5, 0.5), (1.0, 1.0))
@@ -20,13 +20,13 @@
   @test isapprox(ngtb.z[linds[75, 50]], 1.0, atol=1e-3)
 
   # units
-  gtb = georef((; T=[1.0, 0.0, 1.0] * u"K"), pset)
+  gtb = georef((; T=[1.0, 0.0, 1.0] * u"K"), points)
   grid = CartesianGrid(5, 5)
   ngtb = gtb |> Interpolate(grid)
   @test GeoStatsTransforms.elunit(ngtb.T) == u"K"
 
   # affine units
-  gtb = georef((; T=[-272.15, -273.15, -272.15] * u"°C"), pset)
+  gtb = georef((; T=[-272.15, -273.15, -272.15] * u"°C"), points)
   ngtb = gtb |> Interpolate(grid)
   @test GeoStatsTransforms.elunit(ngtb.T) == u"K"
 end

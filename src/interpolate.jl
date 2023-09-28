@@ -4,13 +4,16 @@
 
 """
     Interpolate(domain, vars₁ => model₁, ..., varsₙ => modelₙ; [parameters])
+    Interpolate([g₁, g₂, ..., gₙ], vars₁ => model₁, ..., varsₙ => modelₙ; [parameters])
   
-Interpolate geospatial data on given `domain` using geostatistical models
-`model₁`, ..., `modelₙ` for variables `vars₁`, ..., `varsₙ`.
+Interpolate geospatial data on given `domain` or set of geometries `g₁`, `g₂`, ..., `gₙ`,
+using geostatistical models `model₁`, ..., `modelₙ` for variables `vars₁`, ..., `varsₙ`.
 
     Interpolate(domain, model=IDW(); [parameters])
+    Interpolate([g₁, g₂, ..., gₙ], model=IDW(); [parameters])
   
-Interpolate geospatial data on given `domain` using geostatistical `model` for all variables.
+Interpolate geospatial data on given `domain` or set of geometries `g₁`, `g₂`, ..., `gₙ`,
+using geostatistical `model` for all variables.
 
 ## Parameters
 
@@ -30,10 +33,13 @@ end
 Interpolate(domain::Domain, colspecs, models; point=true, prob=false) =
   Interpolate(domain, collect(ColSpec, colspecs), collect(GeoStatsModel, models), point, prob)
 
-Interpolate(domain::Domain, model::GeoStatsModel=IDW(); kwargs...) =
+Interpolate(geoms::AbstractVector{<:Geometry}, colspecs, models; kwargs...) =
+  Interpolate(GeometrySet(geoms), colspecs, models; kwargs...)
+
+Interpolate(domain, model::GeoStatsModel=IDW(); kwargs...) =
   Interpolate(domain, [AllSpec()], [model]; kwargs...)
 
-Interpolate(domain::Domain, pairs::Pair{<:Any,<:GeoStatsModel}...; kwargs...) =
+Interpolate(domain, pairs::Pair{<:Any,<:GeoStatsModel}...; kwargs...) =
   Interpolate(domain, colspec.(first.(pairs)), last.(pairs); kwargs...)
 
 isrevertible(::Type{<:Interpolate}) = false
