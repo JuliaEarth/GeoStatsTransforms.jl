@@ -79,10 +79,10 @@ InterpolateNeighbors(
 InterpolateNeighbors(geoms::AbstractVector{<:Geometry}, selectors, models; kwargs...) =
   InterpolateNeighbors(GeometrySet(geoms), selectors, models; kwargs...)
 
-InterpolateNeighbors(domain::Domain, model::GeoStatsModel=IDW(); kwargs...) =
+InterpolateNeighbors(domain, model::GeoStatsModel=IDW(); kwargs...) =
   InterpolateNeighbors(domain, [AllSelector()], [model]; kwargs...)
 
-InterpolateNeighbors(domain::Domain, pairs::Pair{<:Any,<:GeoStatsModel}...; kwargs...) =
+InterpolateNeighbors(domain, pairs::Pair{<:Any,<:GeoStatsModel}...; kwargs...) =
   InterpolateNeighbors(domain, selector.(first.(pairs)), last.(pairs); kwargs...)
 
 isrevertible(::Type{<:InterpolateNeighbors}) = false
