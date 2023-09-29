@@ -51,7 +51,7 @@
   end
 
   # custom aggregators
-  # colspec: index
+  # selector: indices
   ndata = sdata |> UniqueCoords(1 => std, 2 => median)
   @test nrow(ndata) == 10
 
@@ -65,7 +65,7 @@
     @test ndata.b[i] == median(sdata.b[(j - 9):j])
   end
 
-  # colspec: symbols
+  # selector: symbols
   ndata = sdata |> UniqueCoords(:a => last, :b => first)
   @test nrow(ndata) == 10
 
@@ -79,7 +79,7 @@
     @test ndata.b[i] == first(sdata.b[(j - 9):j])
   end
 
-  # colspec: strings
+  # selector: strings
   ndata = sdata |> UniqueCoords("a" => maximum, "b" => minimum)
   @test nrow(ndata) == 10
 

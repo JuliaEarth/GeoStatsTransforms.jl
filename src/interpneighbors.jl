@@ -44,7 +44,7 @@ See also [`Interpolate`](@ref).
 """
 struct InterpolateNeighbors{D<:Domain,N,M} <: TableTransform
   domain::D
-  colspecs::Vector{ColSpec}
+  selectors::Vector{ColumnSelector}
   models::Vector{GeoStatsModel}
   minneighbors::Int
   maxneighbors::Int
@@ -56,7 +56,7 @@ end
 
 InterpolateNeighbors(
   domain::Domain,
-  colspecs,
+  selectors,
   models;
   minneighbors=1,
   maxneighbors=10,
@@ -66,7 +66,7 @@ InterpolateNeighbors(
   prob=false
 ) = InterpolateNeighbors(
   domain,
-  collect(ColSpec, colspecs),
+  collect(ColumnSelector, selectors),
   collect(GeoStatsModel, models),
   minneighbors,
   maxneighbors,
@@ -76,14 +76,14 @@ InterpolateNeighbors(
   prob
 )
 
-InterpolateNeighbors(geoms::AbstractVector{<:Geometry}, colspecs, models; kwargs...) =
-  InterpolateNeighbors(GeometrySet(geoms), colspecs, models; kwargs...)
+InterpolateNeighbors(geoms::AbstractVector{<:Geometry}, selectors, models; kwargs...) =
+  InterpolateNeighbors(GeometrySet(geoms), selectors, models; kwargs...)
 
 InterpolateNeighbors(domain, model::GeoStatsModel=IDW(); kwargs...) =
-  InterpolateNeighbors(domain, [AllSpec()], [model]; kwargs...)
+  InterpolateNeighbors(domain, [AllSelector()], [model]; kwargs...)
 
 InterpolateNeighbors(domain, pairs::Pair{<:Any,<:GeoStatsModel}...; kwargs...) =
-  InterpolateNeighbors(domain, colspec.(first.(pairs)), last.(pairs); kwargs...)
+  InterpolateNeighbors(domain, selector.(first.(pairs)), last.(pairs); kwargs...)
 
 isrevertible(::Type{<:InterpolateNeighbors}) = false
 
@@ -94,7 +94,7 @@ function apply(transform::InterpolateNeighbors, geotable::AbstractGeoTable)
   vars = Tables.columnnames(cols)
 
   idom = transform.domain
-  colspecs = transform.colspecs
+  selectors = transform.selectors
   models = transform.models
   minneighbors = transform.minneighbors
   maxneighbors = transform.maxneighbors
@@ -122,8 +122,8 @@ function apply(transform::InterpolateNeighbors, geotable::AbstractGeoTable)
   end
 
   # preprocess variable models
-  varmodels = mapreduce(vcat, colspecs, models) do colspec, model
-    svars = choose(colspec, vars)
+  varmodels = mapreduce(vcat, selectors, models) do selector, model
+    svars = selector(vars)
     [var => model for var in svars]
   end
 

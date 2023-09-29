@@ -24,8 +24,9 @@ using Statistics
 
 using Unitful: AbstractQuantity, AffineUnits, Units
 using GeoStatsModels: GeoStatsModel, fit, predict, predictprob
-using TableTransforms: ColSpec, Col, AllSpec, NoneSpec
-using TableTransforms: colspec, choose
+using ColumnSelectors: ColumnSelector, SingleColumnSelector
+using ColumnSelectors: Column, AllSelector, NoneSelector
+using ColumnSelectors: selector, selectsingle
 
 import TableTransforms: divide, attach
 import TableTransforms: applymeta, revertmeta

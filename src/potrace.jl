@@ -32,16 +32,16 @@ Potrace("mask", "a" => last, "b" => maximum)
 - Selinger, P. 2003. [Potrace: A polygon-based tracing algorithm]
   (https://potrace.sourceforge.net/potrace.pdf)
 """
-struct Potrace{M<:ColSpec,S<:ColSpec,T} <: TableTransform
+struct Potrace{M<:SingleColumnSelector,S<:ColumnSelector,T} <: TableTransform
   mask::M
-  colspec::S
+  selector::S
   aggfuns::Vector{Function}
   ϵ::T
 end
 
-Potrace(mask::Col; ϵ=nothing) = Potrace(colspec(mask), NoneSpec(), Function[], ϵ)
-Potrace(mask::Col, pairs::Pair{C,<:Function}...; ϵ=nothing) where {C<:Col} =
-  Potrace(colspec(mask), colspec(first.(pairs)), collect(Function, last.(pairs)), ϵ)
+Potrace(mask::Column; ϵ=nothing) = Potrace(selector(mask), NoneSelector(), Function[], ϵ)
+Potrace(mask::Column, pairs::Pair{C,<:Function}...; ϵ=nothing) where {C<:Column} =
+  Potrace(selector(mask), selector(first.(pairs)), collect(Function, last.(pairs)), ϵ)
 
 isrevertible(::Type{<:Potrace}) = true
 
@@ -61,10 +61,10 @@ function apply(transform::Potrace, geotable::AbstractGeoTable)
   ϵ = transform.ϵ
 
   # select column name
-  sname = choose(transform.mask, vars) |> first
+  sname = selectsingle(transform.mask, vars)
 
   # aggregation functions
-  svars = choose(transform.colspec, vars)
+  svars = transform.selector(vars)
   agg = Dict(zip(svars, transform.aggfuns))
   for var in vars
     if !haskey(agg, var)
