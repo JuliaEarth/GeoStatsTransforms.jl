@@ -4,13 +4,16 @@
 
 """
     InterpolateNeighbors(domain, vars₁ => model₁, ..., varsₙ => modelₙ; [parameters])
+    InterpolateNeighbors([g₁, g₂, ..., gₙ], vars₁ => model₁, ..., varsₙ => modelₙ; [parameters])
   
-Interpolate geospatial data on given `domain` using geostatistical models
-`model₁`, ..., `modelₙ` for variables `vars₁`, ..., `varsₙ`.
+Interpolate geospatial data on given `domain` or set of geometries `g₁`, `g₂`, ..., `gₙ`,
+using geostatistical models `model₁`, ..., `modelₙ` for variables `vars₁`, ..., `varsₙ`.
 
     InterpolateNeighbors(domain, model=IDW(); [parameters])
+    InterpolateNeighbors([g₁, g₂, ..., gₙ], model=IDW(); [parameters])
   
-Interpolate geospatial data on given `domain` using geostatistical `model` for all variables.
+Interpolate geospatial data on given `domain` or set of geometries `g₁`, `g₂`, ..., `gₙ`,
+using geostatistical `model` for all variables.
 
 Unlike [`Interpolate`](@ref), this transform uses neighbor search methods to
 fit geostatistical models at each interpolation location with a reduced number
@@ -72,6 +75,9 @@ InterpolateNeighbors(
   point,
   prob
 )
+
+InterpolateNeighbors(geoms::AbstractVector{<:Geometry}, selectors, models; kwargs...) =
+  InterpolateNeighbors(GeometrySet(geoms), selectors, models; kwargs...)
 
 InterpolateNeighbors(domain::Domain, model::GeoStatsModel=IDW(); kwargs...) =
   InterpolateNeighbors(domain, [AllSelector()], [model]; kwargs...)

@@ -57,6 +57,19 @@ end
 
 # --------------------------------------------------
 
+function applymeta(::DropExtrema, dom::Domain, prep)
+  ftrans, fprep = prep
+  newmeta, fmcache = applymeta(ftrans, dom, fprep)
+  newmeta, (ftrans, fmcache)
+end
+
+function revertmeta(::DropExtrema, newdom::Domain, mcache)
+  ftrans, fmcache = mcache
+  revertmeta(ftrans, newdom, fmcache)
+end
+
+# --------------------------------------------------
+
 function applymeta(::Sample, dom::Domain, prep)
   sinds, rinds = prep
 
