@@ -95,8 +95,6 @@ function apply(transform::Rasterize, geotable::AbstractGeoTable)
       vs = rows[i][j]
       if isempty(vs)
         missing
-      elseif length(vs) == 1
-        first(vs)
       else
         agg[var](vs)
       end
