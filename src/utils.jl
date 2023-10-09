@@ -56,7 +56,7 @@ uadjust(x) = uadjust(elunit(x), x)
 uadjust(::Units, x) = x
 function uadjust(u::AffineUnits, x)
   a = absoluteunit(u)
-  [ismissing(v) ? missing : uconvert(a, v) for v in x]
+  map(v -> uconvert(a, v), x)
 end
 
 elunit(x) = typeunit(nonmissingtype(eltype(x)))

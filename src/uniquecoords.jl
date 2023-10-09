@@ -64,13 +64,7 @@ function apply(transform::UniqueCoords, geotable::AbstractGeoTable)
     v = Tables.getcolumn(cols, var)
     map(ginds) do gind
       group = groups[gind]
-      if length(group) > 1
-        # aggregate values
-        agg[var](v[group])
-      else
-        # copy value
-        v[group[1]]
-      end
+      agg[var](v[group])
     end
   end
 

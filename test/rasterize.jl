@@ -48,7 +48,7 @@
   @test ngtb.b[linds[4, 14]] == 5.5
 
   gtb = georef((; a, b), [poly1, poly2, poly3, poly4, poly5])
-  trans = Rasterize(20, 20, :a => last, :b => std)
+  trans = Rasterize(20, 20, :a => last, :b => mean)
   ngtb, cache = apply(trans, gtb)
   linds = LinearIndices((20, 20))
   @test ngtb.a[linds[7, 3]] == 1
@@ -63,7 +63,7 @@
   @test ngtb.b[linds[6, 11]] == 5.5
   # intersection: poly3 with poly5
   @test ngtb.a[linds[9, 13]] == last(gtb.a[[3, 5]])
-  @test ngtb.b[linds[9, 13]] == std(gtb.b[[3, 5]])
+  @test ngtb.b[linds[9, 13]] == mean(gtb.b[[3, 5]])
 
   # units
   gtb = georef((; T=rand(5) * u"K"), [poly1, poly2, poly3, poly4, poly5])
