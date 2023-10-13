@@ -46,7 +46,7 @@ Potrace(mask::Column, pairs::Pair{C,<:Function}...; ϵ=nothing) where {C<:Column
 isrevertible(::Type{<:Potrace}) = true
 
 function apply(transform::Potrace, geotable::AbstractGeoTable)
-  gtb = uadjust(geotable)
+  gtb = _adjustunits(geotable)
   dom = domain(gtb)
   tab = values(gtb)
   cols = Tables.columns(tab)
@@ -69,7 +69,7 @@ function apply(transform::Potrace, geotable::AbstractGeoTable)
   for var in vars
     if !haskey(agg, var)
       v = Tables.getcolumn(cols, var)
-      agg[var] = defaultagg(v)
+      agg[var] = _defaultagg(v)
     end
   end
 

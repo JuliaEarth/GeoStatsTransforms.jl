@@ -3,10 +3,10 @@ using Meshes
 using GeoTables
 using Tables
 using Unitful
+using SciTypes
 using Variography
 using GeoStatsModels
 using TableTransforms
-using ScientificTypes
 using CategoricalArrays
 using Statistics
 using CoDa

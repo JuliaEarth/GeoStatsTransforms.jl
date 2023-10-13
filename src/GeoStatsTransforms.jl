@@ -10,9 +10,9 @@ using GeoStatsModels
 
 using Tables
 using Unitful
+using SciTypes
 using TableDistances
 using TableTransforms
-using ScientificTypes
 using Combinatorics
 using Distances
 using Clustering
@@ -22,7 +22,7 @@ using SparseArrays
 using LinearAlgebra
 using Statistics
 
-using Unitful: AbstractQuantity, AffineUnits, Units
+using Unitful: AffineQuantity
 using GeoStatsModels: GeoStatsModel, fit, predict, predictprob
 using ColumnSelectors: ColumnSelector, SingleColumnSelector
 using ColumnSelectors: Column, AllSelector, NoneSelector

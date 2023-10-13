@@ -65,7 +65,7 @@
   gtb = georef((; T=Z * u"K", M))
   ngtb = gtb |> Potrace(:M)
   masks = unique(gtb.M)
-  @test GeoStatsTransforms.elunit(ngtb.T) == u"K"
+  @test unit(eltype(ngtb.T)) == u"K"
   @test ngtb.T[1] ≈ mean(gtb.T[masks[1] .== gtb.M])
   @test ngtb.T[2] ≈ mean(gtb.T[masks[2] .== gtb.M])
 
@@ -73,9 +73,9 @@
   gtb = georef((; T=Z * u"°C", M))
   ngtb = gtb |> Potrace(:M)
   masks = unique(gtb.M)
-  @test GeoStatsTransforms.elunit(ngtb.T) == u"K"
-  v = GeoStatsTransforms.uadjust(gtb.T[masks[1] .== gtb.M])
+  @test unit(eltype(ngtb.T)) == u"K"
+  v = GeoStatsTransforms._absunit(gtb.T[masks[1] .== gtb.M])
   @test ngtb.T[1] ≈ mean(v)
-  v = GeoStatsTransforms.uadjust(gtb.T[masks[2] .== gtb.M])
+  v = GeoStatsTransforms._absunit(gtb.T[masks[2] .== gtb.M])
   @test ngtb.T[2] ≈ mean(v)
 end
