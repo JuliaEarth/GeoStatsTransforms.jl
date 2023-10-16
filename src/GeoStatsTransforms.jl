@@ -10,9 +10,9 @@ using GeoStatsModels
 
 using Tables
 using Unitful
-using SciTypes
 using TableDistances
 using TableTransforms
+using DataScienceTraits
 using Combinatorics
 using Distances
 using Clustering
@@ -27,6 +27,7 @@ using GeoStatsModels: GeoStatsModel, fit, predict, predictprob
 using ColumnSelectors: ColumnSelector, SingleColumnSelector
 using ColumnSelectors: Column, AllSelector, NoneSelector
 using ColumnSelectors: selector, selectsingle
+using DataScienceTraits: Continuous
 
 import TableTransforms: divide, attach
 import TableTransforms: applymeta, revertmeta

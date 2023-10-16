@@ -13,7 +13,7 @@
     DropExtrema(:z),
     Replace(1.0 => 2.0),
     Coalesce(value=0.0),
-    Coerce(:z => SciTypes.Continuous),
+    Coerce(:z => DST.Continuous),
     Identity(),
     Center(),
     Scale(),
