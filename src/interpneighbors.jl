@@ -116,9 +116,9 @@ function apply(transform::InterpolateNeighbors, geotable::AbstractGeoTable)
 
   data = if point
     pset = PointSet(centroid(dom, i) for i in 1:nobs)
-    georef(values(geotable), pset) |> uadjust
+    _adjustunits(georef(values(geotable), pset))
   else
-    uadjust(geotable)
+    _adjustunits(geotable)
   end
 
   # preprocess variable models

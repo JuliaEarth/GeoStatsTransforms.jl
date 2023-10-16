@@ -68,14 +68,14 @@
   # units
   gtb = georef((; T=rand(5) * u"K"), [poly1, poly2, poly3, poly4, poly5])
   ngtb = gtb |> Rasterize(20, 20)
-  @test GeoStatsTransforms.elunit(ngtb.T) == u"K"
+  @test unit(eltype(ngtb.T)) == u"K"
   @test ngtb.T[linds[9, 13]] == mean(gtb.T[[3, 5]])
 
   # affine units
   gtb = georef((; T=rand(5) * u"°C"), [poly1, poly2, poly3, poly4, poly5])
   ngtb = gtb |> Rasterize(20, 20)
-  @test GeoStatsTransforms.elunit(ngtb.T) == u"K"
-  v = GeoStatsTransforms.uadjust(gtb.T[[3, 5]])
+  @test unit(eltype(ngtb.T)) == u"K"
+  v = GeoStatsTransforms._absunit(gtb.T[[3, 5]])
   @test ngtb.T[linds[9, 13]] == mean(v)
 
   # revert

@@ -35,10 +35,10 @@
   gtb = georef((; T=[1.0, 0.0, 1.0] * u"K"), points)
   grid = CartesianGrid(5, 5)
   ngtb = gtb |> InterpolateNeighbors(grid)
-  @test GeoStatsTransforms.elunit(ngtb.T) == u"K"
+  @test unit(eltype(ngtb.T)) == u"K"
 
   # affine units
   gtb = georef((; T=[-272.15, -273.15, -272.15] * u"°C"), points)
   ngtb = gtb |> InterpolateNeighbors(grid)
-  @test GeoStatsTransforms.elunit(ngtb.T) == u"K"
+  @test unit(eltype(ngtb.T)) == u"K"
 end

@@ -33,7 +33,7 @@ UniqueCoords(pairs::Pair{C,<:Function}...) where {C<:Column} =
 isrevertible(::Type{<:UniqueCoords}) = false
 
 function apply(transform::UniqueCoords, geotable::AbstractGeoTable)
-  gtb = uadjust(geotable)
+  gtb = _adjustunits(geotable)
   dom = domain(gtb)
   tab = values(gtb)
   cols = Tables.columns(tab)
@@ -45,7 +45,7 @@ function apply(transform::UniqueCoords, geotable::AbstractGeoTable)
   for var in vars
     if !haskey(agg, var)
       v = Tables.getcolumn(cols, var)
-      agg[var] = defaultagg(v)
+      agg[var] = _defaultagg(v)
     end
   end
 

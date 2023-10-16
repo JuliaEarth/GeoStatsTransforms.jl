@@ -97,7 +97,7 @@
   sdata = georef((; T=rand(100) * u"K"), pset)
   ndata = sdata |> UniqueCoords()
   @test nrow(ndata) == 10
-  @test GeoStatsTransforms.elunit(ndata.T) == u"K"
+  @test unit(eltype(ndata.T)) == u"K"
 
   for i in 1:10
     j = i * 10
@@ -108,11 +108,11 @@
   sdata = georef((; T=rand(100) * u"°C"), pset)
   ndata = sdata |> UniqueCoords()
   @test nrow(ndata) == 10
-  @test GeoStatsTransforms.elunit(ndata.T) == u"K"
+  @test unit(eltype(ndata.T)) == u"K"
 
   for i in 1:10
     j = i * 10
-    v = GeoStatsTransforms.uadjust(sdata.T[(j - 9):j])
+    v = GeoStatsTransforms._absunit(sdata.T[(j - 9):j])
     @test ndata.T[i] == mean(v)
   end
 
@@ -120,11 +120,11 @@
   sdata = georef((; T=shuffle([fill(missing, 50); rand(50)]) * u"K"), pset)
   ndata = sdata |> UniqueCoords()
   @test nrow(ndata) == 10
-  @test GeoStatsTransforms.elunit(ndata.T) == u"K"
+  @test unit(eltype(ndata.T)) == u"K"
 
   for i in 1:10
     j = i * 10
-    v = GeoStatsTransforms._mean(sdata.T[(j - 9):j])
+    v = GeoStatsTransforms._skipmissing(mean)(sdata.T[(j - 9):j])
     @test ndata.T[i] == v
   end
 end

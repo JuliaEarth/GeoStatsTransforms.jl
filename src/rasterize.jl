@@ -55,7 +55,7 @@ _grid(grid::Grid{2}, dom) = grid
 _grid(dims::Dims{2}, dom) = CartesianGrid(extrema(boundingbox(dom))...; dims)
 
 function apply(transform::Rasterize, geotable::AbstractGeoTable)
-  gtb = uadjust(geotable)
+  gtb = _adjustunits(geotable)
   dom = domain(gtb)
   tab = values(gtb)
   cols = Tables.columns(tab)
@@ -72,7 +72,7 @@ function apply(transform::Rasterize, geotable::AbstractGeoTable)
   for var in vars
     if !haskey(agg, var)
       v = Tables.getcolumn(cols, var)
-      agg[var] = defaultagg(v)
+      agg[var] = _defaultagg(v)
     end
   end
 

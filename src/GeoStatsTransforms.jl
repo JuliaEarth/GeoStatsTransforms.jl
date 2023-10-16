@@ -12,7 +12,7 @@ using Tables
 using Unitful
 using TableDistances
 using TableTransforms
-using ScientificTypes
+using DataScienceTraits
 using Combinatorics
 using Distances
 using Clustering
@@ -22,11 +22,12 @@ using SparseArrays
 using LinearAlgebra
 using Statistics
 
-using Unitful: AbstractQuantity, AffineUnits, Units
+using Unitful: AffineQuantity
 using GeoStatsModels: GeoStatsModel, fit, predict, predictprob
 using ColumnSelectors: ColumnSelector, SingleColumnSelector
 using ColumnSelectors: Column, AllSelector, NoneSelector
 using ColumnSelectors: selector, selectsingle
+using DataScienceTraits: Continuous
 
 import TableTransforms: divide, attach
 import TableTransforms: applymeta, revertmeta

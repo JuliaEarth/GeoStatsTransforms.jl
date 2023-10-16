@@ -22,44 +22,37 @@ end
 # AGGREGATION
 #-------------
 
-defaultagg(x) = defaultagg(nonmissingtype(elscitype(x)), nonmissingtype(eltype(x)))
-defaultagg(::Type{<:Continuous}, ::Type) = _mean
-defaultagg(::Type, ::Type{<:AbstractQuantity}) = _mean
-defaultagg(::Type, ::Type) = _first
+_defaultagg(x) = _defaultagg(elscitype(x))
+_defaultagg(::Type) = _skipmissing(first)
+_defaultagg(::Type{Continuous}) = _skipmissing(mean)
 
-function _mean(x)
-  vs = skipmissing(x)
-  isempty(vs) ? missing : mean(vs)
-end
-
-function _first(x)
-  vs = skipmissing(x)
-  isempty(vs) ? missing : first(vs)
+function _skipmissing(fun)
+  x -> begin
+    vs = skipmissing(x)
+    isempty(vs) ? missing : fun(vs)
+  end
 end
 
 #-------
 # UNITS
 #-------
 
-function uadjust(geotable::AbstractGeoTable)
+function _adjustunits(geotable::AbstractGeoTable)
   dom = domain(geotable)
   tab = values(geotable)
   cols = Tables.columns(tab)
   vars = Tables.columnnames(cols)
 
-  pairs = (var => uadjust(Tables.getcolumn(cols, var)) for var in vars)
+  pairs = (var => _absunit(Tables.getcolumn(cols, var)) for var in vars)
   newtab = (; pairs...) |> Tables.materializer(tab)
-  georef(newtab, dom)
+
+  vals = Dict(paramdim(dom) => newtab)
+  constructor(geotable)(dom, vals)
 end
 
-uadjust(x) = uadjust(elunit(x), x)
-uadjust(::Units, x) = x
-function uadjust(u::AffineUnits, x)
-  a = absoluteunit(u)
-  map(v -> uconvert(a, v), x)
+_absunit(x) = _absunit(nonmissingtype(eltype(x)), x)
+_absunit(::Type, x) = x
+function _absunit(::Type{Q}, x) where {Q<:AffineQuantity}
+  u = absoluteunit(unit(Q))
+  map(v -> uconvert(u, v), x)
 end
-
-elunit(x) = typeunit(nonmissingtype(eltype(x)))
-
-typeunit(::Type) = NoUnits
-typeunit(::Type{Q}) where {Q<:AbstractQuantity} = unit(Q)

@@ -1,17 +1,16 @@
 using GeoStatsTransforms
 using Meshes
-using GeoTables
 using Tables
 using Unitful
+using GeoTables
 using Variography
 using GeoStatsModels
 using TableTransforms
-using ScientificTypes
 using CategoricalArrays
 using Statistics
-using CoDa
 using Test, Random
 using FileIO: load
+import DataScienceTraits as DST
 
 # environment settings
 datadir = joinpath(@__DIR__, "data")
