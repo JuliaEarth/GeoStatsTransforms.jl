@@ -45,47 +45,23 @@ Interpolate(domain, pairs::Pair{<:Any,<:GeoStatsModel}...; kwargs...) =
 isrevertible(::Type{<:Interpolate}) = false
 
 function apply(transform::Interpolate, geotable::AbstractGeoTable)
-  dom = domain(geotable)
   tab = values(geotable)
   cols = Tables.columns(tab)
   vars = Tables.columnnames(cols)
 
-  idom = transform.domain
+  domain = transform.domain
   selectors = transform.selectors
   models = transform.models
   point = transform.point
   prob = transform.prob
 
-  data = if point
-    pset = PointSet(centroid(dom, i) for i in 1:nelements(dom))
-    _adjustunits(georef(values(geotable), pset))
-  else
-    _adjustunits(geotable)
-  end
-
-  # preprocess variable models
-  varmodels = mapreduce(vcat, selectors, models) do selector, model
-    fmodel = fit(model, data)
+  interps = map(selectors, models) do selector, model
     svars = selector(vars)
-    [var => fmodel for var in svars]
+    data = geotable[:, svars]
+    fitpredict(model, data, domain; point, prob, neighbors=false)
   end
 
-  # prediction order
-  inds = traverse(idom, LinearPath())
-
-  # predict variable values
-  function pred(var, fmodel)
-    map(inds) do ind
-      geom = point ? centroid(idom, ind) : idom[ind]
-      pfun = prob ? predictprob : predict
-      pfun(fmodel, var, geom)
-    end
-  end
-
-  pairs = (var => pred(var, fmodel) for (var, fmodel) in varmodels)
-  newtab = (; pairs...) |> Tables.materializer(tab)
-
-  newgeotable = georef(newtab, idom)
+  newgeotable = reduce(hcat, interps)
 
   newgeotable, nothing
 end

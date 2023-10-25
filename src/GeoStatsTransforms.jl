@@ -23,7 +23,7 @@ using LinearAlgebra
 using Statistics
 
 using Unitful: AffineQuantity
-using GeoStatsModels: GeoStatsModel, fit, predict, predictprob
+using GeoStatsModels: GeoStatsModel, fitpredict
 using ColumnSelectors: ColumnSelector, SingleColumnSelector
 using ColumnSelectors: Column, AllSelector, NoneSelector
 using ColumnSelectors: selector, selectsingle
