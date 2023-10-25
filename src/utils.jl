@@ -2,22 +2,6 @@
 # Licensed under the MIT License. See LICENSE in the project root.
 # ------------------------------------------------------------------
 
-"""
-    searcher_ui(domain, maxneighbors, distance, neighborhood)
-
-Return the appropriate search method over the `domain` based on
-end-user inputs such as `maxneighbors`, `distance` and `neighborhood`.
-"""
-function searcher_ui(domain, maxneighbors, distance, neighborhood)
-  if isnothing(neighborhood)
-    # nearest neighbor search with a metric
-    KNearestSearch(domain, maxneighbors; metric=distance)
-  else
-    # neighbor search with ball neighborhood
-    KBallSearch(domain, maxneighbors, neighborhood)
-  end
-end
-
 #-------------
 # AGGREGATION
 #-------------

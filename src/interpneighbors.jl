@@ -88,12 +88,11 @@ InterpolateNeighbors(domain, pairs::Pair{<:Any,<:GeoStatsModel}...; kwargs...) =
 isrevertible(::Type{<:InterpolateNeighbors}) = false
 
 function apply(transform::InterpolateNeighbors, geotable::AbstractGeoTable)
-  dom = domain(geotable)
   tab = values(geotable)
   cols = Tables.columns(tab)
   vars = Tables.columnnames(cols)
 
-  idom = transform.domain
+  domain = transform.domain
   selectors = transform.selectors
   models = transform.models
   minneighbors = transform.minneighbors
@@ -103,73 +102,13 @@ function apply(transform::InterpolateNeighbors, geotable::AbstractGeoTable)
   point = transform.point
   prob = transform.prob
 
-  nobs = nelements(dom)
-  if maxneighbors > nobs || maxneighbors < 1
-    @warn "Invalid maximum number of neighbors. Adjusting to $nobs..."
-    maxneighbors = nobs
-  end
-
-  if minneighbors > maxneighbors || minneighbors < 1
-    @warn "Invalid minimum number of neighbors. Adjusting to 1..."
-    minneighbors = 1
-  end
-
-  data = if point
-    pset = PointSet(centroid(dom, i) for i in 1:nobs)
-    _adjustunits(georef(values(geotable), pset))
-  else
-    _adjustunits(geotable)
-  end
-
-  # preprocess variable models
-  varmodels = mapreduce(vcat, selectors, models) do selector, model
+  interps = map(selectors, models) do selector, model
     svars = selector(vars)
-    [var => model for var in svars]
+    data = geotable[:, svars]
+    fitpredict(model, data, domain; point, prob, minneighbors, maxneighbors, neighborhood, distance)
   end
 
-  # determine bounded search method
-  searcher = searcher_ui(dom, maxneighbors, distance, neighborhood)
-
-  # pre-allocate memory for neighbors
-  neighbors = Vector{Int}(undef, maxneighbors)
-
-  # prediction order
-  inds = traverse(idom, LinearPath())
-
-  # predict variable values
-  function pred(var, model)
-    map(inds) do ind
-      # centroid of estimation
-      center = centroid(idom, ind)
-
-      # find neighbors with data
-      nneigh = search!(neighbors, center, searcher)
-
-      # predict if enough neighbors
-      if nneigh ≥ minneighbors
-        # final set of neighbors
-        ninds = view(neighbors, 1:nneigh)
-
-        # view neighborhood with data
-        samples = view(data, ninds)
-
-        # fit model to data
-        fmodel = fit(model, samples)
-
-        # save prediction
-        geom = point ? center : idom[ind]
-        pfun = prob ? predictprob : predict
-        pfun(fmodel, var, geom)
-      else # missing prediction
-        missing
-      end
-    end
-  end
-
-  pairs = (var => pred(var, model) for (var, model) in varmodels)
-  newtab = (; pairs...) |> Tables.materializer(tab)
-
-  newgeotable = georef(newtab, idom)
+  newgeotable = reduce(hcat, interps)
 
   newgeotable, nothing
 end
