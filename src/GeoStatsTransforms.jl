@@ -7,6 +7,7 @@ module GeoStatsTransforms
 using Meshes
 using GeoTables
 using GeoStatsModels
+using GeoStatsProcesses
 
 using Tables
 using Unitful
@@ -21,12 +22,14 @@ using CategoricalArrays
 using SparseArrays
 using LinearAlgebra
 using Statistics
+using Random
 
 using Unitful: AffineQuantity
 using GeoStatsModels: GeoStatsModel, fitpredict
 using ColumnSelectors: ColumnSelector, SingleColumnSelector
 using ColumnSelectors: Column, AllSelector, NoneSelector
 using ColumnSelectors: selector, selectsingle
+using GeoStatsProcesses: GeoStatsProcess
 using DataScienceTraits: Continuous
 
 import TableTransforms: divide, attach
@@ -42,6 +45,7 @@ include("geometric.jl")
 
 include("interpneighbors.jl")
 include("interpolate.jl")
+include("simulate.jl")
 include("uniquecoords.jl")
 include("clustering.jl")
 include("rasterize.jl")
@@ -52,6 +56,7 @@ export
   # transforms
   InterpolateNeighbors,
   Interpolate,
+  Simulate,
   UniqueCoords,
   Rasterize,
   Potrace,
