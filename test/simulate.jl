@@ -1,4 +1,6 @@
 @testset "Simulate" begin
+  @test !isrevertible(Simulate(CartesianGrid(10, 10), :a => GaussianProcess()))
+
   a = rand(100)
   b = rand(100)
   c = rand(100)
