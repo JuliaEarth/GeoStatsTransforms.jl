@@ -16,4 +16,7 @@
   sim = gtb |> Simulate(pts, 2, [:b, :c] => GaussianProcess())
   @test nrow(sim) == 200
   @test propertynames(sim) == [:b_1, :c_1, :b_2, :c_2, :geometry]
+  sim = gtb |> Simulate(pts, [:b, :c] => GaussianProcess())
+  @test nrow(sim) == 200
+  @test propertynames(sim) == [:b_1, :c_1, :geometry]
 end
