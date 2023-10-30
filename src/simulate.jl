@@ -9,7 +9,7 @@
 
 TODO
 """
-struct Simulate{D<:Domain,R<:AbstractRNG} <: TableTransform 
+struct Simulate{D<:Domain,R<:AbstractRNG} <: TableTransform
   domain::D
   nreals::Int
   selectors::Vector{ColumnSelector}
@@ -17,7 +17,7 @@ struct Simulate{D<:Domain,R<:AbstractRNG} <: TableTransform
   rng::R
 end
 
-Simulate(domain::Domain, nreals::Int, selectors, processes, rng) = 
+Simulate(domain::Domain, nreals::Int, selectors, processes, rng) =
   Simulate(domain, nreals, collect(ColumnSelector, selectors), collect(GeoStatsProcess, processes), rng)
 
 Simulate(geoms::AbstractVector{<:Geometry}, nreals::Int, selectors, processes, rng) =
