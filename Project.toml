@@ -1,7 +1,7 @@
 name = "GeoStatsTransforms"
 uuid = "725d9659-360f-4996-9c94-5f19c7e4a8a6"
 authors = ["Júlio Hoffimann <julio.hoffimann@gmail.com> and contributors"]
-version = "0.2.1"
+version = "0.2.2"
 
 [deps]
 ArnoldiMethod = "ec485272-7323-5ecc-a04f-4719b315124d"
@@ -33,7 +33,7 @@ Distances = "0.10"
 GeoStatsModels = "0.2"
 GeoTables = "1.9"
 Meshes = "0.35"
-Statistics = "1"
+Statistics = "1.9"
 TableDistances = "0.3"
 TableTransforms = "1.16"
 Tables = "1.10"
