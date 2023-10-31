@@ -52,40 +52,38 @@ function apply(transform::CookieCutter, geotable::AbstractGeoTable)
   vars = Tables.columnnames(cols)
 
   (; domain, nreals, master, childrens, rng, kwargs) = transform
-  pad = ndigits(nreals)
 
   mselector, mprocess = master
   mvar = selectsingle(mselector, vars)
-  mdata = geotable[:, mvar]
-  mensemble = rand(rng, mprocess, domain, mdata, nreals; kwargs...)
-  msim = mapreduce(hcat, 1:nreals) do r
-    gtb = mensemble[r]
-    gtb |> Rename(mvar => "$(mvar)_$(string(r; pad))")
-  end
+  msim = geotable |> Simulate(domain, nreals, mvar => mprocess; rng, kwargs...)
 
-  csim = mapreduce(hcat, childrens) do (cselector, cmap)
+  csim = mapreduce(hcat, childrens) do (cselector, cpairs)
     cvar = selectsingle(cselector, vars)
-    cdata = geotable[:, cvar]
-    prep = map(cmap) do (val, process)
-      ensemble = rand(rng, process, domain, cdata, nreals; kwargs...)
-      val => ensemble
+    prep = map(cpairs) do (val, cprocess)
+      sim = Simulate(domain, nreals, cvar => cprocess; rng, kwargs...)
+      val => sim
     end
-    censemble = Dict(prep)
-    cpairs = map(1:nreals) do r
+
+    names = let
+      tab = values(last(first(prep)))
+      cols = Tables.columns(tab)
+      Tables.columnnames(cols)
+    end
+
+    cmap = Dict(prep)
+    columns = map(1:nreals) do r
       mcolumn = msim[:, r]
-      name = Symbol("$(cvar)_$(string(r; pad))")
-      column = map(enumerate(mcolumn)) do (i, v)
-        if haskey(censemble, v)
-          ensemble = censemble[v]
-          gtb = ensemble[r]
-          gtb[:, cvar][i]
+      map(enumerate(mcolumn)) do (i, v)
+        if haskey(cmap, v)
+          sim = cmap[v]
+          sim[:, r][i]
         else
           missing
         end
       end
-      name => column
     end
-    georef((; cpairs...), domain)
+
+    georef((; zip(names, columns)...), domain)
   end
 
   newgeotable = hcat(msim, csim)
