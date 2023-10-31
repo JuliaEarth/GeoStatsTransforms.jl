@@ -46,6 +46,7 @@ include("geometric.jl")
 include("interpneighbors.jl")
 include("interpolate.jl")
 include("simulate.jl")
+include("cookiecutter.jl")
 include("uniquecoords.jl")
 include("clustering.jl")
 include("rasterize.jl")
@@ -57,6 +58,7 @@ export
   InterpolateNeighbors,
   Interpolate,
   Simulate,
+  CookieCutter,
   UniqueCoords,
   Rasterize,
   Potrace,

@@ -5,6 +5,7 @@ using Unitful
 using GeoTables
 using Variography
 using GeoStatsModels
+using GeoStatsImages
 using GeoStatsProcesses
 using TableTransforms
 using CategoricalArrays
@@ -12,6 +13,8 @@ using Statistics
 using Test, Random
 using FileIO: load
 import DataScienceTraits as DST
+
+import ImageQuilting
 
 # environment settings
 datadir = joinpath(@__DIR__, "data")
@@ -23,6 +26,7 @@ testfiles = [
   "interpneighbors.jl",
   "interpolate.jl",
   "simulate.jl",
+  "cookiecutter.jl",
   "uniquecoords.jl",
   "clustering.jl",
   "rasterize.jl",
