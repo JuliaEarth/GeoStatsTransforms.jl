@@ -9,7 +9,7 @@
 Simulate `nreals` realizations of variable `master` with geostatistical process `process`, 
 and each child variable `varsᵢ` with process map `procmapᵢ`, over given `domain`.
 
-The process map must be a pairwise iterable in the format: value => process.
+The process map must be an iterable of pairs of the form: value => process.
 Each process in the map is related to a value of the `master` realization, 
 therefore the values of the child variables will be chosen according
 to the values of the corresponding `master` realization.
