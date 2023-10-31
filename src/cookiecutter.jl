@@ -2,11 +2,24 @@
 # Licensed under the MIT License. See LICENSE in the project root.
 # ------------------------------------------------------------------
 
+"""
+    CookieCutter(domain, master => process, var₁ => map₁, ..., varₙ => mapₙ; [parameters])
+    CookieCutter(domain, nreals, master => process, var₁ => map₁, ..., varₙ => mapₙ; [parameters])
+
+TODO
+
+## Parameters
+
+* `rng`      - Random number generator (default to `Random.default_rng()`)
+* `pool`     - Pool of worker processes (default to `[myid()]`)
+* `threads`  - Number of threads (default to `cpucores()`)
+* `progress` - Show progress bar (default to `true`)
+"""
 struct CookieCutter{D<:Domain,M,C,R<:AbstractRNG,K} <: TableTransform
   domain::D
   nreals::Int
   master::M
-  childrens::Vector{C}
+  children::Vector{C}
   rng::R
   kwargs::K
 end
@@ -15,26 +28,20 @@ function CookieCutter(
   domain::Domain,
   nreals::Int,
   master::Pair{C,<:GeoStatsProcess},
-  childrens::Pair{C}...;
+  children::Pair{C}...;
   rng=Random.default_rng(),
   kwargs...
 ) where {C<:Column}
+  if isempty(children)
+    throw(ArgumentError("cannot create CookieCutter transform without children"))
+  end
   mpair = selector(first(master)) => last(master)
-  cpairs = [selector(first(p)) => _childmap(last(p)) for p in childrens]
+  cpairs = [selector(first(p)) => _childmap(last(p)) for p in children]
   CookieCutter(domain, nreals, mpair, cpairs, rng, values(kwargs))
 end
 
-function CookieCutter(
-  domain::Domain,
-  master::Pair{C,<:GeoStatsProcess},
-  childrens::Pair{C}...;
-  rng=Random.default_rng(),
-  kwargs...
-) where {C<:Column}
-  mpair = selector(first(master)) => last(master)
-  cpairs = [selector(first(p)) => _childmap(last(p)) for p in childrens]
-  CookieCutter(domain, 1, mpair, cpairs, rng, values(kwargs))
-end
+CookieCutter(domain::Domain, master::Pair{C,<:GeoStatsProcess}, children::Pair{C}...; kwargs...) where {C<:Column} =
+  CookieCutter(domain, 1, master, children...; kwargs...)
 
 function _childmap(itr)
   pairs = collect(itr)
@@ -51,16 +58,16 @@ function apply(transform::CookieCutter, geotable::AbstractGeoTable)
   cols = Tables.columns(tab)
   vars = Tables.columnnames(cols)
 
-  (; domain, nreals, master, childrens, rng, kwargs) = transform
+  (; domain, nreals, master, children, rng, kwargs) = transform
 
   mselector, mprocess = master
   mvar = selectsingle(mselector, vars)
   msim = geotable |> Simulate(domain, nreals, mvar => mprocess; rng, kwargs...)
 
-  csim = mapreduce(hcat, childrens) do (cselector, cpairs)
+  csim = mapreduce(hcat, children) do (cselector, cpairs)
     cvar = selectsingle(cselector, vars)
     prep = map(cpairs) do (val, cprocess)
-      sim = Simulate(domain, nreals, cvar => cprocess; rng, kwargs...)
+      sim = geotable |> Simulate(domain, nreals, cvar => cprocess; rng, kwargs...)
       val => sim
     end
 

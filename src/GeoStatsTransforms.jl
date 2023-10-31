@@ -58,6 +58,7 @@ export
   InterpolateNeighbors,
   Interpolate,
   Simulate,
+  CookieCutter,
   UniqueCoords,
   Rasterize,
   Potrace,
