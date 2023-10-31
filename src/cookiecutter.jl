@@ -3,10 +3,16 @@
 # ------------------------------------------------------------------
 
 """
-    CookieCutter(domain, master => process, var₁ => map₁, ..., varₙ => mapₙ; [parameters])
-    CookieCutter(domain, nreals, master => process, var₁ => map₁, ..., varₙ => mapₙ; [parameters])
+    CookieCutter(domain, master => process, var₁ => procmap₁, ..., varₙ => procmapₙ; [parameters])
+    CookieCutter(domain, nreals, master => process, var₁ => procmap₁, ..., varₙ => procmapₙ; [parameters])
 
-TODO
+Simulate `nreals` realizations of variable `master` with geostatistical process `process`, 
+and each child variable `varsᵢ` with process map `procmapᵢ`, over given `domain`.
+
+The process map must be a pairwise iterable in the format: value => process.
+Each process in the map is related to a value of the `master` realization, 
+therefore the values of the child variables will be chosen according
+to the values of the corresponding `master` realization.
 
 ## Parameters
 
@@ -36,17 +42,17 @@ function CookieCutter(
     throw(ArgumentError("cannot create CookieCutter transform without children"))
   end
   mpair = selector(first(master)) => last(master)
-  cpairs = [selector(first(p)) => _childmap(last(p)) for p in children]
+  cpairs = [selector(first(p)) => _procmap(last(p)) for p in children]
   CookieCutter(domain, nreals, mpair, cpairs, rng, values(kwargs))
 end
 
 CookieCutter(domain::Domain, master::Pair{C,<:GeoStatsProcess}, children::Pair{C}...; kwargs...) where {C<:Column} =
   CookieCutter(domain, 1, master, children...; kwargs...)
 
-function _childmap(itr)
+function _procmap(itr)
   pairs = collect(itr)
   if !(eltype(pairs) <: Pair{<:Any,<:GeoStatsProcess})
-    throw(ArgumentError("child map must be an iterable of pairs of the form: value => process"))
+    throw(ArgumentError("process map must be an iterable of pairs of the form: value => process"))
   end
   pairs
 end
@@ -64,9 +70,9 @@ function apply(transform::CookieCutter, geotable::AbstractGeoTable)
   mvar = selectsingle(mselector, vars)
   msim = geotable |> Simulate(domain, nreals, mvar => mprocess; rng, kwargs...)
 
-  csim = mapreduce(hcat, children) do (cselector, cpairs)
+  csim = mapreduce(hcat, children) do (cselector, procmap)
     cvar = selectsingle(cselector, vars)
-    prep = map(cpairs) do (val, cprocess)
+    prep = map(procmap) do (val, cprocess)
       sim = geotable |> Simulate(domain, nreals, cvar => cprocess; rng, kwargs...)
       val => sim
     end
@@ -77,12 +83,12 @@ function apply(transform::CookieCutter, geotable::AbstractGeoTable)
       Tables.columnnames(cols)
     end
 
-    cmap = Dict(prep)
+    simmap = Dict(prep)
     columns = map(1:nreals) do r
       mcolumn = msim[:, r]
       map(enumerate(mcolumn)) do (i, v)
-        if haskey(cmap, v)
-          sim = cmap[v]
+        if haskey(simmap, v)
+          sim = simmap[v]
           sim[:, r][i]
         else
           missing
