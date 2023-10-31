@@ -6,13 +6,13 @@
     Interpolate(domain, vars₁ => model₁, ..., varsₙ => modelₙ; [parameters])
     Interpolate([g₁, g₂, ..., gₙ], vars₁ => model₁, ..., varsₙ => modelₙ; [parameters])
   
-Interpolate geospatial data on given `domain` or set of geometries `g₁`, `g₂`, ..., `gₙ`,
+Interpolate geospatial data on given `domain` or vector of geometries `[g₁, g₂, ..., gₙ]`,
 using geostatistical models `model₁`, ..., `modelₙ` for variables `vars₁`, ..., `varsₙ`.
 
     Interpolate(domain, model=IDW(); [parameters])
     Interpolate([g₁, g₂, ..., gₙ], model=IDW(); [parameters])
   
-Interpolate geospatial data on given `domain` or set of geometries `g₁`, `g₂`, ..., `gₙ`,
+Interpolate geospatial data on given `domain` or vector of geometries `[g₁, g₂, ..., gₙ]`,
 using geostatistical `model` for all variables.
 
 ## Parameters

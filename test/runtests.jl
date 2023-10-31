@@ -5,6 +5,7 @@ using Unitful
 using GeoTables
 using Variography
 using GeoStatsModels
+using GeoStatsProcesses
 using TableTransforms
 using CategoricalArrays
 using Statistics
@@ -21,6 +22,7 @@ testfiles = [
   "geometric.jl",
   "interpneighbors.jl",
   "interpolate.jl",
+  "simulate.jl",
   "uniquecoords.jl",
   "clustering.jl",
   "rasterize.jl",
