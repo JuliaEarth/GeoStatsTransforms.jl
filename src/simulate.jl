@@ -14,7 +14,7 @@ Simulate `nreals` realizations of variables `varsᵢ` with geostatistical proces
 
 * `rng`      - Random number generator (default to `Random.default_rng()`)
 * `pool`     - Pool of worker processes (default to `[myid()]`)
-* `threads`  - Number of threads used in simulations (default to `cpucores()`)
+* `threads`  - Number of threads (default to `cpucores()`)
 * `progress` - Defines whether progress bar will be displayed (default to `true`)
 """
 struct Simulate{D<:Domain,R<:AbstractRNG,K} <: TableTransform
