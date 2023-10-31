@@ -1,6 +1,7 @@
 # ------------------------------------------------------------------
 # Licensed under the MIT License. See LICENSE in the project root.
 # ------------------------------------------------------------------
+
 """
     Simulate(domain, vars₁ => process₁, ..., varsₙ => processₙ; [parameters])
     Simulate(domain, nreals, vars₁ => process₁, ..., varsₙ => processₙ; [parameters])
