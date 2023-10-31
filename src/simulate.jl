@@ -7,7 +7,8 @@
     Simulate([g₁, g₂, ..., gₙ], vars₁ => process₁, ..., varsₙ => processₙ)
     Simulate([g₁, g₂, ..., gₙ], nreals, vars₁ => process₁, ..., varsₙ => processₙ)
 
-TODO
+Simulate `nreals` realizations of variables `varsᵢ` with geostatistical process
+`processᵢ` over given `domain` or vector of geometries `[g₁, g₂, ..., gₙ]`.
 """
 struct Simulate{D<:Domain,R<:AbstractRNG} <: TableTransform
   domain::D
