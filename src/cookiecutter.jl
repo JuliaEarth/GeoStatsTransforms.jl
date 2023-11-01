@@ -24,9 +24,9 @@ to the values of the corresponding `parent` realization.
 # Examples
 
 ```julia
-parent = QuiltingProcess(trainimg=trainimg, tilesize=(30, 30))
-child0 = GaussianProcess(variogram=SphericalVariogram(range=20.0, sill=0.2))
-child1 = GaussianProcess(variogram=SphericalVariogram(MetricBall((200.0, 20.0))))
+parent = QuiltingProcess(trainimg, (30, 30))
+child0 = GaussianProcess(SphericalVariogram(range=20.0, sill=0.2))
+child1 = GaussianProcess(SphericalVariogram(MetricBall((200.0, 20.0))))
 transform = CookieCutter(domain, :parent => parent, :child => [0 => child0, 1 => child1])
 ```
 """
