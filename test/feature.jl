@@ -21,7 +21,7 @@
     Interquartile(),
     ZScore(),
     Quantile(),
-    Functional(sin),
+    Functional(exp),
     EigenAnalysis(:V),
     PCA(),
     DRS(),
