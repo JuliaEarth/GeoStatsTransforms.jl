@@ -9,7 +9,7 @@ epanechnikov(h; λ) = (h ≤ λ) * (λ^2 - h^2)
 const KERNFUN = Dict(:uniform => uniform, :triangular => triangular, :epanechnikov => epanechnikov)
 
 """
-    GHC(k, λ; kern=:epanechnikov, link=:ward)
+    GHC(k, λ; kern=:epanechnikov, link=:ward, as=:CLUSTER)
 
 A transform for partitioning geospatial data into `k` clusters 
 according to a range `λ` using Geostatistical Hierarchical
@@ -22,6 +22,7 @@ are nearby samples.
 * `λ`    - Approximate range of kernel function
 * `kern` - Kernel function (`:uniform`, `:triangular` or `:epanechnikov`)
 * `link` - Linkage function (`:single`, `:average`, `:complete`, `:ward` or `:ward_presquared`)
+* `as`   - Cluster column name
 
 ## References
 
@@ -43,15 +44,16 @@ struct GHC <: ClusteringTransform
   λ::Float64
   kern::Symbol
   link::Symbol
+  as::Symbol
 end
 
-function GHC(k, λ; kern=:epanechnikov, link=:ward)
+function GHC(k, λ; kern=:epanechnikov, link=:ward, as=:CLUSTER)
   # sanity checks
   @assert k > 0 "invalid number of clusters"
   @assert λ > 0 "invalid kernel range"
   @assert kern ∈ [:uniform, :triangular, :epanechnikov] "invalid kernel function"
   @assert link ∈ [:single, :average, :complete, :ward, :ward_presquared] "invalid linkage function"
-  GHC(k, λ, kern, link)
+  GHC(k, λ, kern, link, Symbol(as))
 end
 
 function apply(transform::GHC, geotable)
@@ -70,7 +72,7 @@ function apply(transform::GHC, geotable)
   # cut tree to produce clusters
   labels = cutree(tree, k=k)
 
-  newtable = (; CLUSTER=categorical(labels))
+  newtable = (; transform.as => categorical(labels))
   newgeotable = georef(newtable, domain(geotable))
 
   newgeotable, nothing

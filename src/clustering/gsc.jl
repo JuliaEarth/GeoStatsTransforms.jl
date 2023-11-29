@@ -3,7 +3,7 @@
 # ------------------------------------------------------------------
 
 """
-    GSC(k, m; σ=1.0, tol=1e-4, maxiter=10, weights=nothing)
+    GSC(k, m; σ=1.0, tol=1e-4, maxiter=10, weights=nothing, as=:CLUSTER)
 
 A transform for partitioning geospatial data into `k` clusters
 using Geostatistical Spectral Clustering (GSC).
@@ -16,6 +16,7 @@ using Geostatistical Spectral Clustering (GSC).
 * `tol`     - Tolerance of k-means algorithm (default to `1e-4`)
 * `maxiter` - Maximum number of iterations (default to `10`)
 * `weights` - Dictionary with weights for each attribute (default to `nothing`)
+* `as`      - Cluster column name
 
 ## References
 
@@ -37,14 +38,15 @@ struct GSC{W} <: ClusteringTransform
   tol::Float64
   maxiter::Int
   weights::W
+  as::Symbol
 end
 
-function GSC(k, m; σ=1.0, tol=1e-4, maxiter=10, weights=nothing)
+function GSC(k, m; σ=1.0, tol=1e-4, maxiter=10, weights=nothing, as=:CLUSTER)
   # sanity checks
   @assert k > 0 "invalid number of clusters"
   @assert m > 0 "invalid multiplicative factor"
   @assert σ > 0 "invalid standard deviation"
-  GSC(k, m, σ, tol, maxiter, weights)
+  GSC(k, m, σ, tol, maxiter, weights, Symbol(as))
 end
 
 function apply(transform::GSC, geotable)
@@ -87,7 +89,7 @@ function apply(transform::GSC, geotable)
   result = kmeans(V', k, tol=tol, maxiter=maxiter)
   labels = assignments(result)
 
-  newtable = (; CLUSTER=categorical(labels))
+  newtable = (; transform.as => categorical(labels))
   newgeotable = georef(newtable, domain(geotable))
 
   newgeotable, nothing
