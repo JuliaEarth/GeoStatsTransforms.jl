@@ -5,6 +5,12 @@
     C = 𝒮 |> SLIC(4, 1.0)
     @test C.CLUSTER == vec(Z')
 
+    # as kwarg
+    C = 𝒮 |> SLIC(4, 1.0, as=:cluster)
+    @test C.cluster == vec(Z')
+    C = 𝒮 |> SLIC(4, 1.0, as="cluster")
+    @test C.cluster == vec(Z')
+
     𝒮 = georef((z=[√(i^2 + j^2) for i in 1:100, j in 1:100],))
     C = 𝒮 |> SLIC(50, 0.001)
     @test 50 ≤ length(unique(C.CLUSTER)) ≤ 60
@@ -95,6 +101,12 @@
     𝒮 = georef((z=[√(i^2 + j^2) for i in 1:50, j in 1:50],))
     C = 𝒮 |> GHC(50, 1.0)
     @test length(unique(C.CLUSTER)) == 50
+
+    # as kwarg
+    C = 𝒮 |> GHC(50, 1.0, as=:cluster)
+    @test length(unique(C.cluster)) == 50
+    C = 𝒮 |> GHC(50, 1.0, as="cluster")
+    @test length(unique(C.cluster)) == 50
   end
 
   @testset "GSC" begin
@@ -102,5 +114,11 @@
     𝒮 = georef((Z=[10sin(i / 10) + j for i in 1:100, j in 1:100],))
     C = 𝒮 |> GSC(50, 2.0)
     @test Set(C.CLUSTER) == Set(1:50)
+
+    # as kwarg
+    C = 𝒮 |> GSC(50, 2.0, as=:cluster)
+    @test Set(C.cluster) == Set(1:50)
+    C = 𝒮 |> GSC(50, 2.0, as="cluster")
+    @test Set(C.cluster) == Set(1:50)
   end
 end
