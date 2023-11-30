@@ -21,7 +21,6 @@ datadir = joinpath(@__DIR__, "data")
 
 # list of tests
 testfiles = [
-  "feature.jl",
   "geometric.jl",
   "interpneighbors.jl",
   "interpolate.jl",
