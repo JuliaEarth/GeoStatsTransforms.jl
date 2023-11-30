@@ -38,8 +38,6 @@ import TableTransforms: isrevertible
 
 include("utils.jl")
 
-include("geometric.jl")
-
 include("interpneighbors.jl")
 include("interpolate.jl")
 include("simulate.jl")
