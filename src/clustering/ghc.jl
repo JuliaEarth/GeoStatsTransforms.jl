@@ -112,8 +112,11 @@ function ghc_kernel_matrix(kern, λ, 𝒟)
 end
 
 function ghc_diff_matrices(𝒯)
-  # retrieve covariates
-  cols = Tables.columns(𝒯)
+  # features must be standardized
+  𝒮 = ghc_standardize(𝒯)
+
+  # retrieve standardized features
+  cols = Tables.columns(𝒮)
   vars = Tables.columnnames(cols)
 
   # distance matrices
@@ -167,4 +170,16 @@ function ghc_variogram_sum(K, Δ)
   end
 
   Γ
+end
+
+function ghc_standardize(𝒯)
+  cols = Tables.columns(𝒯)
+  vars = Tables.columnnames(cols)
+  zstd = map(vars) do var
+    z = Tables.getcolumn(cols, var)
+    μ = mean(z)
+    σ = std(z, mean=μ)
+    (z .- μ) ./ σ
+  end
+  (; zip(vars, zstd)...) |> Tables.materializer(𝒯)
 end
