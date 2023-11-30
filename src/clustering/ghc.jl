@@ -112,21 +112,26 @@ function ghc_kernel_matrix(kern, λ, 𝒟)
 end
 
 function ghc_diff_matrices(𝒯)
-  # covariates as columns
-  covars = Tables.columntable(𝒯)
+  # retrieve covariates
+  cols = Tables.columns(𝒯)
+  vars = Tables.columnnames(cols)
+
+  # distance matrices
+  D = map(vars) do var
+    z = Tables.getcolumn(cols, var)
+    pairwise(Euclidean(), z)
+  end
 
   # number of covariates
-  p = length(covars)
+  p = length(vars)
 
   # one matrix per covariate pair
   Δ = Matrix{Matrix{Float64}}(undef, p, p)
   @inbounds for j in 1:p
-    Δj = pairwise(Euclidean(), covars[j])
     for i in (j + 1):p
-      Δi = pairwise(Euclidean(), covars[i])
-      Δ[i, j] = Δi .* Δj
+      Δ[i, j] = D[i] .* D[j]
     end
-    Δ[j, j] = Δj .* Δj
+    Δ[j, j] = D[j] .* D[j]
     for i in 1:(j - 1)
       Δ[i, j] = Δ[j, i] # leverage the symmetry
     end
