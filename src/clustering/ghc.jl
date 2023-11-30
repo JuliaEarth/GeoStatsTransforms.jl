@@ -182,7 +182,7 @@ function ghc_standardize(𝒯)
     z = Tables.getcolumn(cols, var)
     μ = mean(z)
     σ = std(z, mean=μ)
-    (z .- μ) ./ σ
+    iszero(σ) ? zero(μ) : (z .- μ) ./ σ
   end
   (; zip(vars, zstd)...) |> Tables.materializer(𝒯)
 end
