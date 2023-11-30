@@ -82,7 +82,7 @@
     @test !isempty(c)
 
     # as kwarg
-    𝒮 = georef((Z=[1,2,3],))
+    𝒮 = georef((Z=[1, 2, 3],))
     C = 𝒮 |> SLIC(3, 1.0, as=:cluster)
     @test names(C) == ["cluster", "geometry"]
     C = 𝒮 |> SLIC(3, 1.0, as="cluster")
@@ -90,7 +90,7 @@
   end
 
   @testset "GHC" begin
-    Z = [ones(10, 10) 2ones(10, 10); 3ones(10, 10) 4ones(10, 10)]
+    Z = [ones(10, 10) 2ones(10, 10); 3ones(10, 10) 4ones(10, 10)] .|> float
     𝒮 = georef((Z=Z,))
     C = 𝒮 |> GHC(4, 1.0)
     𝒮′ = georef(values(𝒮), centroid.(domain(𝒮)))
@@ -103,7 +103,7 @@
     @test length(unique(C.CLUSTER)) == 50
 
     # as kwarg
-    𝒮 = georef((Z=[1,2,3],))
+    𝒮 = georef((Z=[1.0, 2.0, 3.0],))
     C = 𝒮 |> GHC(3, 1.0, as=:cluster)
     @test names(C) == ["cluster", "geometry"]
     C = 𝒮 |> GHC(3, 1.0, as="cluster")
@@ -117,7 +117,7 @@
     @test Set(C.CLUSTER) == Set(1:50)
 
     # as kwarg
-    𝒮 = georef((Z=[1,2,3],))
+    𝒮 = georef((Z=[1, 2, 3],))
     C = 𝒮 |> GSC(3, 2.0, as=:cluster)
     @test names(C) == ["cluster", "geometry"]
     C = 𝒮 |> GSC(3, 2.0, as="cluster")
