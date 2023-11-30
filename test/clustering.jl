@@ -92,11 +92,10 @@
   @testset "GHC" begin
     Z = [ones(10, 10) 2ones(10, 10); 3ones(10, 10) 4ones(10, 10)]
     𝒮 = georef((Z=Z,))
-    C = 𝒮 |> SLIC(4, 1.0)
-    @test C.CLUSTER == categorical(vec(Z'))
-
+    C = 𝒮 |> GHC(4, 1.0)
     𝒮′ = georef(values(𝒮), centroid.(domain(𝒮)))
     C′ = 𝒮′ |> GHC(4, 1.0)
+    @test C.CLUSTER == categorical(vec(Z'))
     @test C.CLUSTER == C′.CLUSTER
 
     𝒮 = georef((z=[√(i^2 + j^2) for i in 1:50, j in 1:50],))

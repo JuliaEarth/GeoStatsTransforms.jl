@@ -121,11 +121,9 @@ function ghc_diff_matrices(𝒯)
   # one matrix per covariate pair
   Δ = Matrix{Matrix{Float64}}(undef, p, p)
   @inbounds for j in 1:p
-    Zj = ghc_normalize(covars[j])
-    Δj = pairwise(Euclidean(), Zj)
+    Δj = pairwise(Euclidean(), covars[j])
     for i in (j + 1):p
-      Zi = ghc_normalize(covars[i])
-      Δi = pairwise(Euclidean(), Zi)
+      Δi = pairwise(Euclidean(), covars[i])
       Δ[i, j] = Δi .* Δj
     end
     Δ[j, j] = Δj .* Δj
@@ -164,10 +162,4 @@ function ghc_variogram_sum(K, Δ)
   end
 
   Γ
-end
-
-function ghc_normalize(x)
-  μ = mean(x)
-  σ = std(x, mean=μ)
-  (x .- μ) ./ σ
 end
