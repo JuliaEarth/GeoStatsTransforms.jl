@@ -125,6 +125,6 @@
   for i in 1:10
     j = i * 10
     v = GeoStatsTransforms._skipmissing(mean)(sdata.T[(j - 9):j])
-    @test ndata.T[i] == v
+    @test isequal(ndata.T[i], v)
   end
 end

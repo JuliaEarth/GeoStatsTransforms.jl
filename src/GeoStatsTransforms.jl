@@ -32,15 +32,11 @@ using ColumnSelectors: selector, selectsingle
 using GeoStatsProcesses: GeoStatsProcess
 using DataScienceTraits: Continuous
 
-import TableTransforms: divide, attach
-import TableTransforms: applymeta, revertmeta
 import TableTransforms: apply, revert, reapply
 import TableTransforms: isrevertible
 
 include("utils.jl")
 
-include("traits.jl")
-include("feature.jl")
 include("geometric.jl")
 
 include("interpneighbors.jl")
