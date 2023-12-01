@@ -87,16 +87,66 @@ function ghc_dissimilarity_matrix(geotable, kern, λ)
   𝒯 = values(geotable)
 
   # kernel matrix
-  K = ghc_kernel_matrix(kern, λ, 𝒟)
+  K = ghc_kern_matrix(kern, λ, 𝒟)
 
-  # difference matrices
-  Δ = ghc_diff_matrices(𝒯)
+  # features must be standardized
+  𝒮 = ghc_standardize(𝒯)
 
-  # sum of cross-variograms
-  ghc_variogram_sum(K, Δ)
+  # retrieve feature columns
+  cols = Tables.columns(𝒮)
+  vars = Tables.columnnames(cols)
+
+  # number of covariates
+  p = length(vars)
+
+  # number of observations
+  n = size(K, 1)
+
+  # dissimilarity matrix
+  D = zeros(n, n)
+  @inbounds for j in 1:p # for each pair of covariates
+    Zj = Tables.getcolumn(cols, j)
+    for i in j:p
+      Zi = Tables.getcolumn(cols, i)
+
+      # difference matrix for covariate pair
+      Δ = ghc_diff_matrix(Zi, Zj)
+
+      # contribution to dissimilarity matrix
+      for l in 1:n
+        Kl = K[:, l]
+        for k in (l + 1):n
+          Kk = K[:, k]
+          Kkl = kron(Kl, Kk) # faster Kk * transpose(Kl)
+          I, W = findnz(Kkl)
+          num = sum(W .* Δ[I], init=0.0)
+          den = sum(W, init=0.0)
+          iszero(den) || (D[k, l] += (1 / 2) * (num / den))
+        end
+        D[l, l] = 0.0
+        for k in 1:(l - 1)
+          D[k, l] = D[l, k] # leverage symmetry
+        end
+      end
+    end
+  end
+
+  D
 end
 
-function ghc_kernel_matrix(kern, λ, 𝒟)
+function ghc_standardize(𝒯)
+  cols = Tables.columns(𝒯)
+  vars = Tables.columnnames(cols)
+  zstd = map(vars) do var
+    z = Tables.getcolumn(cols, var)
+    μ = mean(z)
+    σ = std(z, mean=μ)
+    iszero(σ) ? zero(μ) : (z .- μ) ./ σ
+  end
+  (; zip(vars, zstd)...) |> Tables.materializer(𝒯)
+end
+
+function ghc_kern_matrix(kern, λ, 𝒟)
   # kernel function
   fn = KERNFUN[kern]
   Kλ(h) = fn(h, λ=λ)
@@ -114,75 +164,17 @@ function ghc_kernel_matrix(kern, λ, 𝒟)
   sparse(K)
 end
 
-function ghc_diff_matrices(𝒯)
-  # features must be standardized
-  𝒮 = ghc_standardize(𝒯)
-
-  # retrieve standardized features
-  cols = Tables.columns(𝒮)
-  vars = Tables.columnnames(cols)
-
-  # distance matrices
-  D = map(vars) do var
-    z = Tables.getcolumn(cols, var)
-    pairwise(Euclidean(), z)
-  end
-
-  # number of covariates
-  p = length(vars)
-
-  # one matrix per covariate pair
-  Δ = Matrix{Matrix{Float64}}(undef, p, p)
-  @inbounds for j in 1:p
-    for i in (j + 1):p
-      Δ[i, j] = D[i] .* D[j]
+function ghc_diff_matrix(Zi, Zj)
+  n = length(Zi)
+  Δ = zeros(n, n)
+  @inbounds for l in 1:n
+    for k in (l + 1):n
+      Δ[k, l] = (Zi[k] - Zi[l]) * (Zj[k] - Zj[l])
     end
-    Δ[j, j] = D[j] .* D[j]
-    for i in 1:(j - 1)
-      Δ[i, j] = Δ[j, i] # leverage the symmetry
+    Δ[l, l] = 0.0
+    for k in 1:(l - 1)
+      Δ[k, l] = Δ[l, k] # leverage symmetry
     end
   end
-
   Δ
-end
-
-function ghc_variogram_sum(K, Δ)
-  n = size(K, 1)
-  Γ = zeros(n, n)
-  for Δₒ in Δ # for each covariate pair
-    # update lower triangular matrix
-    @inbounds for j in 1:n
-      kj = K[:, j]
-      for i in (j + 1):n
-        ki = K[:, i]
-        Kij = kron(kj, ki) # faster ki * transpose(kj)
-        I, W = findnz(Kij)
-        num = sum(W .* Δₒ[I], init=0.0)
-        den = sum(W, init=0.0)
-        iszero(den) || (Γ[i, j] += (1 / 2) * (num / den))
-      end
-    end
-  end
-
-  # mirror upper triangular matrix
-  @inbounds for j in 1:n
-    Γ[j, j] = 0.0
-    for i in 1:(j - 1)
-      Γ[i, j] = Γ[j, i] # leverage the symmetry
-    end
-  end
-
-  Γ
-end
-
-function ghc_standardize(𝒯)
-  cols = Tables.columns(𝒯)
-  vars = Tables.columnnames(cols)
-  zstd = map(vars) do var
-    z = Tables.getcolumn(cols, var)
-    μ = mean(z)
-    σ = std(z, mean=μ)
-    iszero(σ) ? zero(μ) : (z .- μ) ./ σ
-  end
-  (; zip(vars, zstd)...) |> Tables.materializer(𝒯)
 end
