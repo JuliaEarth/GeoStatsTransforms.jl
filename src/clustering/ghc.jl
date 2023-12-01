@@ -93,7 +93,7 @@ function ghc_dissimilarity_matrix(geotable, kern, λ)
   Δ = ghc_diff_matrices(𝒯)
 
   # sum of cross-variograms
-  Γ = ghc_variogram_sum(K, Δ)
+  ghc_variogram_sum(K, Δ)
 end
 
 function ghc_kernel_matrix(kern, λ, 𝒟)
@@ -155,7 +155,7 @@ function ghc_variogram_sum(K, Δ)
       kj = K[:, j]
       for i in (j + 1):n
         ki = K[:, i]
-        Kij = kron(ki, kj)
+        Kij = kron(kj, ki) # faster ki * transpose(kj)
         I, W = findnz(Kij)
         num = sum(W .* Δₒ[I], init=0.0)
         den = sum(W, init=0.0)
