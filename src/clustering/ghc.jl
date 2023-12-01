@@ -64,7 +64,7 @@ function apply(transform::GHC, geotable)
   link = transform.link
 
   # all covariates must be continuous
-  values(geotable) |> SciTypeAssertion{Continuous}()
+  values(geotable) |> Assert(cond=x -> elscitype(x) <: Continuous)
 
   # dissimilarity matrix
   D = ghc_dissimilarity_matrix(geotable, kern, λ)
