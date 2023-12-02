@@ -9,8 +9,8 @@
 Interpolate geospatial data on given `domain` or set of geometries `g₁`, `g₂`, ..., `gₙ`,
 using geostatistical models `model₁`, ..., `modelₙ` for variables `vars₁`, ..., `varsₙ`.
 
-    InterpolateNeighbors(domain, model=IDW(); [parameters])
-    InterpolateNeighbors([g₁, g₂, ..., gₙ], model=IDW(); [parameters])
+    InterpolateNeighbors(domain, model=NN(); [parameters])
+    InterpolateNeighbors([g₁, g₂, ..., gₙ], model=NN(); [parameters])
   
 Interpolate geospatial data on given `domain` or set of geometries `g₁`, `g₂`, ..., `gₙ`,
 using geostatistical `model` for all variables.
@@ -79,7 +79,7 @@ InterpolateNeighbors(
 InterpolateNeighbors(geoms::AbstractVector{<:Geometry}, selectors, models; kwargs...) =
   InterpolateNeighbors(GeometrySet(geoms), selectors, models; kwargs...)
 
-InterpolateNeighbors(domain, model::GeoStatsModel=IDW(); kwargs...) =
+InterpolateNeighbors(domain, model::GeoStatsModel=NN(); kwargs...) =
   InterpolateNeighbors(domain, [AllSelector()], [model]; kwargs...)
 
 InterpolateNeighbors(domain, pairs::Pair{<:Any,<:GeoStatsModel}...; kwargs...) =

@@ -29,4 +29,10 @@
   gtb = georef((; T=[-272.15, -273.15, -272.15] * u"°C"), points)
   ngtb = gtb |> Interpolate(grid)
   @test unit(eltype(ngtb.T)) == u"K"
+
+  # default model is NN
+  pset = PointSet(rand(2, 3))
+  gtb = georef((; z=[1.0, 2.0, 3.0], c=["a", "b", "c"]), pset)
+  ngtb = gtb |> Interpolate(pset)
+  @test ngtb == gtb
 end

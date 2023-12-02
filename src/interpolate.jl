@@ -9,8 +9,8 @@
 Interpolate geospatial data on given `domain` or vector of geometries `[g₁, g₂, ..., gₙ]`,
 using geostatistical models `model₁`, ..., `modelₙ` for variables `vars₁`, ..., `varsₙ`.
 
-    Interpolate(domain, model=IDW(); [parameters])
-    Interpolate([g₁, g₂, ..., gₙ], model=IDW(); [parameters])
+    Interpolate(domain, model=NN(); [parameters])
+    Interpolate([g₁, g₂, ..., gₙ], model=NN(); [parameters])
   
 Interpolate geospatial data on given `domain` or vector of geometries `[g₁, g₂, ..., gₙ]`,
 using geostatistical `model` for all variables.
@@ -36,7 +36,7 @@ Interpolate(domain::Domain, selectors, models; point=true, prob=false) =
 Interpolate(geoms::AbstractVector{<:Geometry}, selectors, models; kwargs...) =
   Interpolate(GeometrySet(geoms), selectors, models; kwargs...)
 
-Interpolate(domain, model::GeoStatsModel=IDW(); kwargs...) =
+Interpolate(domain, model::GeoStatsModel=NN(); kwargs...) =
   Interpolate(domain, [AllSelector()], [model]; kwargs...)
 
 Interpolate(domain, pairs::Pair{<:Any,<:GeoStatsModel}...; kwargs...) =

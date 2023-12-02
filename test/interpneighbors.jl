@@ -34,11 +34,17 @@
   # units
   gtb = georef((; T=[1.0, 0.0, 1.0] * u"K"), points)
   grid = CartesianGrid(5, 5)
-  ngtb = gtb |> InterpolateNeighbors(grid)
+  ngtb = gtb |> InterpolateNeighbors(grid, IDW())
   @test unit(eltype(ngtb.T)) == u"K"
 
   # affine units
   gtb = georef((; T=[-272.15, -273.15, -272.15] * u"°C"), points)
-  ngtb = gtb |> InterpolateNeighbors(grid)
+  ngtb = gtb |> InterpolateNeighbors(grid, IDW())
   @test unit(eltype(ngtb.T)) == u"K"
+
+  # default model is NN
+  pset = PointSet(rand(2, 3))
+  gtb = georef((; z=[1.0, 2.0, 3.0], c=["a", "b", "c"]), pset)
+  ngtb = gtb |> InterpolateNeighbors(pset)
+  @test ngtb == gtb
 end
