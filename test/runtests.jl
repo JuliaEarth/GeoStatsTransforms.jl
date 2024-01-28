@@ -3,10 +3,10 @@ using Meshes
 using Tables
 using Unitful
 using GeoTables
-using Variography
+using GeoStatsFunctions
 using GeoStatsModels
-using GeoStatsImages
 using GeoStatsProcesses
+using GeoStatsImages
 using TableTransforms
 using CategoricalArrays
 using Statistics
