@@ -47,7 +47,7 @@ function apply(transform::Simulate, geotable::AbstractGeoTable)
   vars = Tables.columnnames(cols)
 
   (; domain, nreals, selectors, processes, rng, kwargs) = transform
-  ensembles = map(selectors, processes) do selector, process
+  ensembles = map(selectors, processes) do (selector, process)
     svars = selector(vars)
     data = geotable[:, svars]
     svars => rand(rng, process, domain, data, nreals; kwargs...)
