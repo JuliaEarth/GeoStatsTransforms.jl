@@ -54,13 +54,13 @@ function apply(transform::Simulate, geotable::AbstractGeoTable)
   end
 
   pad = ndigits(nreals)
-  newgeotable = mapreduce(hcat, ensembles) do (vars, ensemble)
-    mapreduce(hcat, 1:nreals) do i
-      gtb = ensemble[i]
-      pairs = (v => "$(v)_$(string(i; pad))" for v in vars)
-      gtb |> Rename(pairs...)
+  pairs = mapreduce(vcat, ensembles) do (vars, ensemble)
+    mapreduce(vcat, 1:nreals) do i
+      [Symbol(v, :_, string(i; pad)) => ensemble[v][i] for v in vars]
     end
   end
+
+  newgeotable = georef((; pairs...), domain)
 
   newgeotable, nothing
 end
