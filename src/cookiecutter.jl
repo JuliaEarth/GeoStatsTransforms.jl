@@ -14,12 +14,7 @@ Each process in the map is related to a value of the `parent` realization,
 therefore the values of the child variables will be chosen according
 to the values of the corresponding `parent` realization.
 
-## Parameters
-
-* `rng`      - Random number generator (default to `Random.default_rng()`)
-* `pool`     - Pool of worker processes (default to `[myid()]`)
-* `threads`  - Number of threads (default to `cpucores()`)
-* `progress` - Show progress bar (default to `true`)
+The `parameters` are forwarded to the `rand` method of the geostatistical processes.
 
 # Examples
 

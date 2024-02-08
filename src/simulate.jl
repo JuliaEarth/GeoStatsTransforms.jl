@@ -11,12 +11,7 @@
 Simulate `nreals` realizations of variables `varsᵢ` with geostatistical process
 `processᵢ` over given `domain` or vector of geometries `[g₁, g₂, ..., gₙ]`.
 
-## Parameters
-
-* `rng`      - Random number generator (default to `Random.default_rng()`)
-* `pool`     - Pool of worker processes (default to `[myid()]`)
-* `threads`  - Number of threads (default to `cpucores()`)
-* `progress` - Show progress bar (default to `true`)
+The `parameters` are forwarded to the `rand` method of the geostatistical processes.
 """
 struct Simulate{D<:Domain,R<:AbstractRNG,K} <: TableTransform
   domain::D
