@@ -25,7 +25,7 @@ Tables = "bd369af6-aec1-5ad0-b16a-f7cc5008161c"
 Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
 
 [compat]
-ArnoldiMethod = "0.2, 0.3"
+ArnoldiMethod = "0.2, 0.3, 0.4"
 CategoricalArrays = "0.10"
 Clustering = "0.15"
 ColumnSelectors = "0.1"
