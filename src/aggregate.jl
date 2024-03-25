@@ -6,14 +6,10 @@
     Aggregate(domain, var₁ => agg₁, var₂ => agg₂, ..., varₙ => aggₙ)
     Aggregate([g₁, g₂, ..., gₙ], var₁ => agg₁, var₂ => agg₂, ..., varₙ => aggₙ)
 
-Finds the locations on `domain` (or vector of geometries `[g₁, g₂, ..., gₙ]`)
-of each geotable row.
-
-Duplicates of a variable `varᵢ` are aggregated with
-aggregation function `aggᵢ`. If an aggregation function 
-is not defined for variable `varᵢ`, the default aggregation 
-function will be used. Default aggregation function is `mean` for
-continuous variables and `first` otherwise.
+Aggregate variables `var₁`, `var₂`, ..., `varₙ` over geospatial `domain` using
+aggregation functions `agg₁`, `agg₂`, ..., `aggₙ`. Alternatively, aggregate
+variables over geometries `g₁`, `g₂`, ..., `gₙ`. Default aggregation function
+is `mean` for continuous variables and `first` otherwise.
 
 # Examples
 
