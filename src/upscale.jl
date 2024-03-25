@@ -29,14 +29,14 @@ end
 
 function _targetgrid(grid::RectilinearGrid{Dim}, factors::Dims{Dim}) where {Dim}
   xyz = Meshes.xyz(grid)
-  dims = size(grid) .+ 1
+  dims = size(grid) .+ open(grid)
   ranges = ntuple(i -> 1:factors[i]:dims[i], Dim)
   RectilinearGrid(ntuple(i -> xyz[i][ranges[i]], Dim))
 end
 
 function _targetgrid(grid::StructuredGrid{Dim}, factors::Dims{Dim}) where {Dim}
   XYZ = Meshes.XYZ(grid)
-  dims = size(grid) .+ 1
+  dims = size(grid) .+ open(grid)
   ranges = ntuple(i -> 1:factors[i]:dims[i], Dim)
   StructuredGrid(ntuple(i -> XYZ[i][ranges...], Dim))
 end
