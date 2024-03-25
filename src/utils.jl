@@ -39,3 +39,16 @@ function _absunit(::Type{Q}, x) where {Q<:AffineQuantity}
   u = absoluteunit(unit(Q))
   map(v -> uconvert(u, v), x)
 end
+
+#---------
+# THREADS
+#---------
+
+function _tmap(f, itr)
+  nchunks = cld(length(itr), Threads.nthreads())
+  chunks = Iterators.partition(itr, nchunks)
+  tasks = map(chunks) do chunk
+    Threads.@spawn map(f, chunk)
+  end
+  mapreduce(fetch, vcat, tasks)
+end

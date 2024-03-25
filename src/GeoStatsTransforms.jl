@@ -42,6 +42,7 @@ include("interpolate.jl")
 include("simulate.jl")
 include("cookiecutter.jl")
 include("uniquecoords.jl")
+include("aggregate.jl")
 include("clustering.jl")
 include("rasterize.jl")
 include("potrace.jl")
@@ -54,6 +55,7 @@ export
   Simulate,
   CookieCutter,
   UniqueCoords,
+  Aggregate,
   Rasterize,
   Potrace,
   Detrend,
