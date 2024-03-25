@@ -1,5 +1,5 @@
 @testset "UniqueCoords" begin
-  @test isrevertible(UniqueCoords()) == false
+  @test !isrevertible(UniqueCoords())
 
   X = [i * j for i in 1:2, j in 1:1_000_000]
   z = rand(1_000_000)

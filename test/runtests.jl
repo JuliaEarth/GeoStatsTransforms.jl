@@ -26,6 +26,7 @@ testfiles = [
   "simulate.jl",
   "cookiecutter.jl",
   "uniquecoords.jl",
+  "aggregate.jl",
   "clustering.jl",
   "rasterize.jl",
   "potrace.jl",
