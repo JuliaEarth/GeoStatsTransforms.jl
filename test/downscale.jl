@@ -1,6 +1,6 @@
 @testset "Downscale" begin
   @test !isrevertible(Downscale(2, 2))
-  
+
   grid = CartesianGrid((0.0, 0.0), (10.0, 10.0), dims=(10, 10))
   tgrid = CartesianGrid((0.0, 0.0), (10.0, 10.0), dims=(20, 20))
   gtb = georef((a=rand(Float64, 100), b=rand(Int, 100)), grid)
