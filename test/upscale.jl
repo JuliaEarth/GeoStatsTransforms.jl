@@ -48,11 +48,11 @@
   ngtb = gtb |> Upscale(2, 4)
   @test domain(ngtb) == tgrid
   @test ngtb[(1, 1), :a] == mean(gtb[(1:2, 1:4), :a])
-  @test ngtb[(1, 10), :a] == mean(gtb[(1:2, 17:20), :a])
+  @test ngtb[(1, 5), :a] == mean(gtb[(1:2, 17:20), :a])
   @test ngtb[(10, 1), :a] == mean(gtb[(19:20, 1:4), :a])
-  @test ngtb[(10, 10), :a] == mean(gtb[(19:20, 17:20), :a])
+  @test ngtb[(10, 5), :a] == mean(gtb[(19:20, 17:20), :a])
   @test ngtb[(1, 1), :b] == first(gtb[(1:2, 1:4), :b])
-  @test ngtb[(1, 10), :b] == first(gtb[(1:2, 17:20), :b])
+  @test ngtb[(1, 5), :b] == first(gtb[(1:2, 17:20), :b])
   @test ngtb[(10, 1), :b] == first(gtb[(19:20, 1:4), :b])
-  @test ngtb[(10, 10), :b] == first(gtb[(19:20, 17:20), :b])
+  @test ngtb[(10, 5), :b] == first(gtb[(19:20, 17:20), :b])
 end
