@@ -28,6 +28,7 @@ testfiles = [
   "uniquecoords.jl",
   "aggregate.jl",
   "transfer.jl",
+  "upscale.jl",
   "clustering.jl",
   "rasterize.jl",
   "potrace.jl",
