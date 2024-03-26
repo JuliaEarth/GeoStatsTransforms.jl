@@ -3,9 +3,12 @@
 # ------------------------------------------------------------------
 
 """
-    Upscale(factors...)
+    Upscale(f1, f2, ...)
 
-Upscale each dimension of the grid by `factors`.
+Upscale each dimension of the grid by given factors `f1, f2, ...`.
+
+This transform is equivalent to skipping entries of the grid
+as in the pseudo-code `grid[1:f1:end, 1:f2:end, ...]`.
 
 # Examples
 
