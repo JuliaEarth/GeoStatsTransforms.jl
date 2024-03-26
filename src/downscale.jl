@@ -35,11 +35,11 @@ function _downscale(grid::RectilinearGrid{Dim}, factors::Dims{Dim}) where {Dim}
 end
 
 function _xyz(x, f)
-  newx = mapreduce(vcat, 1:(length(x) - 1)) do i
+  x′ = mapreduce(vcat, 1:(length(x) - 1)) do i
     range(x[i], x[i + 1], f + 1)[begin:(end - 1)]
   end
-  push!(newx, last(x))
-  newx
+  push!(x′, last(x))
+  x′
 end
 
 function apply(transform::Downscale, geotable::AbstractGeoTable)
