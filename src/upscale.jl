@@ -5,7 +5,7 @@
 """
     Upscale(factors...)
 
-TODO
+Upscale each dimension of the grid by `factors`.
 
 # Examples
 
@@ -14,7 +14,7 @@ Upscale(2, 2)
 Upscale(3, 3, 2)
 ```
 """
-struct Upscale{Dim,S<:ColumnSelector}
+struct Upscale{Dim} <: TableTransform
   factors::Dims{Dim}
 end
 
