@@ -30,11 +30,11 @@ function _downscale(grid::CartesianGrid{Dim}, factors::Dims{Dim}) where {Dim}
 end
 
 function _downscale(grid::RectilinearGrid{Dim}, factors::Dims{Dim}) where {Dim}
-  xyz = _genverts.(Meshes.xyz(grid), factors)
+  xyz = _xyz.(Meshes.xyz(grid), factors)
   RectilinearGrid(xyz)
 end
 
-function _genverts(x, f)
+function _xyz(x, f)
   newx = mapreduce(vcat, 1:(length(x) - 1)) do i
     range(x[i], x[i + 1], f + 1)[begin:(end - 1)]
   end
