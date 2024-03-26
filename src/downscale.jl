@@ -36,10 +36,7 @@ end
 
 function _genverts(x, f)
   newx = mapreduce(vcat, 1:(length(x) - 1)) do i
-    a = x[i]
-    b = x[i + 1]
-    d = b - a
-    [a; [a + (k * d / f) for k in 1:(f - 1)]]
+    range(x[i], x[i + 1], f + 1)[begin:(end - 1)]
   end
   push!(newx, last(x))
   newx
