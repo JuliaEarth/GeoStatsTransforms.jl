@@ -37,14 +37,16 @@ function _upscale(grid::RectilinearGrid{Dim}, factors::Dims{Dim}) where {Dim}
   xyz = Meshes.xyz(grid)
   dims = size(grid) .+ .!isperiodic(grid)
   ranges = ntuple(i -> 1:factors[i]:dims[i], Dim)
-  RectilinearGrid(ntuple(i -> xyz[i][ranges[i]], Dim))
+  xyz′ = ntuple(i -> xyz[i][ranges[i]], Dim)
+  RectilinearGrid(xyz′)
 end
 
 function _upscale(grid::StructuredGrid{Dim}, factors::Dims{Dim}) where {Dim}
   XYZ = Meshes.XYZ(grid)
   dims = size(grid) .+ .!isperiodic(grid)
   ranges = ntuple(i -> 1:factors[i]:dims[i], Dim)
-  StructuredGrid(ntuple(i -> XYZ[i][ranges...], Dim))
+  XYZ′ = ntuple(i -> XYZ[i][ranges...], Dim)
+  StructuredGrid(XYZ′)
 end
 
 function apply(transform::Upscale, geotable::AbstractGeoTable)

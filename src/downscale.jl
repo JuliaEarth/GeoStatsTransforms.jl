@@ -29,6 +29,20 @@ function _downscale(grid::CartesianGrid{Dim}, factors::Dims{Dim}) where {Dim}
   CartesianGrid(minimum(grid), maximum(grid); dims)
 end
 
+function _downscale(grid::RectilinearGrid{Dim}, factors::Dims{Dim}) where {Dim}
+  xyz = Meshes.xyz(grid)
+  xyz′ = ntuple(i -> _refine(xyz[i], factors[i]), Dim)
+  RectilinearGrid(xyz′)
+end
+
+function _refine(x, f)
+  x′ = mapreduce(vcat, 1:(length(x) - 1)) do i
+    range(x[i], x[i + 1], f + 1)[begin:(end - 1)]
+  end
+  push!(x′, last(x))
+  x′
+end
+
 function apply(transform::Downscale, geotable::AbstractGeoTable)
   grid = domain(geotable)
   tgrid = _downscale(grid, transform.factors)
