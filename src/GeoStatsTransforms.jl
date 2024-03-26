@@ -45,6 +45,7 @@ include("uniquecoords.jl")
 include("aggregate.jl")
 include("transfer.jl")
 include("upscale.jl")
+include("downscale.jl")
 include("clustering.jl")
 include("rasterize.jl")
 include("potrace.jl")
@@ -60,6 +61,7 @@ export
   Aggregate,
   Transfer,
   Upscale,
+  Downscale,
   Rasterize,
   Potrace,
   Detrend,

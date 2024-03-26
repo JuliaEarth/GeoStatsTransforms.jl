@@ -29,6 +29,7 @@ testfiles = [
   "aggregate.jl",
   "transfer.jl",
   "upscale.jl",
+  "downscale.jl",
   "clustering.jl",
   "rasterize.jl",
   "potrace.jl",
