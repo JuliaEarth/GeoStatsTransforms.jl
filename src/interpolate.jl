@@ -36,8 +36,7 @@ Interpolate(domain::Domain, selectors, models; point=true, prob=false) =
 Interpolate(geoms::AbstractVector{<:Geometry}, selectors, models; kwargs...) =
   Interpolate(GeometrySet(geoms), selectors, models; kwargs...)
 
-Interpolate(domain, model::GeoStatsModel=NN(); kwargs...) =
-  Interpolate(domain, [AllSelector()], [model]; kwargs...)
+Interpolate(domain, model::GeoStatsModel=NN(); kwargs...) = Interpolate(domain, [AllSelector()], [model]; kwargs...)
 
 Interpolate(domain, pairs::Pair{<:Any,<:GeoStatsModel}...; kwargs...) =
   Interpolate(domain, selector.(first.(pairs)), last.(pairs); kwargs...)
