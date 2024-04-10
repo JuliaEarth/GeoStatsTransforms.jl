@@ -82,7 +82,7 @@ isrevertible(::Type{<:InterpolateNaN}) = false
 function apply(transform::InterpolateNaN, geotable::AbstractGeoTable)
   selectors = transform.selectors
   models = transform.models
-  kwrags = (
+  kwargs = (
     minneighbors=transform.minneighbors,
     maxneighbors=transform.maxneighbors,
     neighborhood=transform.neighborhood,
@@ -91,7 +91,7 @@ function apply(transform::InterpolateNaN, geotable::AbstractGeoTable)
     prob=transform.prob
   )
 
-  newgeotable = _interp(geotable, selectors, models, DropNaN(); kwrags...)
+  newgeotable = _interp(geotable, selectors, models, DropNaN(); kwargs...)
 
   newgeotable, nothing
 end
