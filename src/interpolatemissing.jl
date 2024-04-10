@@ -3,19 +3,18 @@
 # ------------------------------------------------------------------
 
 """
-    InterpolateNeighbors(domain, vars₁ => model₁, ..., varsₙ => modelₙ; [parameters])
-    InterpolateNeighbors([g₁, g₂, ..., gₙ], vars₁ => model₁, ..., varsₙ => modelₙ; [parameters])
+    InterpolateMissing(vars₁ => model₁, ..., varsₙ => modelₙ; [parameters])
+    InterpolateMissing(vars₁ => model₁, ..., varsₙ => modelₙ; [parameters])
   
-Interpolate geospatial data on given `domain` or set of geometries `g₁`, `g₂`, ..., `gₙ`,
-using geostatistical models `model₁`, ..., `modelₙ` for variables `vars₁`, ..., `varsₙ`.
+Interpolate geospatial data on its own domain, using geostatistical models `model₁`, ..., `modelₙ` 
+and non-missing values of the variables `vars₁`, ..., `varsₙ`.
 
-    InterpolateNeighbors(domain, model=NN(); [parameters])
-    InterpolateNeighbors([g₁, g₂, ..., gₙ], model=NN(); [parameters])
+    InterpolateMissing(model=NN(); [parameters])
+    InterpolateMissing(model=NN(); [parameters])
   
-Interpolate geospatial data on given `domain` or set of geometries `g₁`, `g₂`, ..., `gₙ`,
-using geostatistical `model` for all variables.
+Interpolate geospatial data on its own domain, using geostatistical `model` and non-missing values of all variables.
 
-Unlike [`Interpolate`](@ref), this transform uses neighbor search methods to
+Just like [`InterpolateNeighbors`](@ref), this transform uses neighbor search methods to
 fit geostatistical models at each interpolation location with a reduced number
 of measurements.
 
@@ -40,10 +39,9 @@ Two `neighborhood` search methods are available:
 * If a `neighborhood` is not provided, the prediction is performed 
   using `maxneighbors` nearest neighbors according to `distance`.
 
-See also [`Interpolate`](@ref), [`InterpolateMissing`](@ref).
+See also [`InterpolateNeighbors`](@ref), [`Interpolate`](@ref).
 """
-struct InterpolateNeighbors{D<:Domain,N,M} <: TableTransform
-  domain::D
+struct InterpolateMissing{N,M} <: TableTransform
   selectors::Vector{ColumnSelector}
   models::Vector{GeoStatsModel}
   minneighbors::Int
@@ -54,8 +52,7 @@ struct InterpolateNeighbors{D<:Domain,N,M} <: TableTransform
   prob::Bool
 end
 
-InterpolateNeighbors(
-  domain::Domain,
+InterpolateMissing(
   selectors,
   models;
   minneighbors=1,
@@ -64,8 +61,7 @@ InterpolateNeighbors(
   distance=Euclidean(),
   point=true,
   prob=false
-) = InterpolateNeighbors(
-  domain,
+) = InterpolateMissing(
   collect(ColumnSelector, selectors),
   collect(GeoStatsModel, models),
   minneighbors,
@@ -76,23 +72,19 @@ InterpolateNeighbors(
   prob
 )
 
-InterpolateNeighbors(geoms::AbstractVector{<:Geometry}, selectors, models; kwargs...) =
-  InterpolateNeighbors(GeometrySet(geoms), selectors, models; kwargs...)
+InterpolateMissing(model::GeoStatsModel=NN(); kwargs...) = InterpolateMissing([AllSelector()], [model]; kwargs...)
 
-InterpolateNeighbors(domain, model::GeoStatsModel=NN(); kwargs...) =
-  InterpolateNeighbors(domain, [AllSelector()], [model]; kwargs...)
+InterpolateMissing(pairs::Pair{<:Any,<:GeoStatsModel}...; kwargs...) =
+  InterpolateMissing(selector.(first.(pairs)), last.(pairs); kwargs...)
 
-InterpolateNeighbors(domain, pairs::Pair{<:Any,<:GeoStatsModel}...; kwargs...) =
-  InterpolateNeighbors(domain, selector.(first.(pairs)), last.(pairs); kwargs...)
+isrevertible(::Type{<:InterpolateMissing}) = false
 
-isrevertible(::Type{<:InterpolateNeighbors}) = false
-
-function apply(transform::InterpolateNeighbors, geotable::AbstractGeoTable)
+function apply(transform::InterpolateMissing, geotable::AbstractGeoTable)
   tab = values(geotable)
+  dom = domain(geotable)
   cols = Tables.columns(tab)
   vars = Tables.columnnames(cols)
 
-  domain = transform.domain
   selectors = transform.selectors
   models = transform.models
   minneighbors = transform.minneighbors
@@ -104,8 +96,10 @@ function apply(transform::InterpolateNeighbors, geotable::AbstractGeoTable)
 
   interps = map(selectors, models) do selector, model
     svars = selector(vars)
-    data = geotable[:, svars]
-    fitpredict(model, data, domain; point, prob, minneighbors, maxneighbors, neighborhood, distance)
+    mapreduce(hcat, svars) do var
+      data = geotable[:, [var]] |> DropMissing()
+      fitpredict(model, data, dom; point, prob, minneighbors, maxneighbors, neighborhood, distance)
+    end
   end
 
   newgeotable = reduce(hcat, interps)
