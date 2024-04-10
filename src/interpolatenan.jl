@@ -3,16 +3,16 @@
 # ------------------------------------------------------------------
 
 """
-    InterpolateMissing(vars₁ => model₁, ..., varsₙ => modelₙ; [parameters])
-    InterpolateMissing(vars₁ => model₁, ..., varsₙ => modelₙ; [parameters])
+    InterpolateNaN(vars₁ => model₁, ..., varsₙ => modelₙ; [parameters])
+    InterpolateNaN(vars₁ => model₁, ..., varsₙ => modelₙ; [parameters])
   
 Interpolate geospatial data on its own domain, using geostatistical models `model₁`, ..., `modelₙ` 
-and non-missing values of the variables `vars₁`, ..., `varsₙ`.
+and non-NaN values of the variables `vars₁`, ..., `varsₙ`.
 
-    InterpolateMissing(model=NN(); [parameters])
-    InterpolateMissing(model=NN(); [parameters])
+    InterpolateNaN(model=NN(); [parameters])
+    InterpolateNaN(model=NN(); [parameters])
   
-Interpolate geospatial data on its own domain, using geostatistical `model` and non-missing values of all variables.
+Interpolate geospatial data on its own domain, using geostatistical `model` and non-NaN values of all variables.
 
 Just like [`InterpolateNeighbors`](@ref), this transform uses neighbor search methods to
 fit geostatistical models at each interpolation location with a reduced number
@@ -39,9 +39,9 @@ Two `neighborhood` search methods are available:
 * If a `neighborhood` is not provided, the prediction is performed 
   using `maxneighbors` nearest neighbors according to `distance`.
 
-See also [`InterpolateNaN`](@ref), [`InterpolateNeighbors`](@ref), [`Interpolate`](@ref).
+See also [`InterpolateMissing`](@ref), [`InterpolateNeighbors`](@ref), [`Interpolate`](@ref).
 """
-struct InterpolateMissing{N,M} <: TableTransform
+struct InterpolateNaN{N,M} <: TableTransform
   selectors::Vector{ColumnSelector}
   models::Vector{GeoStatsModel}
   minneighbors::Int
@@ -52,7 +52,7 @@ struct InterpolateMissing{N,M} <: TableTransform
   prob::Bool
 end
 
-InterpolateMissing(
+InterpolateNaN(
   selectors,
   models;
   minneighbors=1,
@@ -61,7 +61,7 @@ InterpolateMissing(
   distance=Euclidean(),
   point=true,
   prob=false
-) = InterpolateMissing(
+) = InterpolateNaN(
   collect(ColumnSelector, selectors),
   collect(GeoStatsModel, models),
   minneighbors,
@@ -72,34 +72,17 @@ InterpolateMissing(
   prob
 )
 
-InterpolateMissing(model::GeoStatsModel=NN(); kwargs...) = InterpolateMissing([AllSelector()], [model]; kwargs...)
+InterpolateNaN(model::GeoStatsModel=NN(); kwargs...) = InterpolateNaN([AllSelector()], [model]; kwargs...)
 
-InterpolateMissing(pairs::Pair{<:Any,<:GeoStatsModel}...; kwargs...) =
-  InterpolateMissing(selector.(first.(pairs)), last.(pairs); kwargs...)
+InterpolateNaN(pairs::Pair{<:Any,<:GeoStatsModel}...; kwargs...) =
+  InterpolateNaN(selector.(first.(pairs)), last.(pairs); kwargs...)
 
-isrevertible(::Type{<:InterpolateMissing}) = false
+isrevertible(::Type{<:InterpolateNaN}) = false
 
-function _interp(geotable, selectors, models, droptrans; kwargs...)
-  tab = values(geotable)
-  dom = domain(geotable)
-  cols = Tables.columns(tab)
-  vars = Tables.columnnames(cols)
-
-  interps = map(selectors, models) do selector, model
-    svars = selector(vars)
-    mapreduce(hcat, svars) do var
-      data = geotable[:, [var]] |> droptrans
-      fitpredict(model, data, dom; kwargs...)
-    end
-  end
-
-  reduce(hcat, interps)
-end
-
-function apply(transform::InterpolateMissing, geotable::AbstractGeoTable)
+function apply(transform::InterpolateNaN, geotable::AbstractGeoTable)
   selectors = transform.selectors
   models = transform.models
-  kwargs = (
+  kwrags = (
     minneighbors=transform.minneighbors,
     maxneighbors=transform.maxneighbors,
     neighborhood=transform.neighborhood,
@@ -108,7 +91,7 @@ function apply(transform::InterpolateMissing, geotable::AbstractGeoTable)
     prob=transform.prob
   )
 
-  newgeotable = _interp(geotable, selectors, models, DropMissing(); kwargs...)
+  newgeotable = _interp(geotable, selectors, models, DropNaN(); kwrags...)
 
   newgeotable, nothing
 end

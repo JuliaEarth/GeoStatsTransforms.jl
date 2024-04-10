@@ -24,6 +24,7 @@ testfiles = [
   "interpneighbors.jl",
   "interpolate.jl",
   "interpolatemissing.jl",
+  "interpolatenan.jl",
   "simulate.jl",
   "cookiecutter.jl",
   "uniquecoords.jl",

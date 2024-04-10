@@ -40,7 +40,7 @@ Two `neighborhood` search methods are available:
 * If a `neighborhood` is not provided, the prediction is performed 
   using `maxneighbors` nearest neighbors according to `distance`.
 
-See also [`Interpolate`](@ref), [`InterpolateMissing`](@ref).
+See also [`Interpolate`](@ref), [`InterpolateMissing`](@ref), [`InterpolateNaN`](@ref).
 """
 struct InterpolateNeighbors{D<:Domain,N,M} <: TableTransform
   domain::D

@@ -40,6 +40,7 @@ include("utils.jl")
 include("interpneighbors.jl")
 include("interpolate.jl")
 include("interpolatemissing.jl")
+include("interpolatenan.jl")
 include("simulate.jl")
 include("cookiecutter.jl")
 include("uniquecoords.jl")
@@ -57,6 +58,7 @@ export
   InterpolateNeighbors,
   Interpolate,
   InterpolateMissing,
+  InterpolateNaN,
   Simulate,
   CookieCutter,
   UniqueCoords,
