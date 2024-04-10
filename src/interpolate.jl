@@ -20,7 +20,7 @@ using geostatistical `model` for all variables.
 * `point` - Perform interpolation on point support (default to `true`)
 * `prob`  - Perform probabilistic interpolation (default to `false`)
 
-See also [`InterpolateNeighbors`](@ref).
+See also [`InterpolateNeighbors`](@ref), [`InterpolateMissing`](@ref).
 """
 struct Interpolate{D<:Domain} <: TableTransform
   domain::D
