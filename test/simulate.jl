@@ -14,7 +14,7 @@
   @test nrow(sim) == 400
   @test propertynames(sim) == [:a_01, :a_02, :a_03, :a_04, :a_05, :a_06, :a_07, :a_08, :a_09, :a_10, :geometry]
 
-  pts = rand(Point2, 200)
+  pts = [rand(Point{2}) for _ in 1:200]
   sim = gtb |> Simulate(pts, 3, [:b, :c] => GaussianProcess())
   @test nrow(sim) == 200
   @test propertynames(sim) == [:b_1, :c_1, :b_2, :c_2, :b_3, :c_3, :geometry]

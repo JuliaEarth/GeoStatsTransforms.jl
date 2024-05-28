@@ -19,7 +19,7 @@ are nearby samples.
 ## Parameters
 
 * `k`    - Approximate number of clusters
-* `λ`    - Approximate range of kernel function
+* `λ`    - Approximate range of kernel function in length units
 * `kern` - Kernel function (`:uniform`, `:triangular` or `:epanechnikov`)
 * `link` - Linkage function (`:single`, `:average`, `:complete`, `:ward` or `:ward_presquared`)
 * `as`   - Cluster column name
@@ -39,22 +39,25 @@ are nearby samples.
   or `λ=2.0` but the problem starts to become computationally unfeasible
   around `λ=10.0` due to the density of points.
 """
-struct GHC <: ClusteringTransform
+struct GHC{ℒ<:Len} <: ClusteringTransform
   k::Int
-  λ::Float64
+  λ::ℒ
   kern::Symbol
   link::Symbol
   as::Symbol
+  GHC(k, λ::ℒ, kern, link, as) where {ℒ<:Len} = new{float(ℒ)}(k, λ, kern, link, as)
 end
 
-function GHC(k, λ; kern=:epanechnikov, link=:ward, as=:CLUSTER)
+function GHC(k, λ::Len; kern=:epanechnikov, link=:ward, as=:CLUSTER)
   # sanity checks
   @assert k > 0 "invalid number of clusters"
-  @assert λ > 0 "invalid kernel range"
+  @assert λ > zero(λ) "invalid kernel range"
   @assert kern ∈ [:uniform, :triangular, :epanechnikov] "invalid kernel function"
   @assert link ∈ [:single, :average, :complete, :ward, :ward_presquared] "invalid linkage function"
   GHC(k, λ, kern, link, Symbol(as))
 end
+
+GHC(k, λ; kwargs...) = GHC(k, _addunit(λ, u"m"); kwargs...)
 
 function apply(transform::GHC, geotable)
   # GHC parameters
@@ -119,8 +122,8 @@ function ghc_dissimilarity_matrix(geotable, kern, λ)
           Kk = K[:, k]
           Kkl = kron(Kl, Kk) # faster Kk * transpose(Kl)
           I, W = findnz(Kkl)
-          num = sum(W .* Δ[I], init=0.0)
-          den = sum(W, init=0.0)
+          num = sum(W .* Δ[I], init=zero(eltype(W)))
+          den = sum(W, init=zero(eltype(W)))
           iszero(den) || (D[k, l] += (1 / 2) * (num / den))
         end
         D[l, l] = 0.0
@@ -152,13 +155,13 @@ function ghc_kern_matrix(kern, λ, 𝒟)
   Kλ(h) = fn(h, λ=λ)
 
   # collect coordinates
-  coords = [coordinates(centroid(𝒟, i)) for i in 1:nelements(𝒟)]
+  coords = [to(centroid(𝒟, i)) for i in 1:nelements(𝒟)]
 
   # lag matrix
   H = pairwise(Euclidean(), coords)
 
   # kernel matrix
-  K = Kλ.(H)
+  K = ustrip.(Kλ.(H))
 
   # return sparse version
   sparse(K)

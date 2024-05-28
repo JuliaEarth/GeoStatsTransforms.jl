@@ -75,7 +75,7 @@
     z = LinRange(-44.90690201082941, 351.4007207008662, 1200)
     𝒟 = PointSet(collect(zip(x, y, z)))
     s = GeoStatsTransforms.slic_spacing(𝒟, SLIC(k, m))
-    lo, up = coordinates.(extrema(boundingbox(𝒟)))
+    lo, up = to.(extrema(boundingbox(𝒟)))
     ranges = [(l + sᵢ / 2):sᵢ:u for (l, sᵢ, u) in zip(lo, s, up)]
     @test !isempty(Iterators.product(ranges...))
     c = GeoStatsTransforms.slic_initialization(𝒟, s)

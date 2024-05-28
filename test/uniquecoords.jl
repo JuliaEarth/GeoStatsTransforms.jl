@@ -1,13 +1,13 @@
 @testset "UniqueCoords" begin
   @test !isrevertible(UniqueCoords())
 
-  X = [i * j for i in 1:2, j in 1:1_000_000]
+  X = Float64[i * j for i in 1:2, j in 1:1_000_000] * u"m"
   z = rand(1_000_000)
   d = georef((z=[z; z],), [X X])
   u = d |> UniqueCoords()
   du = domain(u)
   p = [centroid(du, i) for i in 1:nelements(du)]
-  U = reduce(hcat, coordinates.(p))
+  U = reduce(hcat, to.(p))
   @test nelements(du) == 1_000_000
   @test Set(eachcol(U)) == Set(eachcol(X))
 

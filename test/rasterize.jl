@@ -3,7 +3,7 @@
 
   a = [1, 2, 3, 4, 5]
   b = [1.1, 2.2, 3.3, 4.4, 5.5]
-  pts = Point2[(3, 9), (7, 8), (8, 5), (5, 4), (1, 5)]
+  pts = [(3, 9), (7, 8), (8, 5), (5, 4), (1, 5)]
   seg1 = Segment(pts[1], pts[2])
   seg2 = Segment(pts[2], pts[3])
   seg3 = Segment(pts[3], pts[4])
@@ -84,10 +84,10 @@
   ngtb, cache = apply(trans, gtb)
   rgtb = revert(trans, ngtb, cache)
   inds = filter(!iszero, unique(cache))
-  @test isapprox(area(gtb.geometry[inds[1]]), area(rgtb.geometry[1]), atol=0.5)
-  @test isapprox(area(gtb.geometry[inds[2]]), area(rgtb.geometry[2]), atol=0.5)
-  @test isapprox(area(gtb.geometry[inds[3]]), area(rgtb.geometry[3]), atol=0.5)
-  @test isapprox(area(gtb.geometry[inds[4]]), area(rgtb.geometry[4]), atol=0.5)
+  @test isapprox(area(gtb.geometry[inds[1]]), area(rgtb.geometry[1]), atol=0.5u"m^2")
+  @test isapprox(area(gtb.geometry[inds[2]]), area(rgtb.geometry[2]), atol=0.5u"m^2")
+  @test isapprox(area(gtb.geometry[inds[3]]), area(rgtb.geometry[3]), atol=0.5u"m^2")
+  @test isapprox(area(gtb.geometry[inds[4]]), area(rgtb.geometry[4]), atol=0.5u"m^2")
   # geotable with "mask" column
   gtb = georef((; z=1:4, mask=4:-1:1), [poly1, poly2, poly3, poly4])
   trans = Rasterize(10, 10)

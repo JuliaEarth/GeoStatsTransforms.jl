@@ -51,7 +51,7 @@ function apply(transform::UniqueCoords, geotable::AbstractGeoTable)
 
   # group locations with the same coordinates
   pts = [centroid(dom, i) for i in 1:nelements(dom)]
-  X = reduce(hcat, coordinates.(pts))
+  X = reduce(hcat, to.(pts))
   uinds = _uniqueinds(X, 2)
   ginds = unique(uinds)
   groups = Dict(ind => Int[] for ind in ginds)
