@@ -131,7 +131,7 @@ function slic_initialization(𝒟, s)
 
   # bounding box properties
   bbox = boundingbox(𝒟)
-  lo, up = coordinates.(extrema(bbox))
+  lo, up = to.(extrema(bbox))
 
   # cluster centers
   clusters = Vector{Int}()
@@ -152,8 +152,8 @@ function slic_assignment!(geotable, searcher, w, m, s, c, l, d)
     inds = search(centroid(𝒟, cₖ), searcher)
 
     # distance between coordinates
-    X = (coordinates(centroid(𝒟, i)) for i in inds)
-    xₖ = [coordinates(centroid(𝒟, cₖ))]
+    X = (to(centroid(𝒟, i)) for i in inds)
+    xₖ = [to(centroid(𝒟, cₖ))]
     dₛ = pairwise(Euclidean(), X, xₖ)
 
     # distance between variables
@@ -179,7 +179,7 @@ function slic_update!(geotable, c, l)
   𝒟 = domain(geotable)
   for k in eachindex(c)
     inds = findall(isequal(k), l)
-    X = (coordinates(centroid(𝒟, i)) for i in inds)
+    X = (to(centroid(𝒟, i)) for i in inds)
     xₖ = [mean(X)]
     dₛ = pairwise(Euclidean(), X, xₖ)
     @inbounds c[k] = inds[argmin(vec(dₛ))]

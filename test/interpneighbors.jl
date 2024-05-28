@@ -1,7 +1,7 @@
 @testset "InterpolateNeighbors" begin
   @test !isrevertible(InterpolateNeighbors(CartesianGrid(2, 2)))
 
-  points = rand(Point2, 3)
+  points = [rand(Point{2}) for _ in 1:3]
   gtb = georef((a=[1, 2, 3], b=[4, 5, 6]), points)
   ngtb = gtb |> InterpolateNeighbors(points, IDW(), maxneighbors=3)
   @test ngtb.a == gtb.a

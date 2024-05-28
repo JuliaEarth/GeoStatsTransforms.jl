@@ -135,7 +135,7 @@ function trend(data, vars::AbstractVector{Symbol}; degree=1)
   cols = Tables.columns(𝒯)
 
   # build polynomial drift terms
-  coords(𝒟, i) = coordinates(centroid(𝒟, i))
+  coords(𝒟, i) = ustrip.(to(centroid(𝒟, i)))
   xs = (coords(𝒟, i) for i in 1:nelements(𝒟))
   F = polymat(xs, degree)
 

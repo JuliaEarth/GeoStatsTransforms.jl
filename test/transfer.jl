@@ -1,8 +1,8 @@
 @testset "Transfer" begin
   @test !isrevertible(Transfer(CartesianGrid(10, 10)))
 
-  pts1 = Point2[(1, 1), (7, 1), (4, 4)]
-  pts2 = Point2[(5, 4), (3, 4), (0, 1), (7, 0), (7, 2)]
+  pts1 = Point.([(1, 1), (7, 1), (4, 4)])
+  pts2 = Point.([(5, 4), (3, 4), (0, 1), (7, 0), (7, 2)])
   gtb = georef((a=rand(Float64, 3), b=rand(Int, 3)), pts1)
   ngtb = gtb |> Transfer(pts2)
   @test domain(ngtb) == PointSet(pts2)

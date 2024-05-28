@@ -21,6 +21,11 @@ end
 # UNITS
 #-------
 
+const Len{T} = Quantity{T,u"𝐋"}
+
+_addunit(x::Number, u) = x * u
+_addunit(::Quantity, _) = throw(ArgumentError("invalid units, please check the documentation"))
+
 function _adjustunits(geotable::AbstractGeoTable)
   dom = domain(geotable)
   tab = values(geotable)
