@@ -161,7 +161,7 @@ function ghc_kern_matrix(kern, λ, 𝒟)
   H = pairwise(Euclidean(), coords)
 
   # kernel matrix
-  K = Kλ.(H)
+  K = map(ustrip ∘ Kλ, H)
 
   # return sparse version
   sparse(K)
