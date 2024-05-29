@@ -1,7 +1,7 @@
 @testset "Interpolate" begin
   @test !isrevertible(Interpolate(CartesianGrid(2, 2)))
 
-  points = [rand(Point{2}) for _ in 1:3]
+  points = rand(Point{2}, 3)
   gtb = georef((a=[1, 2, 3], b=[4, 5, 6]), points)
   ngtb = gtb |> Interpolate(points, IDW())
   @test ngtb.a == gtb.a

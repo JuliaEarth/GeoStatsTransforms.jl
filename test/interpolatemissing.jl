@@ -41,7 +41,7 @@
 
   # default model is NN
   Random.seed!(2021)
-  pset = PointSet([rand(Point{2}) for _ in 1:5])
+  pset = PointSet(rand(Point{2}, 5))
   gtb = georef((; z=[1.0, missing, 2.0, missing, 3.0], c=[missing, "a", "b", "c", missing]), pset)
   ngtb = gtb |> InterpolateMissing()
   @test ngtb.z == [1.0, 3.0, 2.0, 1.0, 3.0]

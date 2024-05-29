@@ -13,7 +13,7 @@ Alternatively, transfer variables to geometries `g₁`, `g₂`, ..., `gₙ`.
 
 ```julia
 Transfer(CartesianGrid(10, 10))
-Transfer([rand(Point{2}) for _ in 1:100])
+Transfer(rand(Point{2}, 100))
 ```
 """
 struct Transfer{D<:Domain} <: TableTransform
