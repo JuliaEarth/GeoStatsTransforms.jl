@@ -37,10 +37,10 @@ import TableTransforms: isrevertible
 
 include("utils.jl")
 
-include("interpneighbors.jl")
 include("interpolate.jl")
-include("interpolatemissing.jl")
-include("interpolatenan.jl")
+include("interpneighbors.jl")
+include("interpmissing.jl")
+include("interpnan.jl")
 include("simulate.jl")
 include("cookiecutter.jl")
 include("uniquecoords.jl")

@@ -21,10 +21,10 @@ datadir = joinpath(@__DIR__, "data")
 
 # list of tests
 testfiles = [
-  "interpneighbors.jl",
   "interpolate.jl",
-  "interpolatemissing.jl",
-  "interpolatenan.jl",
+  "interpneighbors.jl",
+  "interpmissing.jl",
+  "interpnan.jl",
   "simulate.jl",
   "cookiecutter.jl",
   "uniquecoords.jl",
