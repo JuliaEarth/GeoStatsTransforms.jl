@@ -17,7 +17,7 @@
   Xd = hcat(X, X[:, 1:10])
   zd = vcat(z, z[1:10])
   nd = vcat(n, n[1:10])
-  sdata = georef((z=zd, n=nd), PointSet(Xd))
+  sdata = georef((z=zd, n=nd), PointSet(Tuple.(eachcol(Xd))))
   ndata = sdata |> UniqueCoords()
   @test nrow(ndata) == 100
 

@@ -31,7 +31,7 @@
   @test unit(eltype(ngtb.T)) == u"K"
 
   # default model is NN
-  pset = PointSet(rand(2, 3))
+  pset = PointSet(rand(Point{2}, 3))
   gtb = georef((; z=[1.0, 2.0, 3.0], c=["a", "b", "c"]), pset)
   ngtb = gtb |> Interpolate(pset)
   @test ngtb == gtb
