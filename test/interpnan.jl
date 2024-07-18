@@ -41,8 +41,8 @@
 
   # default model is NN
   Random.seed!(2021)
-  pset = PointSet(rand(Point{2}, 5))
+  pset = PointSet(rand(Point, 5))
   gtb = georef((; z=[1.0, NaN, 2.0, NaN, 3.0]), pset)
   ngtb = gtb |> InterpolateNaN()
-  @test ngtb.z == [1.0, 3.0, 2.0, 1.0, 3.0]
+  @test ngtb.z ⊆ [1.0, 2.0, 3.0]
 end

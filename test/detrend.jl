@@ -33,7 +33,7 @@
   z̄ = reshape(d̄.z, 100, 100)
   @test all([abs(z̄[i] - μ[i]) < 0.1 for i in 1:length(z̄)])
 
-  d = georef((x=rand(rng, 10), y=rand(rng, 10)), rand(rng, 2, 10))
+  d = georef((x=rand(rng, 10), y=rand(rng, 10)), rand(rng, Point, 10))
   𝒯 = d |> GeoStatsTransforms.trend |> values
   s = Tables.schema(𝒯)
   @test s.names == (:x, :y)

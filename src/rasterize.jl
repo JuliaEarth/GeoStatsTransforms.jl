@@ -34,16 +34,16 @@ Rasterize(grid, "a" => last, "b" => maximum)
 Rasterize(10, 10, "a" => last, "b" => maximum)
 ```
 """
-struct Rasterize{T<:Union{Grid{2},Dims{2}},S<:ColumnSelector} <: TableTransform
+struct Rasterize{T<:Union{Grid,Dims},S<:ColumnSelector} <: TableTransform
   grid::T
   selector::S
   aggfuns::Vector{Function}
 end
 
-Rasterize(grid::Grid{2}) = Rasterize(grid, NoneSelector(), Function[])
+Rasterize(grid::Grid) = Rasterize(grid, NoneSelector(), Function[])
 Rasterize(nx::Int, ny::Int) = Rasterize((nx, ny), NoneSelector(), Function[])
 
-Rasterize(grid::Grid{2}, pairs::Pair{C,<:Function}...) where {C<:Column} =
+Rasterize(grid::Grid, pairs::Pair{C,<:Function}...) where {C<:Column} =
   Rasterize(grid, selector(first.(pairs)), collect(Function, last.(pairs)))
 
 Rasterize(nx::Int, ny::Int, pairs::Pair{C,<:Function}...) where {C<:Column} =
@@ -51,8 +51,8 @@ Rasterize(nx::Int, ny::Int, pairs::Pair{C,<:Function}...) where {C<:Column} =
 
 isrevertible(::Type{<:Rasterize}) = true
 
-_grid(grid::Grid{2}, dom) = grid
-_grid(dims::Dims{2}, dom) = CartesianGrid(extrema(boundingbox(dom))...; dims)
+_grid(grid::Grid, dom) = grid
+_grid(dims::Dims, dom) = CartesianGrid(extrema(boundingbox(dom))...; dims)
 
 function apply(transform::Rasterize, geotable::AbstractGeoTable)
   gtb = _adjustunits(geotable)

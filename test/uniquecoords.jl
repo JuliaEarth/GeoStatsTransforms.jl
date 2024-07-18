@@ -3,7 +3,7 @@
 
   X = Float64[i * j for i in 1:2, j in 1:1_000_000] * u"m"
   z = rand(1_000_000)
-  d = georef((z=[z; z],), [X X])
+  d = georef((z=[z; z],), Tuple.(eachcol([X X])))
   u = d |> UniqueCoords()
   du = domain(u)
   p = [centroid(du, i) for i in 1:nelements(du)]
@@ -17,7 +17,7 @@
   Xd = hcat(X, X[:, 1:10])
   zd = vcat(z, z[1:10])
   nd = vcat(n, n[1:10])
-  sdata = georef((z=zd, n=nd), PointSet(Tuple.(eachcol(Xd))))
+  sdata = georef((z=zd, n=nd), Tuple.(eachcol(Xd)))
   ndata = sdata |> UniqueCoords()
   @test nrow(ndata) == 100
 

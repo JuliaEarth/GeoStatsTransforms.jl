@@ -1,9 +1,9 @@
 @testset "Interpolate" begin
   @test !isrevertible(Interpolate(CartesianGrid(2, 2)))
 
-  points = rand(Point{2}, 3)
-  gtb = georef((a=[1, 2, 3], b=[4, 5, 6]), points)
-  ngtb = gtb |> Interpolate(points, IDW())
+  pts = rand(Point, 3)
+  gtb = georef((a=[1, 2, 3], b=[4, 5, 6]), pts)
+  ngtb = gtb |> Interpolate(pts, IDW())
   @test ngtb.a == gtb.a
   @test ngtb.b == gtb.b
   @test ngtb.geometry == gtb.geometry
@@ -20,19 +20,20 @@
   @test isapprox(ngtb.z[linds[75, 50]], 1.0, atol=1e-3)
 
   # units
-  gtb = georef((; T=[1.0, 0.0, 1.0] * u"K"), points)
-  grid = CartesianGrid(5, 5)
+  gtb = georef((; T=[1.0, 0.0, 1.0] * u"K"), rand(Point, 3))
+  grid = CartesianGrid(5, 5, 5)
   ngtb = gtb |> Interpolate(grid)
   @test unit(eltype(ngtb.T)) == u"K"
 
   # affine units
-  gtb = georef((; T=[-272.15, -273.15, -272.15] * u"°C"), points)
+  gtb = georef((; T=[-272.15, -273.15, -272.15] * u"°C"), rand(Point, 3))
+  grid = CartesianGrid(5, 5, 5)
   ngtb = gtb |> Interpolate(grid)
   @test unit(eltype(ngtb.T)) == u"K"
 
   # default model is NN
-  pset = PointSet(rand(Point{2}, 3))
-  gtb = georef((; z=[1.0, 2.0, 3.0], c=["a", "b", "c"]), pset)
-  ngtb = gtb |> Interpolate(pset)
+  pts = rand(Point, 3)
+  gtb = georef((; z=[1.0, 2.0, 3.0], c=["a", "b", "c"]), pts)
+  ngtb = gtb |> Interpolate(pts)
   @test ngtb == gtb
 end
