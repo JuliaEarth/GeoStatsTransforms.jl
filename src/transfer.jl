@@ -34,7 +34,7 @@ function apply(transform::Transfer, geotable::AbstractGeoTable)
   # find target indices of each row
   tdom = transform.domain
   knn = KNearestSearch(dom, 1)
-  inds = _tmap(1:nelements(tdom)) do i
+  inds = tmap(1:nelements(tdom)) do i
     first(search(centroid(tdom, i), knn))
   end
 
