@@ -31,6 +31,7 @@ using ColumnSelectors: Column, AllSelector, NoneSelector
 using ColumnSelectors: selector, selectsingle
 using GeoStatsProcesses: GeoStatsProcess
 using DataScienceTraits: Continuous
+using OhMyThreads: tmap
 
 import TableTransforms: apply, revert, reapply
 import TableTransforms: isrevertible
