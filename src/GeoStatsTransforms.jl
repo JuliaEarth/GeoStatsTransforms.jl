@@ -54,6 +54,8 @@ include("rasterize.jl")
 include("potrace.jl")
 include("detrend.jl")
 
+include("precompile.jl")
+
 export
   # transforms
   InterpolateNeighbors,
