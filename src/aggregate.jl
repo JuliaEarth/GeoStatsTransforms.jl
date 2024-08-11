@@ -35,50 +35,83 @@ isrevertible(::Type{<:Aggregate}) = false
 
 function apply(transform::Aggregate, geotable::AbstractGeoTable)
   gtb = _adjustunits(geotable)
-  dom = domain(gtb)
-  tab = values(gtb)
-  cols = Tables.columns(tab)
+  table = values(gtb)
+  cols = Tables.columns(table)
   vars = Tables.columnnames(cols)
 
   # aggregation functions
   svars = transform.selector(vars)
-  agg = Dict(zip(svars, transform.aggfuns))
+  aggfun = Dict(zip(svars, transform.aggfuns))
   for var in vars
-    if !haskey(agg, var)
-      v = Tables.getcolumn(cols, var)
-      agg[var] = _defaultagg(v)
+    if !haskey(aggfun, var)
+      vals = Tables.getcolumn(cols, var)
+      aggfun[var] = _defaultagg(vals)
     end
   end
 
-  # find target indices of each row
+  # source and target domains
+  sdom = domain(gtb)
   tdom = transform.domain
+
+  # perform aggregation
+  newcols = _aggregate(sdom, tdom, cols, vars, aggfun)
+  newtable = (; (newcols)...) |> Tables.materializer(table)
+
+  georef(newtable, tdom), nothing
+end
+
+function _aggregate(sdom, tdom, cols, vars, aggfun)
+  isgridₛ = sdom isa Mesh && topology(sdom) isa GridTopology
+  isgridₜ = tdom isa Mesh && topology(tdom) isa GridTopology
+  matchₛₜ = extrema(sdom) == extrema(tdom)
+  if isgridₛ && isgridₜ && matchₛₜ
+    # we have two grids overlaid, and can rely on
+    # tiled iteration for efficient aggregation
+    _gridagg(sdom, tdom, cols, vars, aggfun)
+  else
+    # general case with knn search
+    _knnagg(sdom, tdom, cols, vars, aggfun)
+  end
+end
+
+function _gridagg(sdom, tdom, cols, vars, aggfun)
+  # determine tile size for tiled iteration
+  tilesize = ceil.(Int, size(sdom) ./ size(tdom))
+  if any(<(1), tilesize)
+    throw(ArgumentError("cannot aggregate a coarse grid over a fine grid"))
+  end
+
+  # perform aggregation
+  map(vars) do var
+    svals = Tables.getcolumn(cols, var)
+    array = reshape(svals, size(sdom))
+    titer = TileIterator(axes(array), tilesize)
+    tvals = tmap(titer) do sinds
+      aggfun[var](array[sinds...])
+    end |> vec
+    var => tvals
+  end
+end
+
+function _knnagg(sdom, tdom, cols, vars, aggfun)
+  # find nearest elements in target domain
   knn = KNearestSearch(tdom, 1)
-  inds = tmap(1:nelements(dom)) do i
-    first(search(centroid(dom, i), knn))
+  near = tmap(1:nelements(sdom)) do i
+    first(search(centroid(sdom, i), knn))
   end
 
-  # group rows with the same target indices
-  tinds = 1:nelements(tdom)
-  group = Dict(tind => Int[] for tind in tinds)
-  for (i, tind) in enumerate(inds)
-    push!(group[tind], i)
+  # map target element to source elements
+  group = Dict(tind => Int[] for tind in 1:nelements(tdom))
+  for (sind, tind) in enumerate(near)
+    push!(group[tind], sind)
   end
 
-  # perform aggregation with repeated indices
-  function aggvar(var)
-    v = Tables.getcolumn(cols, var)
-    map(tinds) do tind
-      sinds = group[tind]
-      agg[var](v[sinds])
+  # perform aggregation
+  map(vars) do var
+    svals = Tables.getcolumn(cols, var)
+    tvals = tmap(1:nelements(tdom)) do tind
+      aggfun[var](svals[group[tind]])
     end
+    var => tvals
   end
-
-  # construct new table
-  𝒯 = (; (var => aggvar(var) for var in vars)...)
-  newtab = 𝒯 |> Tables.materializer(tab)
-
-  # new spatial data
-  newgeotable = georef(newtab, tdom)
-
-  newgeotable, nothing
 end
