@@ -55,7 +55,7 @@ function apply(transform::Aggregate, geotable::AbstractGeoTable)
 
   # perform aggregation
   newcols = _aggregate(sdom, tdom, cols, vars, aggfun)
-  newtable = (; (newcols)...) |> Tables.materializer(table)
+  newtable = (; newcols...) |> Tables.materializer(table)
 
   georef(newtable, tdom), nothing
 end
