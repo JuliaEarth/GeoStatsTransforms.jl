@@ -24,14 +24,15 @@ using LinearAlgebra
 using Statistics
 using Random
 
+using OhMyThreads: tmap
 using Unitful: AffineQuantity
-using GeoStatsModels: GeoStatsModel, fitpredict
+using TiledIteration: TileIterator
+using DataScienceTraits: Continuous
 using ColumnSelectors: ColumnSelector, SingleColumnSelector
 using ColumnSelectors: Column, AllSelector, NoneSelector
 using ColumnSelectors: selector, selectsingle
+using GeoStatsModels: GeoStatsModel, fitpredict
 using GeoStatsProcesses: GeoStatsProcess
-using DataScienceTraits: Continuous
-using OhMyThreads: tmap
 
 import TableTransforms: apply, revert, reapply
 import TableTransforms: isrevertible
