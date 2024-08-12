@@ -26,30 +26,67 @@ isrevertible(::Type{<:Transfer}) = false
 
 function apply(transform::Transfer, geotable::AbstractGeoTable)
   gtb = _adjustunits(geotable)
-  dom = domain(gtb)
-  tab = values(gtb)
-  cols = Tables.columns(tab)
+  table = values(gtb)
+  cols = Tables.columns(table)
   vars = Tables.columnnames(cols)
 
-  # find target indices of each row
+  # source and target domains
+  sdom = domain(gtb)
   tdom = transform.domain
-  knn = KNearestSearch(dom, 1)
-  inds = tmap(1:nelements(tdom)) do i
+
+  # perform transfer
+  newcols = _transfer(sdom, tdom, cols, vars)
+  newtable = (; newcols...) |> Tables.materializer(table)
+
+  georef(newtable, tdom), nothing
+end
+
+function _transfer(sdom, tdom, cols, vars)
+  isgridₛ = sdom isa Mesh && topology(sdom) isa GridTopology
+  isgridₜ = tdom isa Mesh && topology(tdom) isa GridTopology
+  matchₛₜ = extrema(sdom) == extrema(tdom)
+  if isgridₛ && isgridₜ && matchₛₜ
+    # we have two grids overlaid, and can rely on
+    # tiled iteration for efficient aggregation
+    _gridtransfer(sdom, tdom, cols, vars)
+  else
+    # general case with knn search
+    _knntransfer(sdom, tdom, cols, vars)
+  end
+end
+
+function _gridtransfer(sdom, tdom, cols, vars)
+  # determine tile size for tiled iteration
+  tilesize = ceil.(Int, size(tdom) ./ size(sdom))
+  if any(<(1), tilesize)
+    # fallback to general case with knn search
+    _knntransfer(sdom, tdom, cols, vars)
+  else
+    # perform transfer with tiled iteration
+    map(vars) do var
+      svals = Tables.getcolumn(cols, var)
+      array = similar(svals, size(tdom))
+      titer = TileIterator(axes(array), tilesize)
+      for (sind, tinds) in enumerate(titer)
+        array[tinds...] .= svals[sind]
+      end
+      tvals = vec(array)
+      var => tvals
+    end
+  end
+end
+
+function _knntransfer(sdom, tdom, cols, vars)
+  # find nearest elements in source domain
+  knn = KNearestSearch(sdom, 1)
+  near = tmap(1:nelements(tdom)) do i
     first(search(centroid(tdom, i), knn))
   end
 
-  # generate variables for target domain
-  function genvar(var)
-    v = Tables.getcolumn(cols, var)
-    v[inds]
+  # perform transfer
+  map(vars) do var
+    svals = Tables.getcolumn(cols, var)
+    tvals = svals[near]
+    var => tvals
   end
-
-  # construct new table
-  𝒯 = (; (var => genvar(var) for var in vars)...)
-  newtab = 𝒯 |> Tables.materializer(tab)
-
-  # new spatial data
-  newgeotable = georef(newtab, tdom)
-
-  newgeotable, nothing
 end
