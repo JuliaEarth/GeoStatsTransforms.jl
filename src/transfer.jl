@@ -42,12 +42,9 @@ function apply(transform::Transfer, geotable::AbstractGeoTable)
 end
 
 function _transfer(sdom, tdom, cols, vars)
-  isgridₛ = sdom isa Mesh && topology(sdom) isa GridTopology
-  isgridₜ = tdom isa Mesh && topology(tdom) isa GridTopology
-  matchₛₜ = extrema(sdom) == extrema(tdom)
-  if isgridₛ && isgridₜ && matchₛₜ
+  if sdom isa Grid && tdom isa Grid && extrema(sdom) == extrema(tdom)
     # we have two grids overlaid, and can rely on
-    # tiled iteration for efficient aggregation
+    # tiled iteration for efficient transfer
     _gridtransfer(sdom, tdom, cols, vars)
   else
     # general case with knn search
