@@ -123,7 +123,7 @@ function apply(transform::Potrace, geotable::AbstractGeoTable)
   end
 
   # simplify multi-polygons if necessary
-  elems = isnothing(ϵ) ? multis : [simplify(multi, Selinger(ϵ)) for multi in multis]
+  elems = isnothing(ϵ) ? multis : [simplify(multi, SelingerSimplification(ϵ)) for multi in multis]
 
   # georeference new features on new geometries
   newtab = feats |> Tables.materializer(tab)
