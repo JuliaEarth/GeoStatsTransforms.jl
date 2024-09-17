@@ -10,7 +10,7 @@ using GeoStatsImages
 using TableTransforms
 using CategoricalArrays
 using Statistics
-using Test, Random
+using Test, StableRNGs
 using FileIO: load
 import DataScienceTraits as DST
 

@@ -13,7 +13,6 @@
   linds = LinearIndices(size(grid))
   variogram = GaussianVariogram(range=35.0, nugget=0.0)
 
-  Random.seed!(2021)
   ngtb = gtb |> Interpolate(grid, :z => Kriging(variogram))
   @test isapprox(ngtb.z[linds[25, 25]], 1.0, atol=1e-3)
   @test isapprox(ngtb.z[linds[50, 75]], 0.0, atol=1e-3)
