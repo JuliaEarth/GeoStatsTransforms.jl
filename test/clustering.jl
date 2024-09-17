@@ -111,7 +111,6 @@
   end
 
   @testset "GSC" begin
-    Random.seed!(2022)
     𝒮 = georef((Z=[10sin(i / 10) + j for i in 1:100, j in 1:100],))
     C = 𝒮 |> GSC(50, 2.0)
     @test Set(C.CLUSTER) == Set(1:50)

@@ -117,7 +117,7 @@
   end
 
   # units and missings
-  sdata = georef((; T=shuffle([fill(missing, 50); rand(50)]) * u"K"), pset)
+  sdata = georef((; T=[fill(missing, 50); rand(50)] * u"K"), pset)
   ndata = sdata |> UniqueCoords()
   @test nrow(ndata) == 10
   @test unit(eltype(ndata.T)) == u"K"

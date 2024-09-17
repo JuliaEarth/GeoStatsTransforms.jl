@@ -42,121 +42,54 @@ Detrend(cols::C...; degree=1) where {C<:Column} = Detrend(selector(cols), degree
 isrevertible(::Type{<:Detrend}) = true
 
 function apply(transform::Detrend, geotable)
-  table = values(geotable)
-  cols = Tables.columns(table)
+  dom = domain(geotable)
+  tab = values(geotable)
+  cols = Tables.columns(tab)
   names = Tables.columnnames(cols)
   snames = transform.selector(names)
 
-  tdata = trend(geotable, snames; degree=transform.degree)
-  ttable = values(tdata)
-  tcols = Tables.columns(ttable)
+  gview = geotable |> Select(snames)
+  model = Polynomial(transform.degree)
+  fitted = GeoStatsModels.fit(model, gview)
 
-  ncols = map(names) do n
-    x = Tables.getcolumn(cols, n)
-    if n ∈ snames
-      μ = Tables.getcolumn(tcols, n)
-      x .- μ
+  ncols = map(names) do name
+    z = Tables.getcolumn(cols, name)
+    ẑ(i) = GeoStatsModels.predict(fitted, name, centroid(dom, i))
+    if name ∈ snames
+      @inbounds [z[i] - ẑ(i) for i in 1:nelements(dom)]
     else
-      x
+      z
     end
   end
 
   𝒯 = (; zip(names, ncols)...)
-  newtable = 𝒯 |> Tables.materializer(table)
+  newtab = 𝒯 |> Tables.materializer(tab)
 
-  newgeotable = georef(newtable, domain(geotable))
+  newgeotable = georef(newtab, dom)
 
-  newgeotable, (snames, tcols)
+  newgeotable, (snames, fitted)
 end
 
 function revert(::Detrend, newgeotable, cache)
-  newtable = values(newgeotable)
-  cols = Tables.columns(newtable)
-  names = Tables.schema(newtable).names
+  newdom = domain(newgeotable)
+  newtab = values(newgeotable)
+  cols = Tables.columns(newtab)
+  names = Tables.columnnames(cols)
 
-  snames, tcols = cache
+  snames, fitted = cache
 
-  ncols = map(names) do n
-    x = Tables.getcolumn(cols, n)
-    if n ∈ snames
-      μ = Tables.getcolumn(tcols, n)
-      x .+ μ
+  ocols = map(names) do name
+    z = Tables.getcolumn(cols, name)
+    ẑ(i) = GeoStatsModels.predict(fitted, name, centroid(newdom, i))
+    if name ∈ snames
+      @inbounds [z[i] + ẑ(i) for i in 1:nelements(newdom)]
     else
-      x
+      z
     end
   end
 
-  𝒯 = (; zip(names, ncols)...)
-  table = 𝒯 |> Tables.materializer(newtable)
+  𝒯 = (; zip(names, ocols)...)
+  table = 𝒯 |> Tables.materializer(newtab)
 
-  georef(table, domain(newgeotable))
-end
-
-"""
-    polymat(xs, d)
-
-Return the matrix of monomials for the iterator `xs`, i.e.
-for each item `x = (x₁, x₂,…, xₙ)` in `xs`, evaluate
-the monomial terms of the expansion `(x₁ + x₂ + ⋯ + xₙ)ᵈ`
-for a given degree `d`.
-
-The resulting matrix has a number of rows that is equal
-to the number of items in the iterator `xs`. The number
-of columns is a function of the degree. For `d=0`, a
-single column of ones is returned that corresponds to
-the constant term `x₁⁰⋅x₂⁰⋅⋯⋅xₙ⁰` for all items in `xs`.
-"""
-function polymat(xs, d)
-  x = first(xs)
-  n = length(x)
-  es = Iterators.flatten(multiexponents(n, d) for d in 0:d)
-  ps = [[prod(x .^ e) for x in xs] for e in es]
-  reduce(hcat, ps)
-end
-
-"""
-    trend(data, vars; degree=1)
-
-Return the deterministic spatial trend for the variables `vars`
-in the spatial `data`. Approximate the trend with a polynomial
-of given `degree`.
-
-## References
-
-* Menafoglio, A., Secchi, P. 2013. [A Universal Kriging predictor
-  for spatially dependent functional data of a Hilbert Space]
-  (https://doi.org/10.1214/13-EJS843)
-"""
-function trend(data, vars::AbstractVector{Symbol}; degree=1)
-  𝒯 = values(data)
-  𝒟 = domain(data)
-
-  # retrieve columns
-  cols = Tables.columns(𝒯)
-
-  # build polynomial drift terms
-  coords(𝒟, i) = ustrip.(to(centroid(𝒟, i)))
-  xs = (coords(𝒟, i) for i in 1:nelements(𝒟))
-  F = polymat(xs, degree)
-
-  # eqs 25 and 26 in Menafoglio, A., Secchi, P. 2013.
-  ms = map(vars) do var
-    z = Tables.getcolumn(cols, var)
-    a = (F'F \ F') * z
-    F * a
-  end
-
-  ctor = Tables.materializer(𝒯)
-  means = ctor((; zip(vars, ms)...))
-
-  georef(means, 𝒟)
-end
-
-trend(data, var::Symbol; kwargs...) = trend(data, [var]; kwargs...)
-
-function trend(data; kwargs...)
-  𝒯 = values(data)
-  s = Tables.schema(𝒯)
-  vars = collect(s.names)
-  trend(data, vars; kwargs...)
+  georef(table, newdom)
 end
