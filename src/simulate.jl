@@ -51,7 +51,7 @@ function apply(transform::Simulate, geotable::AbstractGeoTable)
   pad = ndigits(nreals)
   pairs = mapreduce(vcat, ensembles) do (vars, ensemble)
     mapreduce(vcat, 1:nreals) do i
-      [Symbol(v, :_, string(i; pad)) => ensemble[v][i] for v in vars]
+      [Symbol(v, :_, string(i; pad)) => ensemble[i][:, v] for v in vars]
     end
   end
 
