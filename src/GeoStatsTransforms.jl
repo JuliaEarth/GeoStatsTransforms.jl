@@ -27,7 +27,6 @@ using Random
 using OhMyThreads: tmap
 using Unitful: AffineQuantity
 using TiledIteration: TileIterator
-using DataScienceTraits: Continuous
 using ColumnSelectors: ColumnSelector, SingleColumnSelector
 using ColumnSelectors: Column, AllSelector, NoneSelector
 using ColumnSelectors: selector, selectsingle
