@@ -54,7 +54,7 @@ function apply(transform::Interpolate, geotable::AbstractGeoTable)
   point = transform.point
   prob = transform.prob
 
-  gtb = _maybeunique(geotable, models)
+  gtb = _uniquecoords(geotable, models)
   interps = map(selectors, models) do selector, model
     svars = selector(vars)
     data = gtb[:, svars]

@@ -18,7 +18,7 @@
   @test isapprox(ngtb.z[linds[50, 75]], 0.0, atol=1e-3)
   @test isapprox(ngtb.z[linds[75, 50]], 1.0, atol=1e-3)
 
-  # Kriging with non-unique coordinates
+  # Kriging with non-unique geometries
   gtb = georef(
     (; z=[1.0, 1.0, 0.0, 0.0, 1.0, 1.0]),
     [(25.0, 25.0), (25.0, 25.0), (50.0, 75.0), (50.0, 75.0), (75.0, 50.0), (75.0, 50.0)]

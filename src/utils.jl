@@ -48,12 +48,12 @@ end
 #--------
 
 # Kriging models require a geotable with unique geometries
-_uniquerequired(::GeoStatsModel) = false
-_uniquerequired(::KrigingModel) = true
-_uniquerequired(models) = any(_uniquerequired, models)
+_requireuniquecoords(::GeoStatsModel) = false
+_requireuniquecoords(::KrigingModel) = true
+_requireuniquecoords(models) = any(_requireuniquecoords, models)
 
-function _maybeunique(geotable, models)
-  if _uniquerequired(models)
+function _uniquecoords(geotable, models)
+  if _requireuniquecoords(models)
     geotable |> UniqueCoords()
   else
     geotable
