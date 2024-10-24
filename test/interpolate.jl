@@ -18,6 +18,19 @@
   @test isapprox(ngtb.z[linds[50, 75]], 0.0, atol=1e-3)
   @test isapprox(ngtb.z[linds[75, 50]], 1.0, atol=1e-3)
 
+  # Kriging with non-unique coordinates
+  gtb = georef(
+    (; z=[1.0, 1.0, 0.0, 0.0, 1.0, 1.0]),
+    [(25.0, 25.0), (25.0, 25.0), (50.0, 75.0), (50.0, 75.0), (75.0, 50.0), (75.0, 50.0)]
+  )
+  grid = CartesianGrid((100, 100), (0.5, 0.5), (1.0, 1.0))
+  linds = LinearIndices(size(grid))
+  variogram = GaussianVariogram(range=35.0, nugget=0.0)
+  ngtb = gtb |> Interpolate(grid, :z => Kriging(variogram))
+  @test isapprox(ngtb.z[linds[25, 25]], 1.0, atol=1e-3)
+  @test isapprox(ngtb.z[linds[50, 75]], 0.0, atol=1e-3)
+  @test isapprox(ngtb.z[linds[75, 50]], 1.0, atol=1e-3)
+
   # units
   gtb = georef((; T=[1.0, 0.0, 1.0] * u"K"), rand(Point, 3))
   grid = CartesianGrid(5, 5, 5)

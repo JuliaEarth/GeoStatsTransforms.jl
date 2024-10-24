@@ -102,9 +102,10 @@ function apply(transform::InterpolateNeighbors, geotable::AbstractGeoTable)
   point = transform.point
   prob = transform.prob
 
+  gtb = _maybeunique(geotable, models)
   interps = map(selectors, models) do selector, model
     svars = selector(vars)
-    data = geotable[:, svars]
+    data = gtb[:, svars]
     fitpredict(model, data, domain; point, prob, minneighbors, maxneighbors, neighborhood, distance)
   end
 

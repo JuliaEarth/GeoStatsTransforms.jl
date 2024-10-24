@@ -42,3 +42,20 @@ function _absunit(::Type{Q}, x) where {Q<:AffineQuantity}
   u = absoluteunit(unit(Q))
   map(v -> uconvert(u, v), x)
 end
+
+#--------
+# MODELS
+#--------
+
+# Kriging models requires a geotable with unique coordinates
+_uniquerequired(::GeoStatsModel) = false
+_uniquerequired(::KrigingModel) = true
+_uniquerequired(models) = any(_uniquerequired, models)
+
+function _maybeunique(geotable, models)
+  if _uniquerequired(models)
+    geotable |> UniqueCoords()
+  else
+    geotable
+  end
+end

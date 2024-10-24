@@ -91,7 +91,8 @@ function apply(transform::InterpolateNaN, geotable::AbstractGeoTable)
     prob=transform.prob
   )
 
-  newgeotable = _interp(geotable, selectors, models, DropNaN(); kwargs...)
+  gtb = _maybeunique(geotable, models)
+  newgeotable = _interp(gtb, selectors, models, DropNaN(); kwargs...)
 
   newgeotable, nothing
 end
