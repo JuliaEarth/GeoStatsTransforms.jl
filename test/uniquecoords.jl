@@ -127,4 +127,10 @@
     v = GeoStatsTransforms._skipmissing(mean)(sdata.T[(j - 9):j])
     @test isequal(ndata.T[i], v)
   end
+
+  # optimazation for grids
+  grid = CartesianGrid(10, 10)
+  sdata = georef((; Z=rand(100)), grid)
+  ndata = sdata |> UniqueCoords()
+  @test sdata === ndata
 end

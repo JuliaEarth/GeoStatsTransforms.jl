@@ -32,7 +32,9 @@ UniqueCoords(pairs::Pair{C,<:Function}...) where {C<:Column} =
 
 isrevertible(::Type{<:UniqueCoords}) = false
 
-function apply(transform::UniqueCoords, geotable::AbstractGeoTable)
+apply(transform::UniqueCoords, geotable::AbstractGeoTable) = _unique(typeof(domain(geotable)), transform, geotable)
+
+function _unique(::Type{<:Domain}, transform::UniqueCoords, geotable::AbstractGeoTable)
   gtb = _adjustunits(geotable)
   dom = domain(gtb)
   tab = values(gtb)
@@ -80,6 +82,8 @@ function apply(transform::UniqueCoords, geotable::AbstractGeoTable)
 
   newgtb, nothing
 end
+
+_unique(::Type{<:Grid}, ::UniqueCoords, geotable::AbstractGeoTable) = geotable, nothing
 
 # ---------------------------------------------------------------
 # The code below was copied/modified provisorily from Base.unique
