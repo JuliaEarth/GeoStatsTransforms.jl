@@ -132,5 +132,6 @@
   grid = CartesianGrid(10, 10)
   sdata = georef((; Z=rand(100)), grid)
   ndata = sdata |> UniqueCoords()
-  @test sdata === ndata
+  @test domain(ndata) === domain(sdata)
+  @test values(ndata) === values(sdata)
 end
