@@ -108,7 +108,8 @@ function apply(transform::InterpolateMissing, geotable::AbstractGeoTable)
     prob=transform.prob
   )
 
-  newgeotable = _interp(geotable, selectors, models, DropMissing(); kwargs...)
+  gtb = _uniquecoords(geotable, models)
+  newgeotable = _interp(gtb, selectors, models, DropMissing(); kwargs...)
 
   newgeotable, nothing
 end

@@ -27,10 +27,10 @@ using Random
 using OhMyThreads: tmap
 using Unitful: AffineQuantity
 using TiledIteration: TileIterator
+using GeoStatsModels: GeoStatsModel, KrigingModel, fitpredict
 using ColumnSelectors: ColumnSelector, SingleColumnSelector
 using ColumnSelectors: Column, AllSelector, NoneSelector
 using ColumnSelectors: selector, selectsingle
-using GeoStatsModels: GeoStatsModel, fitpredict
 using GeoStatsProcesses: GeoStatsProcess
 
 import TableTransforms: apply, revert, reapply
