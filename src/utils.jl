@@ -47,7 +47,7 @@ end
 # MODELS
 #--------
 
-# Kriging models requires a geotable with unique coordinates
+# Kriging models require a geotable with unique geometries
 _uniquerequired(::GeoStatsModel) = false
 _uniquerequired(::KrigingModel) = true
 _uniquerequired(models) = any(_uniquerequired, models)
