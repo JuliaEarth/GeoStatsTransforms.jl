@@ -55,4 +55,32 @@
   @test ngtb[(1, 5), :b] == first(gtb[(1:2, 17:20), :b])
   @test ngtb[(10, 1), :b] == first(gtb[(19:20, 1:4), :b])
   @test ngtb[(10, 5), :b] == first(gtb[(19:20, 17:20), :b])
+
+  # non-multiple dimensions
+  grid = CartesianGrid((0.0, 0.0), (13.0, 17.0), dims=(13, 17))
+  gtb = georef((a=rand(Float64, nelements(grid)), b=rand(Int, nelements(grid))), grid)
+  ngtb = gtb |> Upscale(5, 3)
+  @test size(domain(ngtb)) == (3, 6)
+  @test ngtb[(1, 1), :a] == mean(gtb[(1:5, 1:3), :a])
+  @test ngtb[(1, 6), :a] == mean(gtb[(1:5, 16:17), :a])
+  @test ngtb[(3, 1), :a] == mean(gtb[(11:13, 1:3), :a])
+  @test ngtb[(3, 6), :a] == mean(gtb[(11:13, 16:17), :a])
+  @test ngtb[(1, 1), :b] == first(gtb[(1:5, 1:3), :b])
+  @test ngtb[(1, 6), :b] == first(gtb[(1:5, 16:17), :b])
+  @test ngtb[(3, 1), :b] == first(gtb[(11:13, 1:3), :b])
+  @test ngtb[(3, 6), :b] == first(gtb[(11:13, 16:17), :b])
+
+  # large grid
+  grid = CartesianGrid((0.0, 0.0), (16200.0, 8100.0), dims=(16200, 8100))
+  gtb = georef((a=rand(Float64, nelements(grid)), b=rand(Int, nelements(grid))), grid)
+  ngtb = gtb |> Upscale(80, 40)
+  @test size(domain(ngtb)) == (203, 203)
+  @test ngtb[(1, 1), :a] ≈ mean(gtb[(1:80, 1:40), :a])
+  @test ngtb[(1, 203), :a] ≈ mean(gtb[(1:80, 8081:8100), :a])
+  @test ngtb[(203, 1), :a] ≈ mean(gtb[(16161:16200, 1:40), :a])
+  @test ngtb[(203, 203), :a] ≈ mean(gtb[(16161:16200, 8081:8100), :a])
+  @test ngtb[(1, 1), :b] == first(gtb[(1:80, 1:40), :b])
+  @test ngtb[(1, 203), :b] == first(gtb[(1:80, 8081:8100), :b])
+  @test ngtb[(203, 1), :b] == first(gtb[(16161:16200, 1:40), :b])
+  @test ngtb[(203, 203), :b] == first(gtb[(16161:16200, 8081:8100), :b])
 end
