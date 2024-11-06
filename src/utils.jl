@@ -2,6 +2,9 @@
 # Licensed under the MIT License. See LICENSE in the project root.
 # ------------------------------------------------------------------
 
+# fit tuple `dims` to a given length `D` by repeating the last dimension.
+_fitdims(dims::Dims{N}, D) where {N} = ntuple(i -> i ≤ N ? dims[i] : last(dims), D)
+
 #-------------
 # AGGREGATION
 #-------------

@@ -36,7 +36,7 @@ function apply(transform::Upscale, geotable::AbstractGeoTable)
   vars = Tables.columnnames(cols)
 
   # upscale the grid
-  factors = Meshes.fitdims(transform.factors, paramdim(grid))
+  factors = _fitdims(transform.factors, paramdim(grid))
   tgrid = coarsen(grid, RegularCoarsening(factors))
 
   # aggregate columns
