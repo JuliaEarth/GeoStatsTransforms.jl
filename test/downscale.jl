@@ -6,6 +6,8 @@
   gtb = georef((a=rand(Float64, 100), b=rand(Int, 100)), grid)
   ngtb = gtb |> Downscale(2, 2)
   @test domain(ngtb) == tgrid
+  @test length(ngtb.a) == nelements(domain(ngtb))
+  @test length(ngtb.b) == nelements(domain(ngtb))
   @test ngtb[(1, 1), :a] == gtb[(1, 1), :a]
   @test ngtb[(1, 2), :a] == gtb[(1, 1), :a]
   @test ngtb[(2, 1), :a] == gtb[(1, 1), :a]
@@ -28,6 +30,8 @@
   gtb = georef((a=rand(Float64, 100), b=rand(Int, 100)), rgrid)
   ngtb = gtb |> Downscale(2, 2)
   @test domain(ngtb) == trgrid
+  @test length(ngtb.a) == nelements(domain(ngtb))
+  @test length(ngtb.b) == nelements(domain(ngtb))
   @test ngtb[(1, 1), :a] == gtb[(1, 1), :a]
   @test ngtb[(1, 2), :a] == gtb[(1, 1), :a]
   @test ngtb[(2, 1), :a] == gtb[(1, 1), :a]
@@ -50,6 +54,8 @@
   gtb = georef((a=rand(Float64, 100), b=rand(Int, 100)), sgrid)
   ngtb = gtb |> Downscale(2, 2)
   @test domain(ngtb) == tsgrid
+  @test length(ngtb.a) == nelements(domain(ngtb))
+  @test length(ngtb.b) == nelements(domain(ngtb))
   @test ngtb[(1, 1), :a] == gtb[(1, 1), :a]
   @test ngtb[(1, 2), :a] == gtb[(1, 1), :a]
   @test ngtb[(2, 1), :a] == gtb[(1, 1), :a]
@@ -72,6 +78,8 @@
   gtb = georef((a=rand(Float64, 27), b=rand(Int, 27)), grid)
   ngtb = gtb |> Downscale(2, 2, 2)
   @test domain(ngtb) == tgrid
+  @test length(ngtb.a) == nelements(domain(ngtb))
+  @test length(ngtb.b) == nelements(domain(ngtb))
   @test ngtb[(1, 1, 1), :a] == gtb[(1, 1, 1), :a]
   @test ngtb[(1, 2, 1), :a] == gtb[(1, 1, 1), :a]
   @test ngtb[(2, 1, 1), :a] == gtb[(1, 1, 1), :a]
@@ -94,6 +102,8 @@
   gtb = georef((a=rand(Float64, 27), b=rand(Int, 27)), rgrid)
   ngtb = gtb |> Downscale(2, 2, 2)
   @test domain(ngtb) == trgrid
+  @test length(ngtb.a) == nelements(domain(ngtb))
+  @test length(ngtb.b) == nelements(domain(ngtb))
   @test ngtb[(1, 1, 1), :a] == gtb[(1, 1, 1), :a]
   @test ngtb[(1, 2, 1), :a] == gtb[(1, 1, 1), :a]
   @test ngtb[(2, 1, 1), :a] == gtb[(1, 1, 1), :a]
@@ -116,6 +126,8 @@
   gtb = georef((a=rand(Float64, 27), b=rand(Int, 27)), sgrid)
   ngtb = gtb |> Downscale(2, 2, 2)
   @test domain(ngtb) == tsgrid
+  @test length(ngtb.a) == nelements(domain(ngtb))
+  @test length(ngtb.b) == nelements(domain(ngtb))
   @test ngtb[(1, 1, 1), :a] == gtb[(1, 1, 1), :a]
   @test ngtb[(1, 2, 1), :a] == gtb[(1, 1, 1), :a]
   @test ngtb[(2, 1, 1), :a] == gtb[(1, 1, 1), :a]

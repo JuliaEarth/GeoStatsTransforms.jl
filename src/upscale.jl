@@ -39,7 +39,7 @@ function apply(transform::Upscale, geotable::AbstractGeoTable)
   factors = _fitdims(transform.factors, paramdim(grid))
   tgrid = coarsen(grid, RegularCoarsening(factors))
 
-  # aggregate columns
+  # perform aggregation
   pairs = map(vars) do var
     svals = Tables.getcolumn(cols, var)
     aggfun = _defaultagg(svals)
