@@ -6,6 +6,8 @@
   gtb = georef((a=rand(Float64, 3), b=rand(Int, 3)), pts1)
   ngtb = gtb |> Transfer(pts2)
   @test domain(ngtb) == PointSet(pts2)
+  @test length(ngtb.a) == nelements(domain(ngtb))
+  @test length(ngtb.b) == nelements(domain(ngtb))
   @test ngtb.a[1] == gtb.a[3]
   @test ngtb.a[2] == gtb.a[3]
   @test ngtb.a[3] == gtb.a[1]
@@ -22,6 +24,8 @@
   gtb = georef((a=rand(Float64, 100), b=rand(Int, 100)), grid1)
   ngtb = gtb |> Transfer(grid2)
   @test domain(ngtb) == grid2
+  @test length(ngtb.a) == nelements(domain(ngtb))
+  @test length(ngtb.b) == nelements(domain(ngtb))
   @test ngtb[(1, 1), :a] == gtb[(1, 1), :a]
   @test ngtb[(1, 2), :a] == gtb[(1, 1), :a]
   @test ngtb[(2, 1), :a] == gtb[(1, 1), :a]

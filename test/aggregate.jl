@@ -6,6 +6,8 @@
   gtb = georef((a=rand(Float64, 5), b=rand(Int, 5)), pts1)
   ngtb = gtb |> Aggregate(pts2)
   @test domain(ngtb) == PointSet(pts2)
+  @test length(ngtb.a) == nelements(domain(ngtb))
+  @test length(ngtb.b) == nelements(domain(ngtb))
   @test ngtb.a[1] == gtb.a[3]
   @test ngtb.a[2] == mean(gtb.a[[4, 5]])
   @test ngtb.a[3] == mean(gtb.a[[1, 2]])
@@ -15,6 +17,8 @@
 
   ngtb = gtb |> Aggregate(pts2, :a => median, :b => last)
   @test domain(ngtb) == PointSet(pts2)
+  @test length(ngtb.a) == nelements(domain(ngtb))
+  @test length(ngtb.b) == nelements(domain(ngtb))
   @test ngtb.a[1] == gtb.a[3]
   @test ngtb.a[2] == median(gtb.a[[4, 5]])
   @test ngtb.a[3] == median(gtb.a[[1, 2]])
@@ -27,6 +31,8 @@
   gtb = georef((a=rand(Float64, 400), b=rand(Int, 400)), grid1)
   ngtb = gtb |> Aggregate(grid2)
   @test domain(ngtb) == grid2
+  @test length(ngtb.a) == nelements(domain(ngtb))
+  @test length(ngtb.b) == nelements(domain(ngtb))
   @test ngtb[(1, 1), :a] == mean(gtb[(1:2, 1:2), :a])
   @test ngtb[(1, 10), :a] == mean(gtb[(1:2, 19:20), :a])
   @test ngtb[(10, 1), :a] == mean(gtb[(19:20, 1:2), :a])
@@ -38,6 +44,8 @@
 
   ngtb = gtb |> Aggregate(grid2, :a => median, :b => last)
   @test domain(ngtb) == grid2
+  @test length(ngtb.a) == nelements(domain(ngtb))
+  @test length(ngtb.b) == nelements(domain(ngtb))
   @test ngtb[(1, 1), :a] == median(gtb[(1:2, 1:2), :a])
   @test ngtb[(1, 10), :a] == median(gtb[(1:2, 19:20), :a])
   @test ngtb[(10, 1), :a] == median(gtb[(19:20, 1:2), :a])

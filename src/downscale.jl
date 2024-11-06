@@ -25,8 +25,33 @@ Downscale(factors::Int...) = Downscale(factors)
 isrevertible(::Type{<:Downscale}) = false
 
 function apply(transform::Downscale, geotable::AbstractGeoTable)
-  grid = domain(geotable)
-  tgrid = refine(grid, RegularRefinement(transform.factors))
-  newgeotable = geotable |> Transfer(tgrid)
+  gtb = _adjustunits(geotable)
+  tab = values(gtb)
+  grid = domain(gtb)
+  cols = Tables.columns(tab)
+  vars = Tables.columnnames(cols)
+
+  # downscale the grid
+  factors = _fitdims(transform.factors, paramdim(grid))
+  tgrid = refine(grid, RegularRefinement(factors))
+
+  # perform transfer
+  pairs = map(vars) do var
+    svals = Tables.getcolumn(cols, var)
+    array = similar(svals, size(tgrid))
+    titer = TileIterator(axes(array), factors)
+    for (sind, tinds) in enumerate(titer)
+      array[tinds...] .= svals[sind]
+    end
+    tvals = vec(array)
+    var => tvals
+  end
+
+  # construct new table
+  newtab = (; pairs...) |> Tables.materializer(tab)
+
+  # new spatial data
+  newgeotable = georef(newtab, tgrid)
+
   newgeotable, nothing
 end

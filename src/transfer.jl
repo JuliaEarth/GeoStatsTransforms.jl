@@ -42,7 +42,7 @@ function apply(transform::Transfer, geotable::AbstractGeoTable)
 end
 
 function _transfer(sdom, tdom, cols, vars)
-  if sdom isa Grid && tdom isa Grid && extrema(sdom) == extrema(tdom)
+  if sdom isa Grid && tdom isa Grid && extrema(sdom) == extrema(tdom) && all(iszero, size(tdom) .% size(sdom))
     # we have two grids overlaid, and can rely on
     # tiled iteration for efficient transfer
     _gridtransfer(sdom, tdom, cols, vars)
@@ -54,7 +54,7 @@ end
 
 function _gridtransfer(sdom, tdom, cols, vars)
   # determine tile size for tiled iteration
-  tilesize = ceil.(Int, size(tdom) ./ size(sdom))
+  tilesize = size(tdom) .÷ size(sdom)
   if any(<(1), tilesize)
     # fallback to general case with knn search
     _knntransfer(sdom, tdom, cols, vars)
