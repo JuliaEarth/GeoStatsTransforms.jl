@@ -6,6 +6,8 @@
   gtb = georef((a=rand(Float64, 400), b=rand(Int, 400)), grid)
   ngtb = gtb |> Upscale(2, 2)
   @test domain(ngtb) == tgrid
+  @test length(ngtb.a) == nelements(domain(ngtb))
+  @test length(ngtb.b) == nelements(domain(ngtb))
   @test ngtb[(1, 1), :a] == mean(gtb[(1:2, 1:2), :a])
   @test ngtb[(1, 10), :a] == mean(gtb[(1:2, 19:20), :a])
   @test ngtb[(10, 1), :a] == mean(gtb[(19:20, 1:2), :a])
@@ -20,6 +22,8 @@
   gtb = georef((a=rand(Float64, 400), b=rand(Int, 400)), rgrid)
   ngtb = gtb |> Upscale(2, 2)
   @test domain(ngtb) == trgrid
+  @test length(ngtb.a) == nelements(domain(ngtb))
+  @test length(ngtb.b) == nelements(domain(ngtb))
   @test ngtb[(1, 1), :a] == mean(gtb[(1:2, 1:2), :a])
   @test ngtb[(1, 10), :a] == mean(gtb[(1:2, 19:20), :a])
   @test ngtb[(10, 1), :a] == mean(gtb[(19:20, 1:2), :a])
@@ -34,6 +38,8 @@
   gtb = georef((a=rand(Float64, 400), b=rand(Int, 400)), sgrid)
   ngtb = gtb |> Upscale(2, 2)
   @test domain(ngtb) == tsgrid
+  @test length(ngtb.a) == nelements(domain(ngtb))
+  @test length(ngtb.b) == nelements(domain(ngtb))
   @test ngtb[(1, 1), :a] == mean(gtb[(1:2, 1:2), :a])
   @test ngtb[(1, 10), :a] == mean(gtb[(1:2, 19:20), :a])
   @test ngtb[(10, 1), :a] == mean(gtb[(19:20, 1:2), :a])
@@ -47,6 +53,8 @@
   gtb = georef((a=rand(Float64, 400), b=rand(Int, 400)), grid)
   ngtb = gtb |> Upscale(2, 4)
   @test domain(ngtb) == tgrid
+  @test length(ngtb.a) == nelements(domain(ngtb))
+  @test length(ngtb.b) == nelements(domain(ngtb))
   @test ngtb[(1, 1), :a] == mean(gtb[(1:2, 1:4), :a])
   @test ngtb[(1, 5), :a] == mean(gtb[(1:2, 17:20), :a])
   @test ngtb[(10, 1), :a] == mean(gtb[(19:20, 1:4), :a])
@@ -61,6 +69,8 @@
   gtb = georef((a=rand(Float64, nelements(grid)), b=rand(Int, nelements(grid))), grid)
   ngtb = gtb |> Upscale(5, 3)
   @test size(domain(ngtb)) == (3, 6)
+  @test length(ngtb.a) == nelements(domain(ngtb))
+  @test length(ngtb.b) == nelements(domain(ngtb))
   @test ngtb[(1, 1), :a] == mean(gtb[(1:5, 1:3), :a])
   @test ngtb[(1, 6), :a] == mean(gtb[(1:5, 16:17), :a])
   @test ngtb[(3, 1), :a] == mean(gtb[(11:13, 1:3), :a])
@@ -75,6 +85,8 @@
   gtb = georef((a=rand(Float64, nelements(grid)), b=rand(Int, nelements(grid))), grid)
   ngtb = gtb |> Upscale(80, 40)
   @test size(domain(ngtb)) == (203, 203)
+  @test length(ngtb.a) == nelements(domain(ngtb))
+  @test length(ngtb.b) == nelements(domain(ngtb))
   @test ngtb[(1, 1), :a] ≈ mean(gtb[(1:80, 1:40), :a])
   @test ngtb[(1, 203), :a] ≈ mean(gtb[(1:80, 8081:8100), :a])
   @test ngtb[(203, 1), :a] ≈ mean(gtb[(16161:16200, 1:40), :a])
