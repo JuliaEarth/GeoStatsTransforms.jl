@@ -61,7 +61,7 @@ function apply(transform::Aggregate, geotable::AbstractGeoTable)
 end
 
 function _aggregate(sdom, tdom, cols, vars, aggfun)
-  if sdom isa Grid && tdom isa Grid && extrema(sdom) == extrema(tdom)
+  if sdom isa Grid && tdom isa Grid && extrema(sdom) == extrema(tdom) && all(iszero, size(sdom) .% size(tdom))
     # we have two grids overlaid, and can rely on
     # tiled iteration for efficient aggregation
     _gridagg(sdom, tdom, cols, vars, aggfun)
@@ -73,7 +73,7 @@ end
 
 function _gridagg(sdom, tdom, cols, vars, aggfun)
   # determine tile size for tiled iteration
-  tilesize = ceil.(Int, size(sdom) ./ size(tdom))
+  tilesize = size(sdom) .÷ size(tdom)
   if any(<(1), tilesize)
     throw(ArgumentError("cannot aggregate a coarse grid over a fine grid"))
   end
