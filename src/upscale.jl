@@ -29,8 +29,33 @@ Upscale(factors::Int...) = Upscale(factors)
 isrevertible(::Type{<:Upscale}) = false
 
 function apply(transform::Upscale, geotable::AbstractGeoTable)
-  grid = domain(geotable)
-  tgrid = coarsen(grid, RegularCoarsening(transform.factors))
-  newgeotable = geotable |> Aggregate(tgrid)
+  gtb = _adjustunits(geotable)
+  tab = values(gtb)
+  grid = domain(gtb)
+  cols = Tables.columns(tab)
+  vars = Tables.columnnames(cols)
+
+  # upscale the grid
+  factors = Meshes.fitdims(transform.factors, paramdim(grid))
+  tgrid = coarsen(grid, RegularCoarsening(factors))
+
+  # aggregate columns
+  pairs = map(vars) do var
+    svals = Tables.getcolumn(cols, var)
+    aggfun = _defaultagg(svals)
+    array = reshape(svals, size(grid))
+    titer = TileIterator(axes(array), factors)
+    tvals = tmap(titer) do sinds
+      aggfun(array[sinds...])
+    end |> vec
+    var => tvals
+  end
+
+  # construct new table
+  newtab = (; pairs...) |> Tables.materializer(tab)
+
+  # new spatial data
+  newgeotable = georef(newtab, tgrid)
+
   newgeotable, nothing
 end
