@@ -3,7 +3,7 @@
 # ------------------------------------------------------------------
 
 """
-    SLIC(k, m; tol=1e-4, maxiter=10, weights=nothing, as=:CLUSTER)
+    SLIC(k, m; tol=1e-4, maxiter=10, weights=nothing, as=:cluster)
 
 A transform for clustering geospatial data into approximately `k`
 clusters using Simple Linear Iterative Clustering (SLIC).
@@ -20,7 +20,7 @@ The tradeoff is controlled with a hyperparameter parameter
 * `tol`     - Tolerance of k-means algorithm (default to `1e-4`)
 * `maxiter` - Maximum number of iterations (default to `10`)
 * `weights` - Dictionary with weights for each attribute (default to `nothing`)
-* `as`      - Cluster column name
+* `as`      - Variable name used to store clustering results
 
 ## References
 
@@ -36,7 +36,7 @@ struct SLIC{W} <: ClusteringTransform
   as::Symbol
 end
 
-function SLIC(k::Int, m::Real; tol=1e-4, maxiter=10, weights=nothing, as=:CLUSTER)
+function SLIC(k::Int, m::Real; tol=1e-4, maxiter=10, weights=nothing, as=:cluster)
   @assert tol > 0 "invalid tolerance"
   @assert maxiter > 0 "invalid number of iterations"
   SLIC{typeof(weights)}(k, m, tol, maxiter, weights, Symbol(as))

@@ -9,7 +9,7 @@ epanechnikov(h; λ) = (h ≤ λ) * (λ^2 - h^2)
 const KERNFUN = Dict(:uniform => uniform, :triangular => triangular, :epanechnikov => epanechnikov)
 
 """
-    GHC(k, λ; kern=:epanechnikov, link=:ward, as=:CLUSTER)
+    GHC(k, λ; kern=:epanechnikov, link=:ward, as=:cluster)
 
 A transform for partitioning geospatial data into `k` clusters 
 according to a range `λ` using Geostatistical Hierarchical
@@ -22,7 +22,7 @@ are nearby samples.
 * `λ`    - Approximate range of kernel function in length units
 * `kern` - Kernel function (`:uniform`, `:triangular` or `:epanechnikov`)
 * `link` - Linkage function (`:single`, `:average`, `:complete`, `:ward` or `:ward_presquared`)
-* `as`   - Cluster column name
+* `as`   - Variable name used to store clustering results
 
 ## References
 
@@ -48,7 +48,7 @@ struct GHC{ℒ<:Len} <: ClusteringTransform
   GHC(k, λ::ℒ, kern, link, as) where {ℒ<:Len} = new{float(ℒ)}(k, λ, kern, link, as)
 end
 
-function GHC(k, λ::Len; kern=:epanechnikov, link=:ward, as=:CLUSTER)
+function GHC(k, λ::Len; kern=:epanechnikov, link=:ward, as=:cluster)
   # sanity checks
   @assert k > 0 "invalid number of clusters"
   @assert λ > zero(λ) "invalid kernel range"
