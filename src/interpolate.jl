@@ -3,65 +3,42 @@
 # ------------------------------------------------------------------
 
 """
-    Interpolate(domain, vars₁ => model₁, ..., varsₙ => modelₙ; [parameters])
-    Interpolate([g₁, g₂, ..., gₙ], vars₁ => model₁, ..., varsₙ => modelₙ; [parameters])
+    Interpolate(domain; [parameters])
   
-Interpolate geospatial data on given `domain` or vector of geometries `[g₁, g₂, ..., gₙ]`,
-using geostatistical models `model₁`, ..., `modelₙ` for variables `vars₁`, ..., `varsₙ`.
-
-    Interpolate(domain, model=NN(); [parameters])
-    Interpolate([g₁, g₂, ..., gₙ], model=NN(); [parameters])
-  
-Interpolate geospatial data on given `domain` or vector of geometries `[g₁, g₂, ..., gₙ]`,
-using geostatistical `model` for all variables.
+Interpolate geospatial data on given `domain` (or vector of geometries)
+using a set of optional `parameters`.
 
 ## Parameters
 
+* `model` - Model from GeoStatsModels.jl (default to `NN()`)
 * `point` - Perform interpolation on point support (default to `true`)
 * `prob`  - Perform probabilistic interpolation (default to `false`)
 
 See also [`InterpolateNeighbors`](@ref).
 """
-struct Interpolate{D<:Domain} <: TableTransform
+struct Interpolate{D<:Domain,GM<:GeoStatsModel} <: TableTransform
   domain::D
-  selectors::Vector{ColumnSelector}
-  models::Vector{GeoStatsModel}
+  model::GM
   point::Bool
   prob::Bool
 end
 
-Interpolate(domain::Domain, selectors, models; point=true, prob=false) =
-  Interpolate(domain, collect(ColumnSelector, selectors), collect(GeoStatsModel, models), point, prob)
+Interpolate(domain::Domain; model=NN(), point=true, prob=false) = Interpolate(domain, model, point, prob)
 
-Interpolate(geoms::AbstractVector{<:Geometry}, selectors, models; kwargs...) =
-  Interpolate(GeometrySet(geoms), selectors, models; kwargs...)
-
-Interpolate(domain, model::GeoStatsModel=NN(); kwargs...) = Interpolate(domain, [AllSelector()], [model]; kwargs...)
-
-Interpolate(domain, pairs::Pair{<:Any,<:GeoStatsModel}...; kwargs...) =
-  Interpolate(domain, selector.(first.(pairs)), last.(pairs); kwargs...)
+Interpolate(geoms::AbstractVector{<:Geometry}; kwargs...) = Interpolate(GeometrySet(geoms); kwargs...)
 
 isrevertible(::Type{<:Interpolate}) = false
 
 function apply(transform::Interpolate, geotable::AbstractGeoTable)
-  absgtb = geotable |> AbsoluteUnits()
+  interp = fitpredict(
+    # forward arguments
+    transform.model,
+    geotable |> AbsoluteUnits(), # handle affine units
+    transform.domain;
+    point=transform.point,
+    prob=transform.prob,
+    neighbors=false
+  )
 
-  cols = Tables.columns(values(absgtb))
-  vars = Tables.columnnames(cols)
-
-  dom = transform.domain
-  point = transform.point
-  prob = transform.prob
-
-  selectors = transform.selectors
-  models = transform.models
-
-  interps = map(selectors, models) do selector, model
-    gtb = absgtb[:, selector(vars)]
-    fitpredict(model, gtb, dom; point, prob, neighbors=false)
-  end
-
-  newgeotable = reduce(hcat, interps)
-
-  newgeotable, nothing
+  interp, nothing
 end
