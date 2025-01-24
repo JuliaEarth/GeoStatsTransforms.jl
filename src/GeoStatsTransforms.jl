@@ -39,8 +39,6 @@ include("utils.jl")
 
 include("interpolate.jl")
 include("interpneighbors.jl")
-include("interpmissing.jl")
-include("interpnan.jl")
 include("simulate.jl")
 include("cookiecutter.jl")
 include("uniquecoords.jl")
@@ -57,10 +55,8 @@ include("precompile.jl")
 
 export
   # transforms
-  InterpolateNeighbors,
   Interpolate,
-  InterpolateMissing,
-  InterpolateNaN,
+  InterpolateNeighbors,
   Simulate,
   CookieCutter,
   UniqueCoords,

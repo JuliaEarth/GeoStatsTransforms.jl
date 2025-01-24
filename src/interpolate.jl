@@ -20,7 +20,7 @@ using geostatistical `model` for all variables.
 * `point` - Perform interpolation on point support (default to `true`)
 * `prob`  - Perform probabilistic interpolation (default to `false`)
 
-See also [`InterpolateNeighbors`](@ref), [`InterpolateMissing`](@ref), [`InterpolateNaN`](@ref).
+See also [`InterpolateNeighbors`](@ref).
 """
 struct Interpolate{D<:Domain} <: TableTransform
   domain::D
@@ -44,9 +44,9 @@ Interpolate(domain, pairs::Pair{<:Any,<:GeoStatsModel}...; kwargs...) =
 isrevertible(::Type{<:Interpolate}) = false
 
 function apply(transform::Interpolate, geotable::AbstractGeoTable)
-  geotable′ = geotable |> AbsoluteUnits()
+  absgtb = geotable |> AbsoluteUnits()
 
-  cols = Tables.columns(values(geotable′))
+  cols = Tables.columns(values(absgtb))
   vars = Tables.columnnames(cols)
 
   dom = transform.domain
@@ -57,7 +57,7 @@ function apply(transform::Interpolate, geotable::AbstractGeoTable)
   models = transform.models
 
   interps = map(selectors, models) do selector, model
-    gtb = geotable′[:, selector(vars)]
+    gtb = absgtb[:, selector(vars)]
     fitpredict(model, gtb, dom; point, prob, neighbors=false)
   end
 

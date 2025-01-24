@@ -40,7 +40,7 @@ Two `neighborhood` search methods are available:
 * If a `neighborhood` is not provided, the prediction is performed 
   using `maxneighbors` nearest neighbors according to `distance`.
 
-See also [`Interpolate`](@ref), [`InterpolateMissing`](@ref), [`InterpolateNaN`](@ref).
+See also [`Interpolate`](@ref).
 """
 struct InterpolateNeighbors{D<:Domain,N,M} <: TableTransform
   domain::D
@@ -88,9 +88,9 @@ InterpolateNeighbors(domain, pairs::Pair{<:Any,<:GeoStatsModel}...; kwargs...) =
 isrevertible(::Type{<:InterpolateNeighbors}) = false
 
 function apply(transform::InterpolateNeighbors, geotable::AbstractGeoTable)
-  geotable′ = geotable |> AbsoluteUnits()
+  absgtb = geotable |> AbsoluteUnits()
 
-  cols = Tables.columns(values(geotable′))
+  cols = Tables.columns(values(absgtb))
   vars = Tables.columnnames(cols)
 
   dom = transform.domain
@@ -105,7 +105,7 @@ function apply(transform::InterpolateNeighbors, geotable::AbstractGeoTable)
   models = transform.models
 
   interps = map(selectors, models) do selector, model
-    gtb = geotable′[:, selector(vars)]
+    gtb = absgtb[:, selector(vars)]
     fitpredict(model, gtb, dom; point, prob, minneighbors, maxneighbors, neighborhood, distance)
   end
 

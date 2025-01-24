@@ -23,8 +23,6 @@ datadir = joinpath(@__DIR__, "data")
 testfiles = [
   "interpolate.jl",
   "interpneighbors.jl",
-  "interpmissing.jl",
-  "interpnan.jl",
   "simulate.jl",
   "cookiecutter.jl",
   "uniquecoords.jl",

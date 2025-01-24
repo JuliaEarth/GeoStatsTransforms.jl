@@ -10,8 +10,6 @@ using PrecompileTools
   @compile_workload begin
     gtb |> Interpolate(gtb.geometry)
     gtb |> InterpolateNeighbors(gtb.geometry)
-    gtb |> InterpolateMissing()
-    gtb |> InterpolateNaN()
     gtb |> Simulate(gtb.geometry, :Z => proc)
     gtb |> UniqueCoords()
     gtb |> Aggregate(gtb.geometry)
