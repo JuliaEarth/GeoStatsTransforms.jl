@@ -46,7 +46,7 @@ Potrace(mask::Column, pairs::Pair{C,<:Function}...; ϵ=nothing) where {C<:Column
 isrevertible(::Type{<:Potrace}) = true
 
 function apply(transform::Potrace, geotable::AbstractGeoTable)
-  gtb = _adjustunits(geotable)
+  gtb = geotable |> AbsoluteUnits()
   dom = domain(gtb)
   tab = values(gtb)
   cols = Tables.columns(tab)

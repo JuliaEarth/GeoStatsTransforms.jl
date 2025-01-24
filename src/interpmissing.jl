@@ -20,12 +20,12 @@ of measurements.
 
 ## Parameters
 
+* `point`        - Perform interpolation on point support (default to `true`)
+* `prob`         - Perform probabilistic interpolation (default to `false`)
 * `minneighbors` - Minimum number of neighbors (default to `1`)
 * `maxneighbors` - Maximum number of neighbors (default to `10`)
 * `neighborhood` - Search neighborhood (default to `nothing`)
 * `distance`     - A distance defined in Distances.jl (default to `Euclidean()`)
-* `point`        - Perform interpolation on point support (default to `true`)
-* `prob`         - Perform probabilistic interpolation (default to `false`)
 
 The `maxneighbors` parameter can be used to perform interpolation with
 a subset of measurements per prediction location. If `maxneighbors`
@@ -97,8 +97,11 @@ function _interp(geotable, selectors, models, droptrans; kwargs...)
 end
 
 function apply(transform::InterpolateMissing, geotable::AbstractGeoTable)
+  gtb = geotable |> AbsoluteUnits()
+
   selectors = transform.selectors
   models = transform.models
+
   kwargs = (
     minneighbors=transform.minneighbors,
     maxneighbors=transform.maxneighbors,
@@ -108,7 +111,7 @@ function apply(transform::InterpolateMissing, geotable::AbstractGeoTable)
     prob=transform.prob
   )
 
-  newgeotable = _interp(geotable, selectors, models, DropMissing(); kwargs...)
+  newgeotable = _interp(gtb, selectors, models, DropMissing(); kwargs...)
 
   newgeotable, nothing
 end

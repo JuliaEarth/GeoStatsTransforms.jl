@@ -29,7 +29,7 @@ Upscale(factors::Int...) = Upscale(factors)
 isrevertible(::Type{<:Upscale}) = false
 
 function apply(transform::Upscale, geotable::AbstractGeoTable)
-  gtb = _adjustunits(geotable)
+  gtb = geotable |> AbsoluteUnits()
   tab = values(gtb)
   grid = domain(gtb)
   cols = Tables.columns(tab)

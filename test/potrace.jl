@@ -74,8 +74,8 @@
   ngtb = gtb |> Potrace(:M)
   masks = unique(gtb.M)
   @test unit(eltype(ngtb.T)) == u"K"
-  v = GeoStatsTransforms._absunit(gtb.T[masks[1] .== gtb.M])
+  v = uconvert.(u"K", gtb.T[masks[1] .== gtb.M])
   @test ngtb.T[1] ≈ mean(v)
-  v = GeoStatsTransforms._absunit(gtb.T[masks[2] .== gtb.M])
+  v = uconvert.(u"K", gtb.T[masks[2] .== gtb.M])
   @test ngtb.T[2] ≈ mean(v)
 end

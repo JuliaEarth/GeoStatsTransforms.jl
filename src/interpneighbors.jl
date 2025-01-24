@@ -21,12 +21,12 @@ of measurements.
 
 ## Parameters
 
+* `point`        - Perform interpolation on point support (default to `true`)
+* `prob`         - Perform probabilistic interpolation (default to `false`)
 * `minneighbors` - Minimum number of neighbors (default to `1`)
 * `maxneighbors` - Maximum number of neighbors (default to `10`)
 * `neighborhood` - Search neighborhood (default to `nothing`)
 * `distance`     - A distance defined in Distances.jl (default to `Euclidean()`)
-* `point`        - Perform interpolation on point support (default to `true`)
-* `prob`         - Perform probabilistic interpolation (default to `false`)
 
 The `maxneighbors` parameter can be used to perform interpolation with
 a subset of measurements per prediction location. If `maxneighbors`
@@ -88,24 +88,25 @@ InterpolateNeighbors(domain, pairs::Pair{<:Any,<:GeoStatsModel}...; kwargs...) =
 isrevertible(::Type{<:InterpolateNeighbors}) = false
 
 function apply(transform::InterpolateNeighbors, geotable::AbstractGeoTable)
-  tab = values(geotable)
-  cols = Tables.columns(tab)
+  geotable′ = geotable |> AbsoluteUnits()
+
+  cols = Tables.columns(values(geotable′))
   vars = Tables.columnnames(cols)
 
-  domain = transform.domain
-  selectors = transform.selectors
-  models = transform.models
+  dom = transform.domain
+  point = transform.point
+  prob = transform.prob
   minneighbors = transform.minneighbors
   maxneighbors = transform.maxneighbors
   neighborhood = transform.neighborhood
   distance = transform.distance
-  point = transform.point
-  prob = transform.prob
+
+  selectors = transform.selectors
+  models = transform.models
 
   interps = map(selectors, models) do selector, model
-    svars = selector(vars)
-    data = geotable[:, svars]
-    fitpredict(model, data, domain; point, prob, minneighbors, maxneighbors, neighborhood, distance)
+    gtb = geotable′[:, selector(vars)]
+    fitpredict(model, gtb, dom; point, prob, minneighbors, maxneighbors, neighborhood, distance)
   end
 
   newgeotable = reduce(hcat, interps)

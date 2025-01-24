@@ -44,20 +44,21 @@ Interpolate(domain, pairs::Pair{<:Any,<:GeoStatsModel}...; kwargs...) =
 isrevertible(::Type{<:Interpolate}) = false
 
 function apply(transform::Interpolate, geotable::AbstractGeoTable)
-  tab = values(geotable)
-  cols = Tables.columns(tab)
+  geotable′ = geotable |> AbsoluteUnits()
+
+  cols = Tables.columns(values(geotable′))
   vars = Tables.columnnames(cols)
 
-  domain = transform.domain
-  selectors = transform.selectors
-  models = transform.models
+  dom = transform.domain
   point = transform.point
   prob = transform.prob
 
+  selectors = transform.selectors
+  models = transform.models
+
   interps = map(selectors, models) do selector, model
-    svars = selector(vars)
-    data = geotable[:, svars]
-    fitpredict(model, data, domain; point, prob, neighbors=false)
+    gtb = geotable′[:, selector(vars)]
+    fitpredict(model, gtb, dom; point, prob, neighbors=false)
   end
 
   newgeotable = reduce(hcat, interps)

@@ -112,7 +112,7 @@
 
   for i in 1:10
     j = i * 10
-    v = GeoStatsTransforms._absunit(sdata.T[(j - 9):j])
+    v = uconvert.(u"K", sdata.T[(j - 9):j])
     @test ndata.T[i] == mean(v)
   end
 

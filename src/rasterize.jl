@@ -55,7 +55,7 @@ _grid(grid::Grid, dom) = grid
 _grid(dims::Dims, dom) = CartesianGrid(extrema(boundingbox(dom))...; dims)
 
 function apply(transform::Rasterize, geotable::AbstractGeoTable)
-  gtb = _adjustunits(geotable)
+  gtb = geotable |> AbsoluteUnits()
   dom = domain(gtb)
   tab = values(gtb)
   cols = Tables.columns(tab)

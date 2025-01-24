@@ -34,7 +34,7 @@ Aggregate(geoms::AbstractVector{<:Geometry}, args...) = Aggregate(GeometrySet(ge
 isrevertible(::Type{<:Aggregate}) = false
 
 function apply(transform::Aggregate, geotable::AbstractGeoTable)
-  gtb = _adjustunits(geotable)
+  gtb = geotable |> AbsoluteUnits()
   table = values(gtb)
   cols = Tables.columns(table)
   vars = Tables.columnnames(cols)

@@ -36,7 +36,7 @@ apply(transform::UniqueCoords, geotable::AbstractGeoTable) = _unique(transform, 
 
 function _unique(transform::UniqueCoords, domain::Domain, table)
   dom = domain
-  tab = _adjustunits(table)
+  tab = table |> AbsoluteUnits()
   cols = Tables.columns(tab)
   vars = Tables.columnnames(cols)
 

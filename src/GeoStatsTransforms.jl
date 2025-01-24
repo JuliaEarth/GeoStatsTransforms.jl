@@ -25,7 +25,6 @@ using Statistics
 using Random
 
 using OhMyThreads: tmap
-using Unitful: AffineQuantity
 using TiledIteration: TileIterator
 using ColumnSelectors: ColumnSelector, SingleColumnSelector
 using ColumnSelectors: Column, AllSelector, NoneSelector
