@@ -7,7 +7,7 @@
   parent = QuiltingProcess(trainimg, (30, 30))
 
   child0 = GaussianProcess(SphericalVariogram(range=20.0, sill=0.2))
-  child1 = GaussianProcess(SphericalVariogram(MetricBall((200.0, 20.0))))
+  child1 = GaussianProcess(SphericalVariogram(ranges=(200.0, 20.0)))
 
   sdomain = CartesianGrid(100, 100)
   transform = CookieCutter(sdomain, :facies => parent, :poro => [0 => child0, 1 => child1])

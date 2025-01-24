@@ -21,7 +21,7 @@ The `parameters` are forwarded to the `rand` method of the geostatistical proces
 ```julia
 parent = QuiltingProcess(trainimg, (30, 30))
 child0 = GaussianProcess(SphericalVariogram(range=20.0, sill=0.2))
-child1 = GaussianProcess(SphericalVariogram(MetricBall((200.0, 20.0))))
+child1 = GaussianProcess(SphericalVariogram(ranges=(200.0, 20.0)))
 transform = CookieCutter(domain, :parent => parent, :child => [0 => child0, 1 => child1])
 ```
 """
