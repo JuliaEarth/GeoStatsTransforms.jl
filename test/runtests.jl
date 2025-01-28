@@ -12,7 +12,6 @@ using CategoricalArrays
 using Statistics
 using Test, StableRNGs
 using FileIO: load
-import DataScienceTraits as DST
 
 import ImageQuilting
 

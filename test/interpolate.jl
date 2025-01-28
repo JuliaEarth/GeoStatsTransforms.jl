@@ -2,10 +2,9 @@
   @test !isrevertible(Interpolate(CartesianGrid(2, 2)))
 
   pts = rand(Point, 3)
-  gtb = georef((a=[1, 2, 3], b=[4, 5, 6]), pts)
+  gtb = georef((; z=[1, 2, 3]), pts)
   ngtb = gtb |> Interpolate(pts; model=IDW())
-  @test ngtb.a == gtb.a
-  @test ngtb.b == gtb.b
+  @test ngtb.z == gtb.z
   @test ngtb.geometry == gtb.geometry
 
   gtb = georef((; z=[1.0, 0.0, 1.0]), [(25.0, 25.0), (50.0, 75.0), (75.0, 50.0)])
@@ -30,7 +29,7 @@
 
   # default model is NN
   pts = rand(Point, 3)
-  gtb = georef((; z=[1.0, 2.0, 3.0], c=["a", "b", "c"]), pts)
+  gtb = georef((; z=["a", "b", "c"]), pts)
   ngtb = gtb |> Interpolate(pts)
   @test ngtb == gtb
 end

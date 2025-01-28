@@ -1,6 +1,5 @@
 [deps]
 CategoricalArrays = "324d7699-5711-5eae-9e2f-1d82baa6b597"
-DataScienceTraits = "6cb2f572-2d2b-4ba6-bdb3-e710fa044d6c"
 FileIO = "5789e2e9-d7fb-5bc7-8068-2c6fae9b9549"
 GeoStatsFunctions = "6771c435-bc22-4842-b0c3-41852a255103"
 GeoStatsImages = "7cd16168-b42c-5e7d-a585-4f59d326662d"
