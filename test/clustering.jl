@@ -103,7 +103,7 @@
     @test length(unique(C.cluster)) == 50
 
     # large geotable
-    𝒮 = georef((z=[10sin(i/10) + j for i in 1:100, j in 1:100],))
+    𝒮 = georef((z=[10sin(i / 10) + j for i in 1:100, j in 1:100],))
     C = 𝒮 |> GHC(3, 1.0)
     @test length(unique(C.cluster)) == 3
 
