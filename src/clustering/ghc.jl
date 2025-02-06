@@ -9,7 +9,7 @@ epanechnikov(h; λ) = (h ≤ λ) * (λ^2 - h^2)
 const KERNFUN = Dict(:uniform => uniform, :triangular => triangular, :epanechnikov => epanechnikov)
 
 """
-    GHC(k, λ; kern=:epanechnikov, link=:ward, as=:cluster)
+    GHC(k, λ; nmax=2000, kern=:epanechnikov, link=:ward, as=:cluster)
 
 A transform for partitioning geospatial data into `k` clusters 
 according to a range `λ` using Geostatistical Hierarchical
@@ -20,6 +20,7 @@ are nearby samples.
 
 * `k`    - Approximate number of clusters
 * `λ`    - Approximate range of kernel function in length units
+* `nmax` - Maximum number of observations to use in dissimilarity matrix
 * `kern` - Kernel function (`:uniform`, `:triangular` or `:epanechnikov`)
 * `link` - Linkage function (`:single`, `:average`, `:complete`, `:ward` or `:ward_presquared`)
 * `as`   - Variable name used to store clustering results
@@ -42,19 +43,21 @@ are nearby samples.
 struct GHC{ℒ<:Len} <: ClusteringTransform
   k::Int
   λ::ℒ
+  nmax::Int
   kern::Symbol
   link::Symbol
   as::Symbol
-  GHC(k, λ::ℒ, kern, link, as) where {ℒ<:Len} = new{float(ℒ)}(k, λ, kern, link, as)
+  GHC(k, λ::ℒ, nmax, kern, link, as) where {ℒ<:Len} = new{float(ℒ)}(k, λ, nmax, kern, link, as)
 end
 
-function GHC(k, λ::Len; kern=:epanechnikov, link=:ward, as=:cluster)
+function GHC(k, λ::Len; nmax=2000, kern=:epanechnikov, link=:ward, as=:cluster)
   # sanity checks
-  @assert k > 0 "invalid number of clusters"
-  @assert λ > zero(λ) "invalid kernel range"
+  @assert k > 0 "number of cluster must be positive"
+  @assert λ > zero(λ) "kernel range must be positive"
+  @assert nmax > 0 "maximum number of observations must be positive"
   @assert kern ∈ [:uniform, :triangular, :epanechnikov] "invalid kernel function"
   @assert link ∈ [:single, :average, :complete, :ward, :ward_presquared] "invalid linkage function"
-  GHC(k, λ, kern, link, Symbol(as))
+  GHC(k, λ, nmax, kern, link, Symbol(as))
 end
 
 GHC(k, λ; kwargs...) = GHC(k, _addunit(λ, u"m"); kwargs...)
@@ -63,14 +66,18 @@ function apply(transform::GHC, geotable)
   # GHC parameters
   k = transform.k
   λ = transform.λ
+  nmax = transform.nmax
   kern = transform.kern
   link = transform.link
 
   # all covariates must be continuous
   values(geotable) |> Assert(cond=x -> elscitype(x) <: Continuous)
 
+  # sub-sample geotable to fit dissimilarity matrix
+  gtb = ghc_subsample(geotable, nmax)
+
   # dissimilarity matrix
-  D = ghc_dissimilarity_matrix(geotable, kern, λ)
+  D = ghc_dissimilarity_matrix(gtb, kern, λ)
 
   # classical hierarchical clustering
   tree = hclust(D, linkage=link)
@@ -78,10 +85,24 @@ function apply(transform::GHC, geotable)
   # cut tree to produce clusters
   labels = cutree(tree, k=k)
 
-  newtable = (; transform.as => categorical(labels))
-  newgeotable = georef(newtable, domain(geotable))
+  # georeference categorical labels
+  newtab = (; transform.as => categorical(labels))
+  newgtb = georef(newtab, domain(gtb))
+
+  # interpolate neighbors in case of sub-sampling
+  newgeotable = if nrow(newgtb) < nrow(geotable)
+    newgtb |> InterpolateNeighbors(domain(geotable), model=NN())
+  else
+    newgtb
+  end
 
   newgeotable, nothing
+end
+
+function ghc_subsample(geotable, nmax)
+  nobs = nrow(geotable)
+  tran = nobs > nmax ? Sample(nmax, replace=false) : Identity()
+  geotable |> tran
 end
 
 function ghc_dissimilarity_matrix(geotable, kern, λ)
