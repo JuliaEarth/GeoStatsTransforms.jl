@@ -43,9 +43,9 @@ end
 
 function GSC(k, m; σ=1.0, tol=1e-4, maxiter=10, weights=nothing, as=:cluster)
   # sanity checks
-  @assert k > 0 "invalid number of clusters"
-  @assert m > 0 "invalid multiplicative factor"
-  @assert σ > 0 "invalid standard deviation"
+  @assert k > 0 "number of clusters must be positive"
+  @assert m > 0 "multiplicative factor must be positive"
+  @assert σ > 0 "standard deviation must be positive"
   GSC(k, m, σ, tol, maxiter, weights, Symbol(as))
 end
 
