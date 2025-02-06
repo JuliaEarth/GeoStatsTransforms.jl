@@ -108,20 +108,20 @@ function ghc_dissimilarity_matrix(geotable, kern, λ)
   # dissimilarity matrix
   D = zeros(n, n)
   @inbounds for j in 1:p # for each pair of covariates
-    Zj = Tables.getcolumn(cols, j)
+    zⱼ = Tables.getcolumn(cols, j)
     for i in j:p
-      Zi = Tables.getcolumn(cols, i)
+      zᵢ = Tables.getcolumn(cols, i)
 
       # difference matrix for covariate pair
-      Δ = ghc_diff_matrix(Zi, Zj)
+      Δ = ghc_diff_matrix(zᵢ, zⱼ)
 
       # contribution to dissimilarity matrix
       for l in 1:n
-        Kl = K[:, l]
+        Kₗ = K[:, l]
         for k in (l + 1):n
-          Kk = K[:, k]
-          Kkl = kron(Kl, Kk) # faster Kk * transpose(Kl)
-          I, W = findnz(Kkl)
+          Kₖ = K[:, k]
+          Kₖₗ = kron(Kₗ, Kₖ) # faster Kₖ * transpose(Kₗ)
+          I, W = findnz(Kₖₗ)
           num = sum(W .* Δ[I], init=zero(eltype(W)))
           den = sum(W, init=zero(eltype(W)))
           iszero(den) || (D[k, l] += (1 / 2) * (num / den))
@@ -163,16 +163,16 @@ function ghc_kern_matrix(kern, λ, 𝒟)
   # kernel matrix
   K = ustrip.(Kλ.(H))
 
-  # return sparse version
+  # return sparse matrix
   sparse(K)
 end
 
-function ghc_diff_matrix(Zi, Zj)
-  n = length(Zi)
+function ghc_diff_matrix(zᵢ, zⱼ)
+  n = length(zᵢ)
   Δ = zeros(n, n)
   @inbounds for l in 1:n
     for k in (l + 1):n
-      Δ[k, l] = (Zi[k] - Zi[l]) * (Zj[k] - Zj[l])
+      Δ[k, l] = (zᵢ[k] - zᵢ[l]) * (zⱼ[k] - zⱼ[l])
     end
     Δ[l, l] = 0.0
     for k in 1:(l - 1)
