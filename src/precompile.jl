@@ -6,11 +6,9 @@ using PrecompileTools
 
 @setup_workload begin
   gtb = georef((; Z=rand(10, 10)))
-  proc = GaussianProcess()
   @compile_workload begin
     gtb |> Interpolate(gtb.geometry)
     gtb |> InterpolateNeighbors(gtb.geometry)
-    gtb |> Simulate(gtb.geometry, :Z => proc)
     gtb |> UniqueCoords()
     gtb |> Aggregate(gtb.geometry)
     gtb |> Transfer(gtb.geometry)
