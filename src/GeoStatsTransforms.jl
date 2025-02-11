@@ -7,7 +7,6 @@ module GeoStatsTransforms
 using Meshes
 using GeoTables
 using GeoStatsModels
-using GeoStatsProcesses
 
 using Tables
 using Unitful
@@ -30,7 +29,6 @@ using ColumnSelectors: ColumnSelector, SingleColumnSelector
 using ColumnSelectors: Column, AllSelector, NoneSelector
 using ColumnSelectors: selector, selectsingle
 using GeoStatsModels: GeoStatsModel, fitpredict
-using GeoStatsProcesses: GeoStatsProcess
 
 import TableTransforms: apply, revert, reapply
 import TableTransforms: isrevertible
@@ -39,8 +37,6 @@ include("utils.jl")
 
 include("interpolate.jl")
 include("interpneighbors.jl")
-include("simulate.jl")
-include("cookiecutter.jl")
 include("uniquecoords.jl")
 include("aggregate.jl")
 include("transfer.jl")
@@ -57,8 +53,6 @@ export
   # transforms
   Interpolate,
   InterpolateNeighbors,
-  Simulate,
-  CookieCutter,
   UniqueCoords,
   Aggregate,
   Transfer,

@@ -5,7 +5,6 @@ using Unitful
 using GeoTables
 using GeoStatsFunctions
 using GeoStatsModels
-using GeoStatsProcesses
 using GeoStatsImages
 using TableTransforms
 using CategoricalArrays
@@ -22,8 +21,6 @@ datadir = joinpath(@__DIR__, "data")
 testfiles = [
   "interpolate.jl",
   "interpneighbors.jl",
-  "simulate.jl",
-  "cookiecutter.jl",
   "uniquecoords.jl",
   "aggregate.jl",
   "transfer.jl",
