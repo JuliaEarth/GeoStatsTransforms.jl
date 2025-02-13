@@ -12,6 +12,9 @@ using Geostatistical Spectral Clustering (GSC).
 
 * `k`       - Desired number of clusters
 * `m`       - Multiplicative factor for adjacent weights
+
+## Options
+
 * `σ`       - Standard deviation for exponential model (default to `1.0`)
 * `tol`     - Tolerance of k-means algorithm (default to `1e-4`)
 * `maxiter` - Maximum number of iterations (default to `10`)

@@ -7,16 +7,20 @@
 
 A transform for clustering geospatial data into approximately `k`
 clusters using Simple Linear Iterative Clustering (SLIC).
+
 The transform produces clusters of samples that are spatially
-connected based on a distance `dₛ` and that, at the same
-time, are similar in terms of `vars` with distance `dᵥ`.
-The tradeoff is controlled with a hyperparameter parameter
-`m` in an additive model `dₜ = √(dᵥ² + m²(dₛ/s)²)`.
+connected based on a distance `dₛ` and that, at the same time,
+are similar in terms of `vars` with distance `dᵥ`. The tradeoff
+is controlled with a hyperparameter `m` in an additive model
+`dₜ = √(dᵥ² + m²(dₛ/s)²)`.
 
 ## Parameters
 
 * `k`       - Approximate number of clusters
 * `m`       - Hyperparameter of SLIC model
+
+## Options
+
 * `tol`     - Tolerance of k-means algorithm (default to `1e-4`)
 * `maxiter` - Maximum number of iterations (default to `10`)
 * `weights` - Dictionary with weights for each attribute (default to `nothing`)

@@ -3,12 +3,12 @@
 # ------------------------------------------------------------------
 
 """
-    InterpolateNeighbors(domain; [parameters])
+    InterpolateNeighbors(domain; [options])
   
-Interpolate geospatial data with neighbor search on given `domain`
-(or vector of geometries) using a set of optional `parameters`.
+Interpolate geotable with neighbor search on given `domain`
+(or vector of geometries) using a set of `options`.
 
-## Parameters
+## Options
 
 * `model`        - Model from GeoStatsModels.jl (default to `NN()`)
 * `path`         - Path over the domain (default to `LinearPath()`)
@@ -26,6 +26,22 @@ Two neighbor search methods are available:
 
 * If a `neighborhood` is not provided, the prediction is performed 
   using `maxneighbors` nearest neighbors according to `distance`.
+
+## Examples
+
+```julia
+# polynomial model with 10 nearby samples
+geotable |> InterpolateNeighbors(grid, model=Polynomial(), maxneighbors=10)
+
+# inverse distance weighting model with samples inside 100m radius
+geotable |> InterpolateNeighbors(pset, model=IDW(), neighborhood=MetricBall(100u"m"))
+```
+
+### Notes
+
+The interpolation is performed with a subset of nearby samples.
+This can lead to undesired artifacts, specially when the number
+of samples is small. If that is that case, prefer [`Interpolate`](@ref).
 
 See also [`Interpolate`](@ref).
 """

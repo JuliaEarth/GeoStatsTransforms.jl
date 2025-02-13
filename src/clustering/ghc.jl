@@ -20,6 +20,9 @@ are nearby samples.
 
 * `k`    - Approximate number of clusters
 * `λ`    - Approximate range of kernel function in length units
+
+## Options
+
 * `nmax` - Maximum number of observations to use in dissimilarity matrix
 * `kern` - Kernel function (`:uniform`, `:triangular` or `:epanechnikov`)
 * `link` - Linkage function (`:single`, `:average`, `:complete`, `:ward` or `:ward_presquared`)
