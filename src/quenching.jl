@@ -3,14 +3,16 @@
 # ------------------------------------------------------------------
 
 """
-    Quenching(transiogram; maxiter=100, skip=[])
+    Quenching(transiogram; [options])
   
 Simulated quenching (Carle et al. 1998) with given
 theoretical `transiogram` from GeoStatsFunctions.jl.
 
-Optionally, specify a maximum number of iterations
-`maxiter`, and `skip` indices in the domain during
-the simulation (i.e., optimization).
+## Options
+
+* `tol` - Tolerance on relative error (default to `1e-4`)
+* `maxiter` - Maximum number of iterations (default to `100`)
+* `skip` - Indices to skip during simulation (default to `[]`)
 
 ## Examples
 
@@ -29,11 +31,12 @@ Quenching(SphericalTransiogram(), skip=[1])
 """
 struct Quenching{T<:Transiogram} <: TableTransform
   transiogram::T
+  tol::Float64
   maxiter::Int
   skip::Vector{Int}
 end
 
-Quenching(func; maxiter=100, skip=Int[]) = Quenching(func, maxiter, skip)
+Quenching(func; tol=1e-4, maxiter=100, skip=Int[]) = Quenching(func, tol, maxiter, skip)
 
 isrevertible(::Type{<:Quenching}) = false
 
@@ -108,23 +111,20 @@ function apply(transform::Quenching, geotable::AbstractGeoTable)
     newgtb = quenching(gtb)
     newobj = objective(newgtb)
 
-    # update upon improvement
+    # relative error
+    error = (newobj - obj) / obj
+
+    # update in case of improvement
     if newobj < obj
       gtb = newgtb
       obj = newobj
     end
 
+    # break in case of low error
+    error < transform.tol && break
+
     iter += 1
   end
 
   gtb, nothing
-end
-
-function _proportions(vals)
-  levs = levels(vals)
-  count = Dict(levs .=> 0)
-  for v in vals
-    count[v] += 1
-  end
-  [count[l] for l in levs] ./ length(levs)
 end
