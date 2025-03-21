@@ -10,9 +10,9 @@ theoretical `transiogram` from GeoStatsFunctions.jl.
 
 ## Options
 
-* `tol` - Tolerance on relative error (default to `1e-4`)
-* `maxiter` - Maximum number of iterations (default to `100`)
-* `skip` - Indices to skip during simulation (default to `[]`)
+* `tol`     - Tolerance on relative error (default to `1e-2`)
+* `maxiter` - Maximum number of iterations (default to `10`)
+* `skip`    - Indices to skip during simulation (default to `[]`)
 
 ## Examples
 
@@ -36,7 +36,7 @@ struct Quenching{T<:Transiogram} <: TableTransform
   skip::Vector{Int}
 end
 
-Quenching(func; tol=1e-4, maxiter=100, skip=Int[]) = Quenching(func, tol, maxiter, skip)
+Quenching(func; tol=1e-2, maxiter=10, skip=Int[]) = Quenching(func, tol, maxiter, skip)
 
 isrevertible(::Type{<:Quenching}) = false
 
@@ -60,6 +60,11 @@ function apply(transform::Quenching, geotable::AbstractGeoTable)
   # indices where data can be changed
   nelm = nelements(dom)
   inds = setdiff(1:nelm, transform.skip)
+
+  # searcher for efficient lookup of neighbors
+  nmax = 26
+  searcher = KNearestSearch(dom, nmax)
+  neighbors = Vector{Int}(undef, nmax)
 
   # auxiliary variables
   d = embeddim(dom)
@@ -93,13 +98,13 @@ function apply(transform::Quenching, geotable::AbstractGeoTable)
     cols = Tables.columns(values(gtb))
     vals = Tables.getcolumn(cols, var)
     @inbounds for i in shuffle(inds)
-      j = rand((i - 1, i + 1))
-      while j < 1 || j > nelm
-        j = rand((i - 1, i + 1))
-      end
-      vals[i] = vals[j]
+      c = centroid(dom, i)
+      n = search!(neighbors, c, searcher)
+      js = view(neighbors, 1:n)
+      vs = view(vals, js)
+      vals[i] = _mode(vs)
     end
-    georef((; var => vals), domain(gtb))
+    georef((; var => vals), dom)
   end
 
   # main loop
@@ -112,7 +117,7 @@ function apply(transform::Quenching, geotable::AbstractGeoTable)
     newobj = objective(newgtb)
 
     # relative error
-    error = (newobj - obj) / obj
+    error = abs((newobj - obj) / obj)
 
     # update in case of improvement
     if newobj < obj
@@ -127,4 +132,12 @@ function apply(transform::Quenching, geotable::AbstractGeoTable)
   end
 
   gtb, nothing
+end
+
+function _mode(vs)
+  c = Dict(unique(vs) .=> 0)
+  for v in vs
+    c[v] += 1
+  end
+  argmax(c)
 end
