@@ -31,10 +31,10 @@ Two neighbor search methods are available:
 
 ```julia
 # polynomial model with 10 nearby samples
-geotable |> InterpolateNeighbors(grid, model=Polynomial(), maxneighbors=10)
+InterpolateNeighbors(grid, model=Polynomial(), maxneighbors=10)
 
 # inverse distance weighting model with samples inside 100m radius
-geotable |> InterpolateNeighbors(pset, model=IDW(), neighborhood=MetricBall(100u"m"))
+InterpolateNeighbors(pset, model=IDW(), neighborhood=MetricBall(100u"m"))
 ```
 
 ### Notes

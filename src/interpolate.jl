@@ -18,10 +18,10 @@ using a set of `options`.
 
 ```julia
 # nearest neighbor model
-geotable |> Interpolate(grid, model=NN())
+Interpolate(grid, model=NN())
 
 # inverse distance weighting model
-geotable |> Interpolate(pset, model=IDW())
+Interpolate(pset, model=IDW())
 ```
 
 ### Notes
