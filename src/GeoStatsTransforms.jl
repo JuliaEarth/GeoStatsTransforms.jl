@@ -6,6 +6,7 @@ module GeoStatsTransforms
 
 using Meshes
 using GeoTables
+using GeoStatsFunctions
 using GeoStatsModels
 
 using Tables
@@ -42,10 +43,11 @@ include("aggregate.jl")
 include("transfer.jl")
 include("upscale.jl")
 include("downscale.jl")
-include("clustering.jl")
 include("rasterize.jl")
 include("potrace.jl")
 include("detrend.jl")
+include("quenching.jl")
+include("clustering.jl")
 
 include("precompile.jl")
 
@@ -61,6 +63,7 @@ export
   Rasterize,
   Potrace,
   Detrend,
+  Quenching,
   SLIC,
   GHC,
   GSC
