@@ -57,15 +57,6 @@ function apply(transform::Quenching, geotable::AbstractGeoTable)
   var = first(vars)
   dom = domain(geotable)
 
-  # indices where data can be changed
-  nelm = nelements(dom)
-  inds = setdiff(1:nelm, transform.skip)
-
-  # searcher for efficient lookup of neighbors
-  nmax = 26
-  searcher = KNearestSearch(dom, nmax)
-  neighbors = Vector{Int}(undef, nmax)
-
   # auxiliary variables
   d = embeddim(dom)
   𝓁 = range(τ)
@@ -78,6 +69,15 @@ function apply(transform::Quenching, geotable::AbstractGeoTable)
   v = ntuple(d) do j
     Vec(ntuple(i -> ℒ(i == j), d))
   end
+
+  # indices where data can be changed
+  nelm = nelements(dom)
+  inds = setdiff(1:nelm, transform.skip)
+
+  # searcher for efficient lookup of neighbors
+  nmax = 3^d - 1
+  searcher = KNearestSearch(dom, nmax)
+  neighbors = Vector{Int}(undef, nmax)
 
   # objective function
   function objective(gtb)

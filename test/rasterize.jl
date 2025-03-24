@@ -1,5 +1,5 @@
 @testset "Rasterize" begin
-  @test isrevertible(Rasterize(10, 10)) == true
+  @test isrevertible(Rasterize(10, 10))
 
   a = [1, 2, 3, 4, 5]
   b = [1.1, 2.2, 3.3, 4.4, 5.5]

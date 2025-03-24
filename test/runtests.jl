@@ -26,10 +26,11 @@ testfiles = [
   "transfer.jl",
   "upscale.jl",
   "downscale.jl",
-  "clustering.jl",
   "rasterize.jl",
   "potrace.jl",
-  "detrend.jl"
+  "detrend.jl",
+  "quenching.jl",
+  "clustering.jl"
 ]
 
 @testset "GeoStatsTransforms.jl" begin
