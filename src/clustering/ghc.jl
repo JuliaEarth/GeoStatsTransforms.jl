@@ -43,7 +43,7 @@ are nearby samples.
   or `λ=2.0` but the problem starts to become computationally unfeasible
   around `λ=10.0` due to the density of points.
 """
-struct GHC{ℒ<:Len} <: ClusteringTransform
+struct GHC{ℒ<:Len} <: TableTransform
   k::Int
   λ::ℒ
   nmax::Int
@@ -65,7 +65,7 @@ end
 
 GHC(k, λ; kwargs...) = GHC(k, _addunit(λ, u"m"); kwargs...)
 
-function apply(transform::GHC, geotable)
+function apply(transform::GHC, geotable::AbstractGeoTable)
   # GHC parameters
   k = transform.k
   λ = transform.λ

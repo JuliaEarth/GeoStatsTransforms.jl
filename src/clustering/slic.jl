@@ -31,7 +31,7 @@ is controlled with a hyperparameter `m` in an additive model
 * Achanta et al. 2011. [SLIC superpixels compared to state-of-the-art
   superpixel methods](https://ieeexplore.ieee.org/document/6205760)
 """
-struct SLIC{W} <: ClusteringTransform
+struct SLIC{W} <: TableTransform
   k::Int
   m::Float64
   tol::Float64
@@ -46,7 +46,7 @@ function SLIC(k::Int, m::Real; tol=1e-4, maxiter=10, weights=nothing, as=:cluste
   SLIC{typeof(weights)}(k, m, tol, maxiter, weights, Symbol(as))
 end
 
-function apply(transform::SLIC, geotable)
+function apply(transform::SLIC, geotable::AbstractGeoTable)
   # retrieve parameters
   w = transform.weights
   m = transform.m

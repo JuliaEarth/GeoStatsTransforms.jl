@@ -34,7 +34,7 @@ described in Romary et al. 2015. Instead of setting Wᵢⱼ = 0 when i <-/-> j,
 we simply magnify the weight by a multiplicative factor Wᵢⱼ *= m when i <--> j.
 This leads to dense matrices but also better results in practice.
 """
-struct GSC{W} <: ClusteringTransform
+struct GSC{W} <: TableTransform
   k::Int
   m::Float64
   σ::Float64
@@ -52,7 +52,7 @@ function GSC(k, m; σ=1.0, tol=1e-4, maxiter=10, weights=nothing, as=:cluster)
   GSC(k, m, σ, tol, maxiter, weights, Symbol(as))
 end
 
-function apply(transform::GSC, geotable)
+function apply(transform::GSC, geotable::AbstractGeoTable)
   # retrieve table and domain
   𝒯 = values(geotable)
   𝒟 = domain(geotable)

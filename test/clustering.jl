@@ -90,7 +90,7 @@
   end
 
   @testset "GHC" begin
-    Z = [ones(10, 10) 2ones(10, 10); 3ones(10, 10) 4ones(10, 10)] .|> float
+    Z = [ones(10, 10) 2ones(10, 10); 3ones(10, 10) 4ones(10, 10)]
     𝒮 = georef((Z=Z,))
     C = 𝒮 |> GHC(4, 1.0)
     𝒮′ = georef(values(𝒮), centroid.(domain(𝒮)))
