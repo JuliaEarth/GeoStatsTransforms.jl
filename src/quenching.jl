@@ -75,7 +75,7 @@ function apply(transform::Quenching, geotable::AbstractGeoTable)
   inds = setdiff(1:nelm, transform.skip)
 
   # searcher for efficient lookup of neighbors
-  nmax = 3^d - 1
+  nmax = 26
   searcher = KNearestSearch(dom, nmax)
   neighbors = Vector{Int}(undef, nmax)
 
