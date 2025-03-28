@@ -80,13 +80,6 @@
     @test !isempty(Iterators.product(ranges...))
     c = GeoStatsTransforms.slic_initialization(𝒟, s)
     @test !isempty(c)
-
-    # as kwarg
-    𝒮 = georef((Z=[1, 2, 3],))
-    C = 𝒮 |> SLIC(3, 1.0, as=:cluster)
-    @test names(C) == ["cluster", "geometry"]
-    C = 𝒮 |> SLIC(3, 1.0, as="cluster")
-    @test names(C) == ["cluster", "geometry"]
   end
 
   @testset "GHC" begin
@@ -106,25 +99,11 @@
     𝒮 = georef((z=[10sin(i / 10) + j for i in 1:100, j in 1:100],))
     C = 𝒮 |> GHC(3, 1.0)
     @test length(unique(C.cluster)) == 3
-
-    # as kwarg
-    𝒮 = georef((Z=[1.0, 2.0, 3.0],))
-    C = 𝒮 |> GHC(3, 1.0, as=:cluster)
-    @test names(C) == ["cluster", "geometry"]
-    C = 𝒮 |> GHC(3, 1.0, as="cluster")
-    @test names(C) == ["cluster", "geometry"]
   end
 
   @testset "GSC" begin
     𝒮 = georef((Z=[10sin(i / 10) + j for i in 1:100, j in 1:100],))
     C = 𝒮 |> GSC(50, 2.0)
     @test Set(C.cluster) == Set(1:50)
-
-    # as kwarg
-    𝒮 = georef((Z=[1, 2, 3],))
-    C = 𝒮 |> GSC(3, 2.0, as=:cluster)
-    @test names(C) == ["cluster", "geometry"]
-    C = 𝒮 |> GSC(3, 2.0, as="cluster")
-    @test names(C) == ["cluster", "geometry"]
   end
 end

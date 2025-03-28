@@ -9,7 +9,7 @@ epanechnikov(h; λ) = (h ≤ λ) * (λ^2 - h^2)
 const KERNFUN = Dict(:uniform => uniform, :triangular => triangular, :epanechnikov => epanechnikov)
 
 """
-    GHC(k, λ; nmax=2000, kern=:epanechnikov, link=:ward, as=:cluster)
+    GHC(k, λ; nmax=2000, kern=:epanechnikov, link=:ward)
 
 A transform for partitioning geospatial data into `k` clusters 
 according to a range `λ` using Geostatistical Hierarchical
@@ -26,7 +26,6 @@ are nearby samples.
 * `nmax` - Maximum number of observations to use in dissimilarity matrix
 * `kern` - Kernel function (`:uniform`, `:triangular` or `:epanechnikov`)
 * `link` - Linkage function (`:single`, `:average`, `:complete`, `:ward` or `:ward_presquared`)
-* `as`   - Variable name used to store clustering results
 
 ## References
 
@@ -49,18 +48,17 @@ struct GHC{ℒ<:Len} <: TableTransform
   nmax::Int
   kern::Symbol
   link::Symbol
-  as::Symbol
-  GHC(k, λ::ℒ, nmax, kern, link, as) where {ℒ<:Len} = new{float(ℒ)}(k, λ, nmax, kern, link, as)
+  GHC(k, λ::ℒ, nmax, kern, link) where {ℒ<:Len} = new{float(ℒ)}(k, λ, nmax, kern, link)
 end
 
-function GHC(k, λ::Len; nmax=2000, kern=:epanechnikov, link=:ward, as=:cluster)
+function GHC(k, λ::Len; nmax=2000, kern=:epanechnikov, link=:ward)
   # sanity checks
   @assert k > 0 "number of cluster must be positive"
   @assert λ > zero(λ) "kernel range must be positive"
   @assert nmax > 0 "maximum number of observations must be positive"
   @assert kern ∈ [:uniform, :triangular, :epanechnikov] "invalid kernel function"
   @assert link ∈ [:single, :average, :complete, :ward, :ward_presquared] "invalid linkage function"
-  GHC(k, λ, nmax, kern, link, Symbol(as))
+  GHC(k, λ, nmax, kern, link)
 end
 
 GHC(k, λ; kwargs...) = GHC(k, _addunit(λ, u"m"); kwargs...)
@@ -89,7 +87,7 @@ function apply(transform::GHC, geotable::AbstractGeoTable)
   labels = cutree(tree, k=k)
 
   # georeference categorical labels
-  newtab = (; transform.as => categorical(labels))
+  newtab = (; cluster=labels)
   newgtb = georef(newtab, domain(gtb))
 
   # interpolate neighbors in case of sub-sampling
