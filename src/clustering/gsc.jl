@@ -5,20 +5,18 @@
 """
     GSC(k, m; σ=1.0, tol=1e-4, maxiter=10, weights=nothing)
 
-A transform for partitioning geospatial data into `k` clusters
-using Geostatistical Spectral Clustering (GSC).
+Assign labels to rows of geotable using the Geostatistical
+Spectral Clustering (GSC) algorithm.
 
-## Parameters
-
-* `k`       - Desired number of clusters
-* `m`       - Multiplicative factor for adjacent weights
+The number of clusters `k` and the multiplicative factor `m`
+for adjacent weights determine the resulting number of clusters.
 
 ## Options
 
 * `σ`       - Standard deviation for exponential model (default to `1.0`)
 * `tol`     - Tolerance of k-means algorithm (default to `1e-4`)
 * `maxiter` - Maximum number of iterations (default to `10`)
-* `weights` - Dictionary with weights for each attribute (default to `nothing`)
+* `weights` - Dictionary of weights for each variable (default to `nothing`)
 
 ## References
 
@@ -28,7 +26,7 @@ using Geostatistical Spectral Clustering (GSC).
 
 ## Notes
 
-- The algorithm implemented here is slightly different than the algorithm
+The algorithm implemented here is slightly different than the algorithm
 described in Romary et al. 2015. Instead of setting Wᵢⱼ = 0 when i <-/-> j,
 we simply magnify the weight by a multiplicative factor Wᵢⱼ *= m when i <--> j.
 This leads to dense matrices but also better results in practice.
