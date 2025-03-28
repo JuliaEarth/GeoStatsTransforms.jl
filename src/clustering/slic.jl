@@ -11,7 +11,8 @@ Iterative Clustering (SLIC) algorithm.
 The algorithm produces approximately `k` clusters by combining
 a geospatial distance `dₛ` and a distance between variables `dᵥ`.
 The tradeoff is controlled with a hyperparameter `m` in an
-additive model `dₜ = √(dᵥ² + m²(dₛ/s)²)`.
+additive model `dₜ = √(dᵥ² + m²(dₛ/s)²)` where `s` is the
+average spacing between cluster centroids.
 
 ## Options
 
@@ -73,14 +74,20 @@ function apply(transform::SLIC, geotable::AbstractGeoTable)
   dists = fill(Inf, nelements(𝒟))
 
   # Lloyd's (a.k.a. k-means) algorithm
-  err, iter = Inf, 0
-  while err > tol && iter < maxiter
-    old = copy(centers)
-
+  iter = 0
+  δcur = mean(dists)
+  while iter < maxiter
     slic_assignment!(Ω, searcher, td, m, s, centers, labels, dists)
     slic_update!(Ω, centers, labels)
 
-    err = norm(centers - old) / norm(old)
+    # average distance to centers
+    δnew = mean(dists)
+
+    # break upon convergence
+    abs(δnew - δcur) / δcur < tol && break
+
+    # update and continue
+    δcur = δnew
     iter += 1
   end
 
