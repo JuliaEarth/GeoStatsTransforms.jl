@@ -46,63 +46,64 @@ end
 
 function apply(transform::SLIC, geotable::AbstractGeoTable)
   # retrieve parameters
-  w = transform.weights
+  k = transform.k
   m = transform.m
+  tol = transform.tol
+  maxiter = transform.maxiter
+  weights = transform.weights
 
   # normalize attributes
-  𝒯 = values(geotable) |> StdFeats()
-  Ω = georef(𝒯, domain(geotable))
+  Ω = geotable |> StdFeats()
   𝒟 = domain(Ω)
 
   # initial spacing of clusters
-  s = slic_spacing(𝒟, transform)
+  s = slic_spacing(𝒟, k)
 
   # initialize cluster centers
-  c = slic_initialization(𝒟, s)
+  centers = slic_initialization(𝒟, s)
 
-  # ball neighborhood search
+  # initialize search method
   searcher = BallSearch(𝒟, MetricBall(maximum(s)))
 
-  # pre-allocate memory for label and distance
-  l = fill(0, nelements(𝒟))
-  d = fill(Inf, nelements(𝒟))
+  # define table distance
+  td = TableDistance(normalize=false, weights=weights)
 
-  # performance parameters
-  tol = transform.tol
-  maxiter = transform.maxiter
+  # pre-allocate memory for label and distance
+  labels = fill(0, nelements(𝒟))
+  dists = fill(Inf, nelements(𝒟))
 
   # Lloyd's (a.k.a. k-means) algorithm
   err, iter = Inf, 0
   while err > tol && iter < maxiter
-    o = copy(c)
+    old = copy(centers)
 
-    slic_assignment!(Ω, searcher, w, m, s, c, l, d)
-    slic_update!(Ω, c, l)
+    slic_assignment!(Ω, searcher, td, m, s, centers, labels, dists)
+    slic_update!(Ω, centers, labels)
 
-    err = norm(c - o) / norm(o)
+    err = norm(centers - old) / norm(old)
     iter += 1
   end
 
-  orphans = findall(iszero, l)
+  orphans = findall(iszero, labels)
   if length(orphans) > 0
-    assigned = findall(!iszero, l)
+    assigned = findall(!iszero, labels)
     𝒟₀ = view(𝒟, assigned)
     csearcher = KNearestSearch(𝒟₀, 1)
 
     for orphan in orphans
       p = centroid(𝒟, orphan)
       i = search(p, csearcher)[1]
-      l[orphan] = l[assigned[i]]
+      labels[orphan] = labels[assigned[i]]
     end
   end
 
-  newtable = (; cluster=l)
+  newtable = (; cluster=labels)
   newgeotable = georef(newtable, domain(geotable))
 
   newgeotable, nothing
 end
 
-slic_spacing(𝒟, transform) = slic_srecursion(transform.k, sides(boundingbox(𝒟)))
+slic_spacing(𝒟, k) = slic_srecursion(k, sides(boundingbox(𝒟)))
 
 # given the desired number of clusters and the sides of the bounding box
 # of the domain, returns the spacing for each dimension recursively
@@ -147,10 +148,10 @@ function slic_initialization(𝒟, s)
   unique(clusters)
 end
 
-function slic_assignment!(geotable, searcher, w, m, s, c, l, d)
+function slic_assignment!(geotable, searcher, td, m, s, centers, labels, dists)
   sₘ = maximum(s)
   𝒟 = domain(geotable)
-  for (k, cₖ) in enumerate(c)
+  for (k, cₖ) in enumerate(centers)
     inds = search(centroid(𝒟, cₖ), searcher)
 
     # distance between coordinates
@@ -163,27 +164,27 @@ function slic_assignment!(geotable, searcher, w, m, s, c, l, d)
     𝒮ₖ = view(geotable, [cₖ])
     V = values(𝒮ᵢ)
     vₖ = values(𝒮ₖ)
-    dᵥ = pairwise(TableDistance(normalize=false, weights=w), V, vₖ)
+    dᵥ = pairwise(td, V, vₖ)
 
     # total distance
     dₜ = @. √(dᵥ^2 + m^2 * (dₛ / sₘ)^2)
 
     @inbounds for (i, ind) in enumerate(inds)
-      if dₜ[i] < d[ind]
-        d[ind] = dₜ[i]
-        l[ind] = k
+      if dₜ[i] < dists[ind]
+        dists[ind] = dₜ[i]
+        labels[ind] = k
       end
     end
   end
 end
 
-function slic_update!(geotable, c, l)
+function slic_update!(geotable, centers, labels)
   𝒟 = domain(geotable)
-  for k in eachindex(c)
-    inds = findall(isequal(k), l)
+  for k in eachindex(centers)
+    inds = findall(isequal(k), labels)
     X = (to(centroid(𝒟, i)) for i in inds)
     xₖ = [mean(X)]
     dₛ = pairwise(Euclidean(), X, xₖ)
-    @inbounds c[k] = inds[argmin(vec(dₛ))]
+    @inbounds centers[k] = inds[argmin(vec(dₛ))]
   end
 end
