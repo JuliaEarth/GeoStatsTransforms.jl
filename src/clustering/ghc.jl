@@ -72,7 +72,9 @@ function apply(transform::GHC, geotable::AbstractGeoTable)
   link = transform.link
 
   # all covariates must be continuous
-  values(geotable) |> Assert(cond=x -> elscitype(x) <: Continuous)
+  cond = x -> elscitype(x) <: Continuous
+  msg = "GHC only defined for continuous variables"
+  values(geotable) |> Assert(; cond, msg)
 
   # sub-sample geotable to fit dissimilarity matrix
   gtb = ghc_subsample(geotable, nmax)
