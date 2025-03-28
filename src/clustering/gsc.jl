@@ -90,7 +90,7 @@ function apply(transform::GSC, geotable::AbstractGeoTable)
   result = kmeans(V', k, tol=tol, maxiter=maxiter)
   labels = assignments(result)
 
-  newtable = (; cluster=labels)
+  newtable = (; label=labels)
   newgeotable = georef(newtable, domain(geotable))
 
   newgeotable, nothing

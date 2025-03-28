@@ -97,7 +97,7 @@ function apply(transform::SLIC, geotable::AbstractGeoTable)
     end
   end
 
-  newtable = (; cluster=labels)
+  newtable = (; label=labels)
   newgeotable = georef(newtable, domain(geotable))
 
   newgeotable, nothing

@@ -87,7 +87,7 @@ function apply(transform::GHC, geotable::AbstractGeoTable)
   labels = cutree(tree, k=k)
 
   # georeference labels
-  newtab = (; cluster=labels)
+  newtab = (; label=labels)
   newgtb = georef(newtab, domain(gtb))
 
   # interpolate neighbors in case of sub-sampling
