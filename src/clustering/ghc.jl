@@ -86,7 +86,7 @@ function apply(transform::GHC, geotable::AbstractGeoTable)
   # cut tree to produce clusters
   labels = cutree(tree, k=k)
 
-  # georeference categorical labels
+  # georeference labels
   newtab = (; cluster=labels)
   newgtb = georef(newtab, domain(gtb))
 
