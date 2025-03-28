@@ -50,8 +50,8 @@ function apply(transform::SLIC, geotable::AbstractGeoTable)
   m = transform.m
 
   # normalize attributes
-  𝒯 = TableDistances.normalize(values(geotable))
-  Ω = georef(first(𝒯), domain(geotable))
+  𝒯 = values(geotable) |> StdFeats()
+  Ω = georef(𝒯, domain(geotable))
   𝒟 = domain(Ω)
 
   # initial spacing of clusters
