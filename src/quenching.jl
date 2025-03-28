@@ -48,9 +48,10 @@ function apply(transform::Quenching, geotable::AbstractGeoTable)
   cols = Tables.columns(values(geotable))
   vars = Tables.columnnames(cols)
   vals = Tables.getcolumn(cols, first(vars))
+  levs = levels(vals)
   isok = length(vars) == 1 && elscitype(vals) <: Categorical
   @assert isok "Quenching only defined for a single categorical variable"
-  isok = length(levels(vals)) == nvariates(τ)
+  isok = length(levs) == nvariates(τ)
   @assert isok "Invalid transiogram for number of categorical values"
 
   # variable and domain
@@ -102,7 +103,7 @@ function apply(transform::Quenching, geotable::AbstractGeoTable)
       n = search!(neighbors, c, searcher)
       js = view(neighbors, 1:n)
       vs = view(vals, js)
-      vals[i] = _mode(vs)
+      vals[i] = _mode(levs, vs)
     end
     georef((; var => vals), dom)
   end
@@ -134,9 +135,9 @@ function apply(transform::Quenching, geotable::AbstractGeoTable)
   gtb, nothing
 end
 
-function _mode(vs)
-  c = Dict(unique(vs) .=> 0)
-  for v in vs
+function _mode(levs, vs)
+  c = Dict(levs .=> 0)
+  @inbounds for v in vs
     c[v] += 1
   end
   argmax(c)
