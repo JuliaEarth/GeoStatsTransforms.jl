@@ -27,9 +27,9 @@ average spacing between cluster centroids.
 
 ### Notes
 
-The variables (or features) are standardized with [`StdFeats`](@ref)
-prior to the core algorithm in order to facilitate the choice of the
-parameter `m`.
+The variables (or features) are standardized with the `StdFeats`
+transform prior to the core algorithm in order to facilitate the
+choice of the parameter `m`.
 """
 struct SLIC{W} <: TableTransform
   k::Int
