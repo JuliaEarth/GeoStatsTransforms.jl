@@ -13,6 +13,7 @@ theoretical `transiogram` from GeoStatsFunctions.jl.
 * `tol`     - Tolerance on relative error (default to `1e-2`)
 * `maxiter` - Maximum number of iterations (default to `10`)
 * `skip`    - Indices to skip during simulation (default to `[]`)
+* `rng`     - Random number generator (default to `Random.default_rng()`)
 
 ## Examples
 
@@ -29,18 +30,22 @@ Quenching(SphericalTransiogram(), skip=[1])
 * Carle et al 1998. [Conditional Simulation of Hydrofacies Architecture:
   A Transition Probability/Markov Approach](https://doi.org/10.2110/sepmcheg.01.147)
 """
-struct Quenching{T<:Transiogram} <: TableTransform
+struct Quenching{T<:Transiogram,RNG} <: TableTransform
   transiogram::T
   tol::Float64
   maxiter::Int
   skip::Vector{Int}
+  rng::RNG
 end
 
-Quenching(func; tol=1e-2, maxiter=10, skip=Int[]) = Quenching(func, tol, maxiter, skip)
+Quenching(func; tol=1e-2, maxiter=10, skip=Int[], rng=Random.default_rng()) = Quenching(func, tol, maxiter, skip, rng)
 
 isrevertible(::Type{<:Quenching}) = false
 
 function apply(transform::Quenching, geotable::AbstractGeoTable)
+  # random number generator
+  rng = transform.rng
+
   # theoretical transiogram
   τ = transform.transiogram
 
@@ -98,7 +103,7 @@ function apply(transform::Quenching, geotable::AbstractGeoTable)
   function quenching(gtb)
     cols = Tables.columns(values(gtb))
     vals = Tables.getcolumn(cols, var)
-    @inbounds for i in shuffle(inds)
+    @inbounds for i in shuffle(rng, inds)
       c = centroid(dom, i)
       n = search!(neighbors, c, searcher)
       js = view(neighbors, 1:n)
