@@ -87,6 +87,7 @@ function apply(transform::Quenching, geotable::AbstractGeoTable)
 
   # objective function
   function objective(gtb)
+    linds = _levelindices(levs, gtb)
     map(v) do vⱼ
       t = DirectionalTransiogram(vⱼ, gtb, var; nlags=5, maxlag=𝓁)
       hs = t.abscissas
@@ -94,7 +95,8 @@ function apply(transform::Quenching, geotable::AbstractGeoTable)
       map(enumerate(hs)) do (i, h)
         tmat = getindex.(ts, i)
         τmat = τ(p, p + ustrip(h) * vⱼ)
-        sum(abs2, tmat .- τmat)
+        t̂mat = view(τmat, linds, linds)
+        sum(abs2, tmat .- t̂mat)
       end |> sum
     end |> sum
   end
@@ -138,6 +140,13 @@ function apply(transform::Quenching, geotable::AbstractGeoTable)
   end
 
   gtb, nothing
+end
+
+function _levelindices(levs, gtb)
+  cols = Tables.columns(values(gtb))
+  vars = Tables.columnnames(cols)
+  vals = Tables.getcolumn(cols, first(vars))
+  indexin(levels(vals), levs)
 end
 
 function _mode(levs, vs)
