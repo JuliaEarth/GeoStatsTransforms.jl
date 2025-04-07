@@ -10,10 +10,11 @@ theoretical `transiogram` from GeoStatsFunctions.jl.
 
 ## Options
 
-* `tol`     - Tolerance on relative error (default to `1e-2`)
-* `maxiter` - Maximum number of iterations (default to `10`)
-* `skip`    - Indices to skip during simulation (default to `[]`)
-* `rng`     - Random number generator (default to `Random.default_rng()`)
+* `skip`         - Indices to skip during simulation (default to `[]`)
+* `tol`          - Tolerance on relative error (default to `1e-2`)
+* `maxiter`      - Maximum number of iterations (default to `10`)
+* `maxneighbors` - Maximum number of neighbors (default to `26`)
+* `rng`          - Random number generator (default to `Random.default_rng()`)
 
 ## Examples
 
@@ -32,20 +33,19 @@ Quenching(SphericalTransiogram(), skip=[1])
 """
 struct Quenching{T<:Transiogram,RNG} <: TableTransform
   transiogram::T
+  skip::Vector{Int}
   tol::Float64
   maxiter::Int
-  skip::Vector{Int}
+  maxneighbors::Int
   rng::RNG
 end
 
-Quenching(func; tol=1e-2, maxiter=10, skip=Int[], rng=Random.default_rng()) = Quenching(func, tol, maxiter, skip, rng)
+Quenching(func; skip=Int[], tol=1e-2, maxiter=10, maxneighbors=26, rng=Random.default_rng()) =
+  Quenching(func, skip, tol, maxiter, maxneighbors, rng)
 
 isrevertible(::Type{<:Quenching}) = false
 
 function apply(transform::Quenching, geotable::AbstractGeoTable)
-  # random number generator
-  rng = transform.rng
-
   # theoretical transiogram
   τ = transform.transiogram
 
@@ -81,7 +81,7 @@ function apply(transform::Quenching, geotable::AbstractGeoTable)
   inds = setdiff(1:nelm, transform.skip)
 
   # searcher for efficient lookup of neighbors
-  nmax = 26
+  nmax = transform.maxneighbors
   searcher = KNearestSearch(dom, nmax)
   neighbors = Vector{Int}(undef, nmax)
 
@@ -103,7 +103,7 @@ function apply(transform::Quenching, geotable::AbstractGeoTable)
   function quenching(gtb)
     cols = Tables.columns(values(gtb))
     vals = Tables.getcolumn(cols, var)
-    @inbounds for i in shuffle(rng, inds)
+    @inbounds for i in shuffle(transform.rng, inds)
       c = centroid(dom, i)
       n = search!(neighbors, c, searcher)
       js = view(neighbors, 1:n)
