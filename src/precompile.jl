@@ -6,7 +6,6 @@ using PrecompileTools
 
 @setup_workload begin
   gtb = georef((; Z=rand(10, 10)))
-  itb = georef((; I=rand(1:2, 10, 10)))
   @compile_workload begin
     gtb |> Interpolate(gtb.geometry)
     gtb |> InterpolateNeighbors(gtb.geometry)
@@ -18,7 +17,6 @@ using PrecompileTools
     gtb |> Rasterize(gtb.geometry)
     gtb |> Potrace(:Z)
     gtb |> Detrend(:Z)
-    itb |> Quenching(GaussianTransiogram())
     gtb |> SLIC(3, 1.0)
     gtb |> GHC(3, 1.0)
     gtb |> GSC(3, 2.0)

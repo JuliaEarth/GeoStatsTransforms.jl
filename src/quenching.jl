@@ -89,7 +89,7 @@ function apply(transform::Quenching, geotable::AbstractGeoTable)
   function objective(gtb)
     linds = _levelindices(levs, gtb)
     map(v) do vⱼ
-      t = DirectionalTransiogram(vⱼ, gtb, var; nlags=5, maxlag=𝓁)
+      t = DirectionalTransiogram(vⱼ, gtb, var; maxlag=𝓁)
       hs = t.abscissas
       ts = t.ordinates
       map(enumerate(hs)) do (i, h)
@@ -101,42 +101,40 @@ function apply(transform::Quenching, geotable::AbstractGeoTable)
     end |> sum
   end
 
-  # quenching step
-  function quenching(gtb)
-    cols = Tables.columns(values(gtb))
-    vals = Tables.getcolumn(cols, var)
-    @inbounds for i in shuffle(transform.rng, inds)
-      c = centroid(dom, i)
-      n = search!(neighbors, c, searcher)
-      js = view(neighbors, 1:n)
-      vs = view(vals, js)
-      vals[i] = _mode(levs, vs)
-    end
-    georef((; var => vals), dom)
-  end
-
   # main loop
-  iter = 0
   gtb = deepcopy(geotable)
-  obj = objective(gtb)
-  while iter < transform.maxiter
-    # quenching step
-    newgtb = quenching(gtb)
-    newobj = objective(newgtb)
+  for _ in 1:transform.maxiter
+    keepgoing = false
+    @inbounds for ind in shuffle(transform.rng, inds)
+      # search neighbors
+      n = search!(neighbors, centroid(dom, ind), searcher)
+      ninds = view(neighbors, 1:n)
 
-    # relative error
-    error = abs((newobj - obj) / obj)
+      # compute mode of neighbor values
+      cols = Tables.columns(values(gtb))
+      vals = Tables.getcolumn(cols, var)
+      mode = _mode(levs, view(vals, ninds))
 
-    # update in case of improvement
-    if newobj < obj
-      gtb = newgtb
-      obj = newobj
+      # geotable with neighbors
+      ntb = view(gtb, ninds)
+
+      # objective before change
+      val = vals[ind]
+      obj = objective(ntb)
+
+      # objective after change
+      vals[ind] = mode
+      newobj = objective(ntb)
+
+      # keep going if relative error is large
+      if abs(newobj - obj) / obj ≥ transform.tol
+        keepgoing = true
+      end
+
+      # undo change if necessary
+      newobj < obj || (vals[ind] = val)
     end
-
-    # break in case of low error
-    error < transform.tol && break
-
-    iter += 1
+    keepgoing || break
   end
 
   gtb, nothing
@@ -149,9 +147,9 @@ function _levelindices(levs, gtb)
   indexin(levels(vals), levs)
 end
 
-function _mode(levs, vs)
+function _mode(levs, vals)
   c = Dict(levs .=> 0)
-  @inbounds for v in vs
+  @inbounds for v in vals
     c[v] += 1
   end
   argmax(c)
