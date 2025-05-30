@@ -103,7 +103,7 @@ function apply(transform::Quenching, geotable::AbstractGeoTable)
 
   # main loop
   gtb = deepcopy(geotable)
-  for _ in 1:transform.maxiter
+  for _ in 1:(transform.maxiter)
     keepgoing = false
     @inbounds for ind in shuffle(transform.rng, inds)
       # search neighbors
