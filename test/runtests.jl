@@ -30,6 +30,7 @@ testfiles = [
   "potrace.jl",
   "detrend.jl",
   "quenching.jl",
+  "maxposterior.jl",
   "clustering.jl"
 ]
 
