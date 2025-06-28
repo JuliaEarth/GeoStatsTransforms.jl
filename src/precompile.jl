@@ -5,20 +5,14 @@
 using PrecompileTools
 
 @setup_workload begin
-  gtb = georef((; Z=rand(10, 10)))
+  gtb = georef((; z=rand(10, 10)))
   @compile_workload begin
-    gtb |> Interpolate(gtb.geometry)
-    gtb |> InterpolateNeighbors(gtb.geometry)
-    gtb |> UniqueCoords()
-    gtb |> Aggregate(gtb.geometry)
-    gtb |> Transfer(gtb.geometry)
+    gtb |> Detrend(:z)
     gtb |> Upscale(2, 2)
     gtb |> Downscale(2, 2)
+    gtb |> Interpolate(gtb.geometry)
+    gtb |> InterpolateNeighbors(gtb.geometry)
     gtb |> Rasterize(gtb.geometry)
-    gtb |> Potrace(:Z)
-    gtb |> Detrend(:Z)
-    gtb |> SLIC(3, 1.0)
-    gtb |> GHC(3, 1.0)
-    gtb |> GSC(3, 2.0)
+    gtb |> Potrace(:z)
   end
 end
