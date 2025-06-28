@@ -38,8 +38,7 @@ struct MaxPosterior{F<:GeoStatsFunction,RNG} <: TableTransform
   rng::RNG
 end
 
-MaxPosterior(func; skip=Int[], maxneighbors=26, rng=Random.default_rng()) =
-  MaxPosterior(func, skip, maxneighbors, rng)
+MaxPosterior(func; skip=Int[], maxneighbors=26, rng=Random.default_rng()) = MaxPosterior(func, skip, maxneighbors, rng)
 
 isrevertible(::Type{<:MaxPosterior}) = false
 
