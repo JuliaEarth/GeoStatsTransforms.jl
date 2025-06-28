@@ -4,10 +4,14 @@
 
 """
     Transfer(domain)
+
+Transfer variables `var₁`, `var₂`, ..., `varₙ`
+from source domain to target `domain`.
+
     Transfer([g₁, g₂, ..., gₙ])
 
-Transfer variables `var₁`, `var₂`, ..., `varₙ` from source domain to target `domain`.
-Alternatively, transfer variables to geometries `g₁`, `g₂`, ..., `gₙ`.
+Alternatively, transfer variables to geometries
+`g₁`, `g₂`, ..., `gₙ`.
 
 # Examples
 

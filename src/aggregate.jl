@@ -4,12 +4,15 @@
 
 """
     Aggregate(domain, var₁ => agg₁, var₂ => agg₂, ..., varₙ => aggₙ)
-    Aggregate([g₁, g₂, ..., gₙ], var₁ => agg₁, var₂ => agg₂, ..., varₙ => aggₙ)
 
 Aggregate variables `var₁`, `var₂`, ..., `varₙ` over geospatial `domain` using
-aggregation functions `agg₁`, `agg₂`, ..., `aggₙ`. Alternatively, aggregate
-variables over geometries `g₁`, `g₂`, ..., `gₙ`. Default aggregation function
-is `mean` for continuous variables and `first` otherwise.
+aggregation functions `agg₁`, `agg₂`, ..., `aggₙ`.
+
+    Aggregate([g₁, g₂, ..., gₙ], var₁ => agg₁, var₂ => agg₂, ..., varₙ => aggₙ)
+
+Alternatively, aggregate variables over geometries `g₁`, `g₂`, ..., `gₙ`.
+
+Default aggregation function is `mean` for continuous variables and `first` otherwise.
 
 # Examples
 
