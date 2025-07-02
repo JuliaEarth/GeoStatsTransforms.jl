@@ -80,9 +80,10 @@ function apply(transform::Quenching, geotable::AbstractGeoTable)
   nelm = nelements(dom)
   inds = setdiff(1:nelm, transform.skip)
 
-  # searcher for efficient lookup of neighbors
+  # efficient lookup of neighbors
   nmax = transform.maxneighbors
-  searcher = KNearestSearch(dom, nmax)
+  ball = MetricBall(range(τ))
+  searcher = KBallSearch(dom, nmax, ball)
   neighbors = Vector{Int}(undef, nmax)
 
   # objective function
@@ -109,6 +110,9 @@ function apply(transform::Quenching, geotable::AbstractGeoTable)
       # search neighbors
       n = search!(neighbors, centroid(dom, ind), searcher)
       ninds = view(neighbors, 1:n)
+
+      # skip if not enough neighbors
+      n > 1 || continue
 
       # compute mode of neighbor values
       cols = Tables.columns(values(gtb))

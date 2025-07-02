@@ -71,10 +71,11 @@ function apply(transform::MaxPosterior, geotable::AbstractGeoTable)
   # CoKriging model
   model = Kriging(f, _proportions(vals))
 
-  # searcher for efficient lookup of neighbors
+  # efficient lookup of neighbors
   nelm = nelements(dom)
   nmax = transform.maxneighbors
-  searcher = KNearestSearch(dom, nmax)
+  ball = MetricBall(range(f))
+  searcher = KBallSearch(dom, nmax, ball)
   neighbors = Vector{Int}(undef, nmax)
 
   # indices where data can be changed
@@ -83,19 +84,22 @@ function apply(transform::MaxPosterior, geotable::AbstractGeoTable)
   # initialize buffer with results
   newvals = deepcopy(vals)
 
-  # initialize mask of interpolation
-  interpolated = trues(nelm)
+  # initialize maximum a posteriori mask
+  mask = trues(nelm)
 
   # maximum a posteriori loop
   @inbounds for ind in shuffle(transform.rng, cinds)
     # disable current index
-    interpolated[ind] = false
+    mask[ind] = false
 
     # center of target location
     center = centroid(dom, ind)
 
     # search neighbors with disabled index
-    n = search!(neighbors, center, searcher, mask=interpolated)
+    n = search!(neighbors, center, searcher, mask=mask)
+
+    # skip if not enough neighbors
+    n > 1 || continue
 
     # neighborhood with data
     neigh = let
@@ -117,7 +121,7 @@ function apply(transform::MaxPosterior, geotable::AbstractGeoTable)
     end
 
     # re-enable current index and continue
-    interpolated[ind] = true
+    mask[ind] = true
   end
 
   # georeference results
