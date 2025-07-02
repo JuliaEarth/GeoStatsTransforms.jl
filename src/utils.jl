@@ -28,3 +28,15 @@ const Len{T} = Quantity{T,u"𝐋"}
 
 _addunit(x::Number, u) = x * u
 _addunit(::Quantity, _) = throw(ArgumentError("invalid units, please check the documentation"))
+
+# ------
+# STATS
+# ------
+
+function _mode(levs, vals)
+  c = Dict(levs .=> 0)
+  @inbounds for v in vals
+    c[v] += 1
+  end
+  argmax(c)
+end

@@ -48,6 +48,7 @@ include("potrace.jl")
 include("detrend.jl")
 include("quenching.jl")
 include("maxposterior.jl")
+include("modefilter.jl")
 include("clustering.jl")
 
 include("precompile.jl")
@@ -66,6 +67,7 @@ export
   Detrend,
   Quenching,
   MaxPosterior,
+  ModeFilter,
   SLIC,
   GHC,
   GSC

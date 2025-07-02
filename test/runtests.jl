@@ -31,6 +31,7 @@ testfiles = [
   "detrend.jl",
   "quenching.jl",
   "maxposterior.jl",
+  "modefilter.jl",
   "clustering.jl"
 ]
 

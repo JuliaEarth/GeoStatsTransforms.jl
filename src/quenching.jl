@@ -150,11 +150,3 @@ function _levelindices(levs, gtb)
   vals = Tables.getcolumn(cols, first(vars))
   indexin(levels(vals), levs)
 end
-
-function _mode(levs, vals)
-  c = Dict(levs .=> 0)
-  @inbounds for v in vals
-    c[v] += 1
-  end
-  argmax(c)
-end
