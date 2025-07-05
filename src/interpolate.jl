@@ -49,7 +49,7 @@ function apply(transform::Interpolate, geotable::AbstractGeoTable)
   interp = fitpredict(
     # forward arguments
     transform.model,
-    geotable |> AbsoluteUnits(), # handle affine units
+    geotable |> AbsoluteUnits(),
     transform.domain;
     point=transform.point,
     prob=transform.prob,

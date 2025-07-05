@@ -11,7 +11,6 @@ Interpolate geotable with neighbor search on given `domain`
 ## Options
 
 * `model`        - Model from GeoStatsModels.jl (default to `NN()`)
-* `path`         - Path over the domain (default to `LinearPath()`)
 * `point`        - Perform interpolation on point support (default to `true`)
 * `prob`         - Perform probabilistic interpolation (default to `false`)
 * `minneighbors` - Minimum number of neighbors (default to `1`)
@@ -45,10 +44,9 @@ of samples is small. If that is that case, prefer [`Interpolate`](@ref).
 
 See also [`Interpolate`](@ref).
 """
-struct InterpolateNeighbors{D<:Domain,GM<:GeoStatsModel,P,N,M} <: TableTransform
+struct InterpolateNeighbors{D<:Domain,GM<:GeoStatsModel,N,M} <: TableTransform
   domain::D
   model::GM
-  path::P
   point::Bool
   prob::Bool
   minneighbors::Int
@@ -60,14 +58,13 @@ end
 InterpolateNeighbors(
   domain::Domain;
   model=NN(),
-  path=LinearPath(),
   point=true,
   prob=false,
   minneighbors=1,
   maxneighbors=10,
   neighborhood=nothing,
   distance=Euclidean()
-) = InterpolateNeighbors(domain, model, path, point, prob, minneighbors, maxneighbors, neighborhood, distance)
+) = InterpolateNeighbors(domain, model, point, prob, minneighbors, maxneighbors, neighborhood, distance)
 
 InterpolateNeighbors(geoms::AbstractVector{<:Geometry}; kwargs...) = InterpolateNeighbors(GeometrySet(geoms); kwargs...)
 
@@ -77,9 +74,8 @@ function apply(transform::InterpolateNeighbors, geotable::AbstractGeoTable)
   interp = fitpredict(
     # forward arguments
     transform.model,
-    geotable |> AbsoluteUnits(), # handle affine units
+    geotable |> AbsoluteUnits(),
     transform.domain;
-    path=transform.path,
     point=transform.point,
     prob=transform.prob,
     neighbors=true,
