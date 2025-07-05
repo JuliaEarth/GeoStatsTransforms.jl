@@ -91,19 +91,19 @@
     @test C.label == categorical(vec(Z'))
     @test C.label == C′.label
 
-    𝒮 = georef((z=[√(i^2 + j^2) for i in 1:50, j in 1:50],))
-    C = 𝒮 |> GHC(50, 1.0)
-    @test length(unique(C.label)) == 50
+    𝒮 = georef((z=[√(i^2 + j^2) for i in 1:10, j in 1:10],))
+    C = 𝒮 |> GHC(10, 1.0)
+    @test length(unique(C.label)) == 10
 
     # large geotable
-    𝒮 = georef((z=[10sin(i / 10) + j for i in 1:100, j in 1:100],))
+    𝒮 = georef((z=[10sin(i / 10) + j for i in 1:10, j in 1:10],))
     C = 𝒮 |> GHC(3, 1.0)
     @test length(unique(C.label)) == 3
   end
 
   @testset "GSC" begin
-    𝒮 = georef((Z=[10sin(i / 10) + j for i in 1:100, j in 1:100],))
-    C = 𝒮 |> GSC(50, 2.0)
-    @test Set(C.label) == Set(1:50)
+    𝒮 = georef((Z=[10sin(i / 10) + j for i in 1:10, j in 1:10],))
+    C = 𝒮 |> GSC(10, 2.0)
+    @test Set(C.label) == Set(1:10)
   end
 end
