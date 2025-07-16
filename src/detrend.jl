@@ -50,11 +50,11 @@ function apply(transform::Detrend, geotable)
 
   gview = geotable |> Select(snames)
   model = Polynomial(transform.degree)
-  fitted = GeoStatsModels.fit(model, gview)
+  fmodel = GeoStatsModels.fit(model, gview)
 
   ncols = map(names) do name
     z = Tables.getcolumn(cols, name)
-    ẑ(i) = GeoStatsModels.predict(fitted, name, centroid(dom, i))
+    ẑ(i) = GeoStatsModels.predict(fmodel, name, centroid(dom, i))
     if name ∈ snames
       @inbounds [z[i] - ẑ(i) for i in 1:nelements(dom)]
     else
@@ -67,7 +67,7 @@ function apply(transform::Detrend, geotable)
 
   newgeotable = georef(newtab, dom)
 
-  newgeotable, (snames, fitted)
+  newgeotable, (snames, fmodel)
 end
 
 function revert(::Detrend, newgeotable, cache)
@@ -76,11 +76,11 @@ function revert(::Detrend, newgeotable, cache)
   cols = Tables.columns(newtab)
   names = Tables.columnnames(cols)
 
-  snames, fitted = cache
+  snames, fmodel = cache
 
   ocols = map(names) do name
     z = Tables.getcolumn(cols, name)
-    ẑ(i) = GeoStatsModels.predict(fitted, name, centroid(newdom, i))
+    ẑ(i) = GeoStatsModels.predict(fmodel, name, centroid(newdom, i))
     if name ∈ snames
       @inbounds [z[i] + ẑ(i) for i in 1:nelements(newdom)]
     else
