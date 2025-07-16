@@ -62,8 +62,7 @@ function apply(transform::Detrend, geotable)
     end
   end
 
-  𝒯 = (; zip(names, ncols)...)
-  newtab = 𝒯 |> Tables.materializer(tab)
+  newtab = (; zip(names, ncols)...) |> Tables.materializer(tab)
 
   newgeotable = georef(newtab, dom)
 
@@ -88,8 +87,7 @@ function revert(::Detrend, newgeotable, cache)
     end
   end
 
-  𝒯 = (; zip(names, ocols)...)
-  table = 𝒯 |> Tables.materializer(newtab)
+  table = (; zip(names, ocols)...) |> Tables.materializer(newtab)
 
   georef(table, newdom)
 end
