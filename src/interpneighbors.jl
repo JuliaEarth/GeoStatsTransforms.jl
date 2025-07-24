@@ -8,7 +8,7 @@
 Interpolate geotable with neighbor search on given `domain`
 (or vector of geometries) using a set of `options`.
 
-## Options
+# Options
 
 * `model`        - Model from GeoStatsModels.jl (default to `NN()`)
 * `point`        - Perform interpolation on point support (default to `true`)
@@ -26,7 +26,7 @@ Two neighbor search methods are available:
 * If a `neighborhood` is not provided, the prediction is performed 
   using `maxneighbors` nearest neighbors according to `distance`.
 
-## Examples
+# Examples
 
 ```julia
 # polynomial model with 10 nearby samples

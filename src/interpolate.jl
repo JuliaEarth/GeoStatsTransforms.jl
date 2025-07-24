@@ -8,13 +8,13 @@
 Interpolate geotable on given `domain` (or vector of geometries)
 using a set of `options`.
 
-## Options
+# Options
 
 * `model` - Model from GeoStatsModels.jl (default to `NN()`)
 * `point` - Perform interpolation on point support (default to `true`)
 * `prob`  - Perform probabilistic interpolation (default to `false`)
 
-## Examples
+# Examples
 
 ```julia
 # nearest neighbor model

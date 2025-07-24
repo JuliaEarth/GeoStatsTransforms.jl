@@ -9,13 +9,13 @@ Replace categorical values with maximum a posteriori
 values given neighboring values and a theoretical
 `func`tion from GeoStatsFunctions.jl.
 
-## Options
+# Options
 
 * `skip`         - Indices to skip in domain (default to `[]`)
 * `maxneighbors` - Maximum number of neighbors (default to `26`)
 * `rng`          - Random number generator (default to `Random.default_rng()`)
 
-## Examples
+# Examples
 
 ```julia
 # maximum a posteriori with Gaussian transiogram

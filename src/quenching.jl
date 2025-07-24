@@ -8,7 +8,7 @@
 Simulated quenching (Carle et al. 1998) with given
 theoretical `transiogram` from GeoStatsFunctions.jl.
 
-## Options
+# Options
 
 * `skip`         - Indices to skip during simulation (default to `[]`)
 * `tol`          - Tolerance on relative error (default to `1e-2`)
@@ -16,7 +16,7 @@ theoretical `transiogram` from GeoStatsFunctions.jl.
 * `maxneighbors` - Maximum number of neighbors (default to `26`)
 * `rng`          - Random number generator (default to `Random.default_rng()`)
 
-## Examples
+# Examples
 
 ```julia
 # simulated quenching with Gaussian transiogram
