@@ -1,7 +1,7 @@
 name = "GeoStatsTransforms"
 uuid = "725d9659-360f-4996-9c94-5f19c7e4a8a6"
 authors = ["Júlio Hoffimann <julio.hoffimann@gmail.com> and contributors"]
-version = "0.12.14"
+version = "0.12.15"
 
 [deps]
 ArnoldiMethod = "ec485272-7323-5ecc-a04f-4719b315124d"
@@ -29,7 +29,7 @@ Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
 
 [compat]
 ArnoldiMethod = "0.2 - 0.4"
-CategoricalArrays = "0.10"
+CategoricalArrays = "0.10, 1.0"
 Clustering = "0.15"
 ColumnSelectors = "1.0"
 Combinatorics = "1.0"
