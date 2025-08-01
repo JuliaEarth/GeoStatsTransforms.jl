@@ -13,7 +13,7 @@ from source domain to target `domain`.
 Alternatively, transfer variables to geometries
 `g₁`, `g₂`, ..., `gₙ`.
 
-# Examples
+## Examples
 
 ```julia
 Transfer(CartesianGrid(10, 10))

@@ -14,7 +14,7 @@ with a polynomial of given `degree`.
 
 Detrends the columns that match with `regex`.
 
-# Examples
+## Examples
 
 ```julia
 Detrend(1, 3, 5)

@@ -13,7 +13,7 @@ is not defined for variable `varᵢ`, the default aggregation
 function will be used. Default aggregation function is `mean` for
 continuous variables and `first` otherwise.
 
-# Examples
+## Examples
 
 ```julia
 UniqueCoords(1 => last, 2 => maximum)

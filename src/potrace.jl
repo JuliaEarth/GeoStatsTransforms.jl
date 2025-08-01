@@ -18,7 +18,7 @@ is not defined for variable `varᵢ`, the default aggregation
 function will be used. Default aggregation function is `mean` for
 continuous variables and `first` otherwise.
 
-# Examples
+## Examples
 
 ```julia
 Potrace(:mask, ϵ=0.1)

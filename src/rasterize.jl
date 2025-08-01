@@ -20,7 +20,7 @@ is not defined for variable `varᵢ`, the default aggregation
 function will be used. Default aggregation function is `mean` for
 continuous variables and `first` otherwise.
 
-# Examples
+## Examples
 
 ```julia
 grid = CartesianGrid(10, 10)

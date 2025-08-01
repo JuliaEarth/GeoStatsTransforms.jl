@@ -13,7 +13,7 @@ as in the pseudo-code `grid[1:f₁:end, 1:f₂:end, ..., 1:fₙ:end]`.
 Resulting values are obtained with the [`Aggregate`](@ref) transform
 and its default aggregation functions.
 
-# Examples
+## Examples
 
 ```julia
 Upscale(2, 2)

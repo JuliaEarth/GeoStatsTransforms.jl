@@ -14,7 +14,7 @@ Alternatively, aggregate variables over geometries `g₁`, `g₂`, ..., `gₙ`.
 
 Default aggregation function is `mean` for continuous variables and `first` otherwise.
 
-# Examples
+## Examples
 
 ```julia
 Aggregate(domain, 1 => last, 2 => maximum)
