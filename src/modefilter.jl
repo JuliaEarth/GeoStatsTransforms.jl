@@ -3,7 +3,7 @@
 # ------------------------------------------------------------------
 
 """
-    ModeFilter(func; [options])
+    ModeFilter(; [options])
   
 Replace categorical values with mode of neighboring values.
 
