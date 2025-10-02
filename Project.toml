@@ -1,7 +1,7 @@
 name = "GeoStatsTransforms"
 uuid = "725d9659-360f-4996-9c94-5f19c7e4a8a6"
 authors = ["Júlio Hoffimann <julio.hoffimann@gmail.com> and contributors"]
-version = "0.13.0"
+version = "0.13.1"
 
 [deps]
 ArnoldiMethod = "ec485272-7323-5ecc-a04f-4719b315124d"
@@ -39,7 +39,7 @@ GeoStatsFunctions = "0.12"
 GeoStatsModels = "0.13"
 GeoTables = "1.25"
 LinearAlgebra = "1.10"
-Meshes = "0.54"
+Meshes = "0.55"
 OhMyThreads = "0.5 - 0.8"
 PrecompileTools = "1.2"
 Random = "1.10"
