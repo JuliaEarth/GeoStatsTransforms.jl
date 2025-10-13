@@ -26,6 +26,7 @@ testfiles = [
   "transfer.jl",
   "upscale.jl",
   "downscale.jl",
+  "gradient.jl",
   "rasterize.jl",
   "potrace.jl",
   "detrend.jl",
