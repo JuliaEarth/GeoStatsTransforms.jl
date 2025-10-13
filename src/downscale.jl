@@ -22,8 +22,6 @@ end
 
 Downscale(factors::Int...) = Downscale(factors)
 
-isrevertible(::Type{<:Downscale}) = false
-
 function apply(transform::Downscale, geotable::AbstractGeoTable)
   gtb = geotable |> AbsoluteUnits()
   tab = values(gtb)

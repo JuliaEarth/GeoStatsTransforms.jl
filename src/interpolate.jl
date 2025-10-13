@@ -43,8 +43,6 @@ Interpolate(domain::Domain; model=NN(), point=true, prob=false) = Interpolate(do
 
 Interpolate(geoms::AbstractVector{<:Geometry}; kwargs...) = Interpolate(GeometrySet(geoms); kwargs...)
 
-isrevertible(::Type{<:Interpolate}) = false
-
 function apply(transform::Interpolate, geotable::AbstractGeoTable)
   interp = fitpredict(
     # forward arguments

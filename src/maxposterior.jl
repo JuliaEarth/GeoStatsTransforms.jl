@@ -40,8 +40,6 @@ end
 
 MaxPosterior(func; skip=Int[], maxneighbors=26, rng=Random.default_rng()) = MaxPosterior(func, skip, maxneighbors, rng)
 
-isrevertible(::Type{<:MaxPosterior}) = false
-
 function apply(transform::MaxPosterior, geotable::AbstractGeoTable)
   # theoretical function
   f = transform.func

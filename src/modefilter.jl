@@ -21,8 +21,6 @@ end
 
 ModeFilter(; skip=Int[], maxneighbors=26, rng=Random.default_rng()) = ModeFilter(skip, maxneighbors, rng)
 
-isrevertible(::Type{<:ModeFilter}) = false
-
 function apply(transform::ModeFilter, geotable::AbstractGeoTable)
   # sanity checks
   cols = Tables.columns(values(geotable))

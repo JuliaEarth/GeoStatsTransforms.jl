@@ -34,8 +34,6 @@ Aggregate(domain::Domain, pairs::Pair{C,<:Function}...) where {C<:Column} =
   Aggregate(domain, selector(first.(pairs)), collect(Function, last.(pairs)))
 Aggregate(geoms::AbstractVector{<:Geometry}, args...) = Aggregate(GeometrySet(geoms), args...)
 
-isrevertible(::Type{<:Aggregate}) = false
-
 function apply(transform::Aggregate, geotable::AbstractGeoTable)
   gtb = geotable |> AbsoluteUnits()
   table = values(gtb)

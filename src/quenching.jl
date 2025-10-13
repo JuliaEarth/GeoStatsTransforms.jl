@@ -43,8 +43,6 @@ end
 Quenching(func; skip=Int[], tol=1e-2, maxiter=10, maxneighbors=26, rng=Random.default_rng()) =
   Quenching(func, skip, tol, maxiter, maxneighbors, rng)
 
-isrevertible(::Type{<:Quenching}) = false
-
 function apply(transform::Quenching, geotable::AbstractGeoTable)
   # theoretical transiogram
   τ = transform.transiogram

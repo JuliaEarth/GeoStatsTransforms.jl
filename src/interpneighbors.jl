@@ -68,8 +68,6 @@ InterpolateNeighbors(
 
 InterpolateNeighbors(geoms::AbstractVector{<:Geometry}; kwargs...) = InterpolateNeighbors(GeometrySet(geoms); kwargs...)
 
-isrevertible(::Type{<:InterpolateNeighbors}) = false
-
 function apply(transform::InterpolateNeighbors, geotable::AbstractGeoTable)
   interp = fitpredict(
     # forward arguments

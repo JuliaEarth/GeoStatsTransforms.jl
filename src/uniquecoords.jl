@@ -30,8 +30,6 @@ UniqueCoords() = UniqueCoords(NoneSelector(), Function[])
 UniqueCoords(pairs::Pair{C,<:Function}...) where {C<:Column} =
   UniqueCoords(selector(first.(pairs)), collect(Function, last.(pairs)))
 
-isrevertible(::Type{<:UniqueCoords}) = false
-
 apply(transform::UniqueCoords, geotable::AbstractGeoTable) = _unique(transform, domain(geotable), values(geotable))
 
 function _unique(transform::UniqueCoords, domain::Domain, table)

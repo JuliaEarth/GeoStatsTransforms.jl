@@ -26,8 +26,6 @@ end
 
 Transfer(geoms::AbstractVector{<:Geometry}) = Transfer(GeometrySet(geoms))
 
-isrevertible(::Type{<:Transfer}) = false
-
 function apply(transform::Transfer, geotable::AbstractGeoTable)
   gtb = geotable |> AbsoluteUnits()
   table = values(gtb)
