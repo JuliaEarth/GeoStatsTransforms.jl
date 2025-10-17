@@ -134,8 +134,8 @@ function ghc_dissimilarity_matrix(geotable, kern, λ)
   # kernel matrix
   K = ghc_kern_matrix(kern, λ, 𝒟)
 
-  # features must be standardized
-  𝒮 = ghc_standardize(𝒯)
+  # standardize features
+  𝒮 = 𝒯 |> ZScore()
 
   # retrieve feature columns
   cols = Tables.columns(𝒮)
@@ -177,18 +177,6 @@ function ghc_dissimilarity_matrix(geotable, kern, λ)
   end
 
   D
-end
-
-function ghc_standardize(𝒯)
-  cols = Tables.columns(𝒯)
-  vars = Tables.columnnames(cols)
-  zstd = map(vars) do var
-    z = Tables.getcolumn(cols, var)
-    μ = mean(z)
-    σ = std(z, mean=μ)
-    iszero(σ) ? zero(μ) : (z .- μ) ./ σ
-  end
-  (; zip(vars, zstd)...) |> Tables.materializer(𝒯)
 end
 
 function ghc_kern_matrix(kern, λ, 𝒟)
