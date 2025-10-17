@@ -95,10 +95,15 @@
     C = 𝒮 |> GHC(10, 1.0)
     @test length(unique(C.label)) == 10
 
-    # large geotable
     𝒮 = georef((z=[10sin(i / 10) + j for i in 1:10, j in 1:10],))
     C = 𝒮 |> GHC(3, 1.0)
     @test length(unique(C.label)) == 3
+
+    # multiple k
+    𝒮 = georef((z=[10sin(i / 10) + j for i in 1:10, j in 1:10],))
+    C = 𝒮 |> GHC([3, 5], 1.0)
+    @test length(unique(C.label1)) == 3
+    @test length(unique(C.label2)) == 5
   end
 
   @testset "GSC" begin
