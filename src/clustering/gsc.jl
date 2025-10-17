@@ -18,6 +18,13 @@ for adjacent weights determine the resulting number of clusters.
 * `maxiter` - Maximum number of iterations (default to `10`)
 * `weights` - Dictionary of weights for each variable (default to `nothing`)
 
+## Examples
+
+```julia
+GSC(3, 2.0) # default options
+GSC(3, 2.0, tol=1e-2) # set tolerance
+```
+
 ## References
 
 * Romary et al. 2015. [Unsupervised classification of multivariate

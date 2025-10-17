@@ -20,6 +20,13 @@ average spacing between cluster centroids.
 * `maxiter` - Maximum number of iterations (default to `10`)
 * `weights` - Dictionary with weights for each variable (default to `nothing`)
 
+## Examples
+
+```julia
+SLIC(10, 0.01) # default options
+SLIC(10, 0.01, tol=1e-2) # set tolerance
+```
+
 ## References
 
 * Achanta et al. 2011. [SLIC superpixels compared to state-of-the-art
