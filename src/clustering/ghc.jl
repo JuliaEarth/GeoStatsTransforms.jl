@@ -18,6 +18,17 @@ The approximate number of clusters `k` and the range `λ` of
 the `kern`el function determine the resulting number of clusters.
 The larger the range the more connected are nearby samples.
 
+Unlike in other clustering algorithms, the argument `k` can
+be a list of integer values. In this case, each value is used
+to cut the underlying tree data structure into clusters.
+
+## Examples
+
+```julia
+GHC(5, 1.0) # request approximately 5 clusters
+GHC([5,10,20], 1.0) # 5, 10 and 20 nested clusters
+```
+
 ## Options
 
 * `nmax` - Maximum number of observations to use in distance matrix
@@ -39,18 +50,18 @@ a 100x100 Cartesian grid with unit spacing is possible with `λ=1.0`
 or `λ=2.0` but the problem starts to become computationally unfeasible
 around `λ=10.0` due to the density of points.
 """
-struct GHC{ℒ<:Len} <: TableTransform
-  k::Int
+struct GHC{K,ℒ<:Len} <: TableTransform
+  k::K
   λ::ℒ
   nmax::Int
   kern::Symbol
   link::Symbol
-  GHC(k, λ::ℒ, nmax, kern, link) where {ℒ<:Len} = new{float(ℒ)}(k, λ, nmax, kern, link)
+  GHC(k::K, λ::ℒ, nmax, kern, link) where {K,ℒ<:Len} = new{K,float(ℒ)}(k, λ, nmax, kern, link)
 end
 
 function GHC(k, λ::Len; nmax=2000, kern=:epanechnikov, link=:ward)
   # sanity checks
-  @assert k > 0 "number of cluster must be positive"
+  @assert all(>(0), k) "number of clusters must be positive"
   @assert λ > zero(λ) "kernel range must be positive"
   @assert nmax > 0 "maximum number of observations must be positive"
   @assert kern ∈ [:uniform, :triangular, :epanechnikov] "invalid kernel function"
@@ -82,18 +93,28 @@ function apply(transform::GHC, geotable::AbstractGeoTable)
   # classical hierarchical clustering
   tree = hclust(D, linkage=link)
 
-  # cut tree to produce clusters
-  labels = cutree(tree, k=k)
+  # cut tree in clusters
+  newgeotables = map(eachindex(k)) do i
+    # perform tree cut
+    cname = Symbol("label", i)
+    cvals = cutree(tree, k=k[i])
 
-  # georeference labels
-  newtab = (; label=labels)
-  newgtb = georef(newtab, domain(gtb))
+    # georeference clusters
+    newgtb = georef((; cname => cvals), domain(gtb))
 
-  # interpolate neighbors in case of sub-sampling
-  newgeotable = if nrow(newgtb) < nrow(geotable)
-    newgtb |> InterpolateNeighbors(domain(geotable), model=NN())
+    # interpolate in case of sub-sampling
+    interp = if nrow(newgtb) < nrow(geotable)
+      InterpolateNeighbors(domain(geotable), model=NN())
+    else
+      Identity()
+    end
+    newgtb |> interp
+  end
+
+  newgeotable = if length(newgeotables) > 1
+    reduce(hcat, newgeotables)
   else
-    newgtb
+    first(newgeotables) |> Rename("label1" => "label")
   end
 
   newgeotable, nothing
