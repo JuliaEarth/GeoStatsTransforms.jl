@@ -26,7 +26,10 @@ struct DropLocalLowHigh{ℒ<:Len,T} <: TableTransform
   high::T
 end
 
-DropLocalLowHigh(radius; low=0.25, high=0.75) = DropLocalLowHigh(aslen(radius), low, high)
+function DropLocalLowHigh(radius; low=0.25, high=0.75)
+  @assert 0 ≤ low ≤ high ≤ 1 "invalid percentiles"
+  DropLocalLowHigh(aslen(radius), low, high)
+end
 
 function apply(transform::DropLocalLowHigh, geotable::AbstractGeoTable)
   # domain and continuous variables
