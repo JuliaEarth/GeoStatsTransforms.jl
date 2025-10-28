@@ -40,6 +40,7 @@ include("utils.jl")
 
 include("interpolate.jl")
 include("interpneighbors.jl")
+include("droplocallowhigh.jl")
 include("uniquecoords.jl")
 include("aggregate.jl")
 include("transfer.jl")
@@ -60,6 +61,9 @@ export
   # transforms
   Interpolate,
   InterpolateNeighbors,
+  DropLocalLowHigh,
+  DropLocalMinima,
+  DropLocalMaxima,
   UniqueCoords,
   Aggregate,
   Transfer,
