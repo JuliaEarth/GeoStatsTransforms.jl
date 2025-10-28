@@ -55,7 +55,8 @@ function apply(transform::DropLocalLowHigh, geotable::AbstractGeoTable)
     inds = search(centroid(dom, i), searcher)
     for var in vars
       x = Tables.getcolumn(cols, var)
-      l, h = quantile(x[inds], (low, high))
+      ismissing(x[i]) && continue
+      l, h = quantile(skipmissing(x[inds]), (low, high))
       if x[i] < l || x[i] > h
         push!(drop, i)
         break
