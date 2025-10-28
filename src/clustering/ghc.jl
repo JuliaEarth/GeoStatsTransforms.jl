@@ -69,7 +69,7 @@ function GHC(k, λ::Len; nmax=2000, kern=:epanechnikov, link=:ward)
   GHC(k, λ, nmax, kern, link)
 end
 
-GHC(k, λ; kwargs...) = GHC(k, _addunit(λ, u"m"); kwargs...)
+GHC(k, λ; kwargs...) = GHC(k, aslen(λ); kwargs...)
 
 function apply(transform::GHC, geotable::AbstractGeoTable)
   # GHC parameters

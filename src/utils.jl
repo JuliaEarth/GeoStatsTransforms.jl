@@ -26,8 +26,9 @@ end
 
 const Len{T} = Quantity{T,u"𝐋"}
 
-_addunit(x::Number, u) = x * u
-_addunit(::Quantity, _) = throw(ArgumentError("invalid units, please check the documentation"))
+aslen(x::Number) = x * u"m"
+aslen(x::Len) = x
+aslen(::Quantity) = throw(ArgumentError("invalid units, please check the documentation"))
 
 # ------
 # STATS
