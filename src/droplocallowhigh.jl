@@ -18,7 +18,7 @@ DropLocalLowHigh(10u"m")
 DropLocalLowHigh(5u"m", low=0.0, high=0.98)
 ```
 
-See also [`DropLocalMinima`](@ref) and [`DropLocalMaxima`](@ref).
+See also [`DropLocalLow`](@ref) and [`DropLocalHigh`](@ref).
 """
 struct DropLocalLowHigh{ℒ<:Len,T} <: TableTransform
   radius::ℒ
@@ -72,19 +72,19 @@ function apply(transform::DropLocalLowHigh, geotable::AbstractGeoTable)
 end
 
 """
-    DropLocalMinima(radius; low=0.25)
+    DropLocalLow(radius; low=0.25)
 
 Equivalent to `DropLocalLowHigh(radius; low=low, high=1.0)`.
 
 Please check the documentation of [`DropLocalLowHigh`](@ref) for more details.
 """
-DropLocalMinima(radius; low=0.25) = DropLocalLowHigh(radius; low=low, high=1.0)
+DropLocalLow(radius; low=0.25) = DropLocalLowHigh(radius; low=low, high=1.0)
 
 """
-    DropLocalMaxima(radius; high=0.75)
+    DropLocalHigh(radius; high=0.75)
 
 Equivalent to `DropLocalLowHigh(radius; low=0.0, high=high)`.
 
 Please check the documentation of [`DropLocalLowHigh`](@ref) for more details.
 """
-DropLocalMaxima(radius; high=0.75) = DropLocalLowHigh(radius; low=0.0, high=high)
+DropLocalHigh(radius; high=0.75) = DropLocalLowHigh(radius; low=0.0, high=high)

@@ -12,9 +12,9 @@
 
   # tests with aliases
   gtb = georef((; a=[1.0, 2.0, 3.0, 100.0, 5.0]))
-  ntb = gtb |> DropLocalMinima(1)
+  ntb = gtb |> DropLocalLow(1)
   @test ntb.a == [2.0, 3.0, 100.0]
-  ntb = gtb |> DropLocalMaxima(1)
+  ntb = gtb |> DropLocalHigh(1)
   @test ntb.a == [1.0, 2.0, 3.0, 5.0]
 
   # missing values
