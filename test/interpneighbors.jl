@@ -8,7 +8,7 @@
   @test ngtb.geometry == gtb.geometry
 
   gtb = georef((; z=[1.0, 0.0, 1.0]), [(25.0, 25.0), (50.0, 75.0), (75.0, 50.0)])
-  grid = CartesianGrid((100, 100), (0.5, 0.5), (1.0, 1.0))
+  grid = CartesianGrid((0.5, 0.5), (100.5, 100.5), dims=(100, 100))
   inds = LinearIndices(size(grid))
   model = Kriging(GaussianVariogram(range=35.0))
   ngtb = gtb |> InterpolateNeighbors(grid; model=model)
