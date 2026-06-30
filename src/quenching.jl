@@ -54,7 +54,7 @@ function apply(transform::Quenching, geotable::AbstractGeoTable)
   levs = levels(vals)
   isok = length(vars) == 1 && elscitype(vals) <: Categorical
   @assert isok "Quenching only defined for a single categorical variable"
-  isok = length(levs) == nvariates(τ)
+  isok = length(levs) == nvariables(τ)
   @assert isok "Invalid transiogram for number of categorical values"
 
   # variable and domain

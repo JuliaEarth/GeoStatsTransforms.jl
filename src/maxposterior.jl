@@ -51,7 +51,7 @@ function apply(transform::MaxPosterior, geotable::AbstractGeoTable)
   levs = levels(vals)
   isok = length(vars) == 1 && elscitype(vals) <: Categorical
   @assert isok "MaxPosterior only defined for a single categorical variable"
-  isok = length(levs) == nvariates(f)
+  isok = length(levs) == nvariables(f)
   @assert isok "Invalid geostatistical function for number of categorical values"
 
   # variable and domain
