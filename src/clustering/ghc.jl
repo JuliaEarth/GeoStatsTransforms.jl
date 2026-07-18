@@ -79,11 +79,6 @@ function apply(transform::GHC, geotable::AbstractGeoTable)
   kern = transform.kern
   link = transform.link
 
-  # all covariates must be continuous
-  cond = x -> elscitype(x) <: Continuous
-  msg = "GHC only defined for continuous variables"
-  values(geotable) |> Assert(; cond, msg)
-
   # subsample geotable to avoid out-of-memory issues
   gtb = ghc_subsample(geotable, nmax)
 
@@ -135,7 +130,7 @@ function ghc_dissimilarity_matrix(geotable, kern, λ)
   K = ghc_kern_matrix(kern, λ, 𝒟)
 
   # standardize features
-  𝒮 = 𝒯 |> ZScore()
+  𝒮 = 𝒯 |> StdFeats()
 
   # retrieve feature columns
   cols = Tables.columns(𝒮)
@@ -202,7 +197,7 @@ function ghc_diff_matrix(zᵢ, zⱼ)
   Δ = zeros(n, n)
   @inbounds for l in 1:n
     for k in (l + 1):n
-      Δ[k, l] = (zᵢ[k] - zᵢ[l]) * (zⱼ[k] - zⱼ[l])
+      Δ[k, l] = (zᵢ[k] - zᵢ[l]) ⋅ (zⱼ[k] - zⱼ[l])
     end
     Δ[l, l] = 0.0
     for k in 1:(l - 1)

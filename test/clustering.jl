@@ -104,6 +104,11 @@
     C = 𝒮 |> GHC([3, 5], 1.0)
     @test length(unique(C.label1)) == 3
     @test length(unique(C.label2)) == 5
+
+    # objects in Hilbert space
+    𝒮 = georef((z=rand(Composition{3}, 100),))
+    C = 𝒮 |> GHC(5, 1.0)
+    @test length(unique(C.label)) == 5
   end
 
   @testset "GSC" begin
