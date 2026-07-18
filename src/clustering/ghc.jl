@@ -84,7 +84,7 @@ function apply(transform::GHC, geotable::AbstractGeoTable)
   msg = "GHC only defined for continuous variables"
   values(geotable) |> Assert(; cond, msg)
 
-  # sub-sample geotable to fit dissimilarity matrix
+  # subsample geotable to avoid out-of-memory issues
   gtb = ghc_subsample(geotable, nmax)
 
   # dissimilarity matrix
@@ -102,7 +102,7 @@ function apply(transform::GHC, geotable::AbstractGeoTable)
     # georeference clusters
     newgtb = georef((; cname => cvals), domain(gtb))
 
-    # interpolate in case of sub-sampling
+    # interpolate in case of subsampling
     interp = if nrow(newgtb) < nrow(geotable)
       InterpolateNeighbors(domain(geotable), model=NN())
     else
@@ -122,7 +122,7 @@ end
 
 function ghc_subsample(geotable, nmax)
   nobs = nrow(geotable)
-  tran = nobs > nmax ? Sample(nmax, replace=false) : Identity()
+  tran = nobs > nmax ? Sample(nmax, replace=false, rng=Xoshiro(123)) : Identity()
   geotable |> tran
 end
 
