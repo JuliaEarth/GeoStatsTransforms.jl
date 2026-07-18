@@ -28,8 +28,7 @@ GSC(3, 2.0, tol=1e-2) # set tolerance
 ## References
 
 * Romary et al. 2015. [Unsupervised classification of multivariate
-  geostatistical data: Two algorithms]
-  (https://www.sciencedirect.com/science/article/pii/S0098300415001314)
+  geostatistical data: Two algorithms](https://www.sciencedirect.com/science/article/pii/S0098300415001314)
 
 ## Notes
 

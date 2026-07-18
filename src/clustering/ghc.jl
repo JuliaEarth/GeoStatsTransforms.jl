@@ -37,8 +37,8 @@ GHC([5,10,20], 1.0) # 5, 10 and 20 nested clusters
 
 ## References
 
-* Fouedjio, F. 2016. [A hierarchical clustering method for multivariate geostatistical data]
-  (https://www.sciencedirect.com/science/article/abs/pii/S2211675316300367)
+* Fouedjio, F. 2016. [A hierarchical clustering method for
+  multivariate geostatistical data](https://www.sciencedirect.com/science/article/abs/pii/S2211675316300367)
 
 ### Notes
 
