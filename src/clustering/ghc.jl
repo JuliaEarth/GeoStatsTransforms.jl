@@ -79,46 +79,53 @@ function apply(transform::GHC, geotable::AbstractGeoTable)
   kern = transform.kern
   link = transform.link
 
+  # normalize variables
+  stdtable = geotable |> StdFeats()
+
   # subsample geotable to avoid out-of-memory issues
-  gtb = ghc_subsample(geotable, nmax)
+  subtable, inds = ghc_subsample(stdtable, nmax)
 
   # dissimilarity matrix
-  D = ghc_dissimilarity_matrix(gtb, kern, λ)
+  D = ghc_dissimilarity_matrix(subtable, kern, λ)
 
   # classical hierarchical clustering
   tree = hclust(D, linkage=link)
 
   # cut tree in clusters
-  newgeotables = map(eachindex(k)) do i
+  newcols = map(eachindex(k)) do i
     # perform tree cut
-    cname = Symbol("label", i)
-    cvals = cutree(tree, k=k[i])
-
-    # georeference clusters
-    newgtb = georef((; cname => cvals), domain(gtb))
+    name = Symbol("label", i)
+    labs = cutree(tree, k=k[i])
 
     # interpolate in case of subsampling
-    interp = if nrow(newgtb) < nrow(geotable)
-      InterpolateNeighbors(domain(geotable), model=NN())
+    vals = if nrow(subtable) < nrow(geotable)
+      ghc_interp(labs, inds, stdtable)
     else
-      Identity()
+      labs
     end
-    newgtb |> interp
+
+    # return column name and values
+    name => vals
   end
 
-  newgeotable = if length(newgeotables) > 1
-    reduce(hcat, newgeotables)
+  # build feature table
+  newtable = if length(newcols) > 1
+    (; newcols...)
   else
-    first(newgeotables) |> Rename("label1" => "label")
+    (; label=last(first(newcols)))
   end
+
+  # georeference onto original domain
+  newgeotable = georef(newtable, domain(geotable))
 
   newgeotable, nothing
 end
 
 function ghc_subsample(geotable, nmax)
   nobs = nrow(geotable)
-  tran = nobs > nmax ? Sample(nmax, replace=false, rng=Xoshiro(123)) : Identity()
-  geotable |> tran
+  inds = nobs > nmax ? sample(Xoshiro(123), 1:nobs, nmax, replace=false) : 1:nobs
+  stab = geotable[inds, :]
+  stab, inds
 end
 
 function ghc_dissimilarity_matrix(geotable, kern, λ)
@@ -129,11 +136,8 @@ function ghc_dissimilarity_matrix(geotable, kern, λ)
   # kernel matrix
   K = ghc_kern_matrix(kern, λ, 𝒟)
 
-  # standardize features
-  𝒮 = 𝒯 |> StdFeats()
-
   # retrieve feature columns
-  cols = Tables.columns(𝒮)
+  cols = Tables.columns(𝒯)
   vars = Tables.columnnames(cols)
 
   # number of covariates
@@ -205,4 +209,24 @@ function ghc_diff_matrix(zᵢ, zⱼ)
     end
   end
   Δ
+end
+
+function ghc_interp(labels, inds, geotable)
+  table = values(geotable)
+  nobs = nrow(geotable)
+
+  ilabels = fill(0, nobs)
+  ilabels[inds] .= labels
+
+  td = TableDistance(normalize=false)
+
+  X = Tables.subset(table, inds, viewhint=true)
+  for i in setdiff(1:nobs, inds)
+    x = Tables.subset(table, [i], viewhint=true)
+    δ = pairwise(td, X, x)
+    _, j = findmin(δ)
+    ilabels[i] = labels[j]
+  end
+
+  ilabels
 end
