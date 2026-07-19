@@ -221,12 +221,35 @@ function ghc_interp(labels, inds, geotable)
   td = TableDistance(normalize=false)
 
   X = Tables.subset(table, inds, viewhint=true)
+  s = _searcher(X, td)
+
   for i in setdiff(1:nobs, inds)
     x = Tables.subset(table, [i], viewhint=true)
-    δ = pairwise(td, X, x) |> vec
-    _, j = findmin(δ)
+    j = _search(s, x)
     ilabels[i] = labels[j]
   end
 
   ilabels
 end
+
+function _searcher(X, td)
+  # check if all variables are continuous
+  cols = Tables.columns(X)
+  vars = Tables.columnnames(cols)
+  allcont = all(vars) do var
+    x = Tables.getcolumn(cols, var)
+    elscitype(x) <: Continuous
+  end
+
+  # use KDTree if all variables are continuous
+  if allcont
+    data = Tables.matrix(X)
+    KDTree(transpose(data))
+  else
+    X, td
+  end
+end
+
+_search(s::KDTree, x) = nn(s, Tables.matrix(x) |> vec) |> first
+
+_search((X, td), x) = pairwise(td, X, x) |> vec |> argmin
