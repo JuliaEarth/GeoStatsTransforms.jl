@@ -27,6 +27,7 @@ using Random
 
 using OhMyThreads: tmap
 using TiledIteration: TileIterator
+using NearestNeighbors: KDTree, nn
 using ImageFiltering: KernelFactors, imgradients
 using ColumnSelectors: ColumnSelector, SingleColumnSelector
 using ColumnSelectors: Column, AllSelector, NoneSelector
