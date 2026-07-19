@@ -223,7 +223,7 @@ function ghc_interp(labels, inds, geotable)
   X = Tables.subset(table, inds, viewhint=true)
   for i in setdiff(1:nobs, inds)
     x = Tables.subset(table, [i], viewhint=true)
-    δ = pairwise(td, X, x)
+    δ = pairwise(td, X, x) |> vec
     _, j = findmin(δ)
     ilabels[i] = labels[j]
   end
