@@ -1,6 +1,6 @@
 name = "GeoStatsTransforms"
 uuid = "725d9659-360f-4996-9c94-5f19c7e4a8a6"
-version = "0.14.17"
+version = "0.14.18"
 authors = ["Júlio Hoffimann <julio.hoffimann@gmail.com> and contributors"]
 
 [deps]
