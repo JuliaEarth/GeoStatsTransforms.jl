@@ -88,7 +88,7 @@ function apply(transform::Quenching, geotable::AbstractGeoTable)
   function objective(gtb)
     linds = _levelindices(levs, gtb)
     map(v) do vⱼ
-      t = DirectionalTransiogram(vⱼ, gtb, var; maxlag=𝓁)
+      t = transiogram(gtb, var; dir=vⱼ, maxlag=𝓁)
       hs = t.abscissas
       ts = t.ordinates
       map(enumerate(hs)) do (i, h)
